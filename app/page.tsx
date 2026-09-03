@@ -261,7 +261,7 @@ export default function HomePage() {
           intro="Every department in one place — full-size motocross, trail enduro, youth e-motos, road-legal machines, farm workhorses and the gear that backs them up."
         />
 
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {homepageCategories.map((cat) => {
             const isAccessories = cat.slug === 'accessories';
             const unitLabel = isAccessories ? 'Items' : 'Models';
