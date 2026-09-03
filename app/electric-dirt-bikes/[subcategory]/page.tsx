@@ -81,7 +81,7 @@ export async function generateMetadata({ params }: SubcategoryPageProps) {
     },
     openGraph: {
       type: 'website',
-      siteName: 'VoltMoto Australia',
+      siteName: 'Australian Electric Motor Co',
       title,
       description,
       images: [{ url: category?.image || 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=1200&q=80' }],

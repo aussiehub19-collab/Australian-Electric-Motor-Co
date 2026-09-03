@@ -115,14 +115,16 @@ export function ProductCard({ product, className = '' }: ProductCardProps) {
       className={`group flex flex-col justify-between bg-[#17191C] rounded-2xl border border-[#2B2F36] overflow-hidden hover:border-[#8C4A2F]/80 transition-all duration-300 hover:shadow-xl hover:shadow-black/60 cursor-pointer ${className}`}
     >
       <div>
-        {/* Image Container with 4:3 Aspect Ratio */}
-        <Link href={productUrl} className="relative aspect-[4/3] bg-white overflow-hidden block">
+        {/* Image Container — every product contained in the same 4:3 white frame so cards align */}
+        <Link href={productUrl} className="relative block aspect-[4/3] overflow-hidden bg-white">
           <SmartImage
             src={product.images?.[0] || 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=600&q=80'}
             alt={product.name}
             width={600}
             height={450}
-            className="w-full h-full object-contain p-3 group-hover:scale-105 transition-transform duration-500"
+            fit="contain"
+            className="h-full w-full p-4"
+            sizes="(max-width: 640px) 90vw, (max-width: 1024px) 45vw, 22vw"
           />
 
           {/* Badges */}

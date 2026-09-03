@@ -180,7 +180,7 @@ export default function HomePage() {
       {/* ============================================================ *
        * HERO — rotating 4-image slider, content centered over it
        * ============================================================ */}
-      <section className="relative flex min-h-[85vh] items-center justify-center overflow-hidden border-b border-[#23272E] bg-[#101214]">
+      <section className="relative flex min-h-[560px] items-center justify-center overflow-hidden border-b border-[#23272E] bg-[#101214] sm:min-h-[85vh]">
         <HeroSlider
           images={[
             { src: '/images/home/hero-1.webp', alt: 'Australian Electric Motor Co electric dirt bike on Australian outback singletrack' },
@@ -190,8 +190,8 @@ export default function HomePage() {
           ]}
         />
 
-        <div className={`relative z-10 ${CONTAINER} py-24 text-center sm:py-28`}>
-          <div className="mx-auto max-w-3xl space-y-8 [text-shadow:0_2px_24px_rgba(0,0,0,0.55)]">
+        <div className={`relative z-10 ${CONTAINER} py-14 text-center sm:py-28`}>
+          <div className="mx-auto max-w-3xl space-y-6 [text-shadow:0_2px_24px_rgba(0,0,0,0.6)] sm:space-y-8">
             <div className="inline-flex items-center gap-2 rounded-full border border-[#8C4A2F]/50 bg-[#1D2024]/90 px-3.5 py-1.5 font-mono text-xs text-[#C87D55] backdrop-blur-md">
               <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-400" />
               <span>AUSTRALIA&apos;S E-MOTO SUPERSTORE &bull; 60V, 72V &amp; 360V PLATFORMS</span>
@@ -205,10 +205,11 @@ export default function HomePage() {
             </h1>
 
             <p className="mx-auto max-w-2xl text-base leading-relaxed text-stone-200 sm:text-lg">
-              Find your next electric dirt bike engineered for rugged trails, tracks, and off-road
-              exploration. Whether you need a full-power adult electric dirt bike capable of 100+ km/h
-              or an entry-level kids electric dirt bike for backyard riding, our Australian inventory
-              features top brands, fast nationwide shipping, and local technical support.
+              From full-power 72V adult machines to entry-level kids mini-motos — top brands, fast
+              nationwide shipping and local NSW warranty.
+              <span className="hidden sm:inline">
+                {' '}Engineered for rugged Australian trails, tracks and off-road exploration.
+              </span>
             </p>
 
             <div className="flex flex-col items-center justify-center gap-4 pt-2 sm:flex-row">
@@ -227,7 +228,7 @@ export default function HomePage() {
               </Link>
             </div>
 
-            <div className="mx-auto grid max-w-3xl grid-cols-2 gap-4 border-t border-[#23272E]/60 pt-8 text-center font-mono sm:grid-cols-4">
+            <div className="mx-auto hidden max-w-3xl grid-cols-2 gap-4 border-t border-[#23272E]/60 pt-8 text-center font-mono sm:grid sm:grid-cols-4">
               {[
                 { label: 'Peak Power', value: '22,000 W', accent: 'text-amber-400' },
                 { label: 'Instant Torque', value: '540 Nm', accent: 'text-white' },

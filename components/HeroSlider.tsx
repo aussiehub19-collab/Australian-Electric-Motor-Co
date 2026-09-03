@@ -65,13 +65,13 @@ export function HeroSlider({ images, interval = 5500 }: HeroSliderProps) {
             fill
             priority={i === 0}
             sizes="100vw"
-            className="object-cover object-center"
+            className="object-cover [object-position:50%_42%]"
           />
         </div>
       ))}
 
-      {/* Light scrim — weighted to top + bottom so the photo stays bright behind the headline */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[#0f1012]/75 via-[#0f1012]/10 to-[#0f1012]/80" />
+      {/* Scrim — light at the top, heavier low where the headline and CTAs sit */}
+      <div className="absolute inset-0 bg-gradient-to-b from-[#0f1012]/45 via-[#0f1012]/25 to-[#0f1012]/85" />
 
       {/* Slide indicators */}
       {images.length > 1 && (

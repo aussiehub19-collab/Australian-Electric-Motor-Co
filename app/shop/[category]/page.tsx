@@ -70,7 +70,7 @@ export async function generateMetadata({ params }: CategoryPageProps) {
 
   if (!category && !customSeo) return { title: 'Category Not Found' };
 
-  const title = customSeo?.title || `${category?.name} | Electric Dirt Bikes Australia | Dirt & Co`;
+  const title = customSeo?.title || `${category?.name} | Electric Dirt Bikes Australia | Australian Electric Motor Co`;
   const description = customSeo?.description || `${category?.description?.slice(0, 150)}...`;
 
   return {

@@ -145,13 +145,15 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
         {/* Left: Product Media Gallery */}
         <div className="space-y-4">
-          <div className="relative aspect-[4/3] w-full rounded-2xl overflow-hidden bg-stone-900 border border-[#2B2F36]">
+          <div className="relative aspect-[4/3] w-full rounded-2xl overflow-hidden bg-white border border-[#2B2F36]">
             <SmartImage
               src={product.images[0]}
               alt={`${product.name} electric dirt bike`}
               aspectRatio="4/3"
               priority={true}
-              className="w-full h-full object-cover"
+              fit="contain"
+              className="h-full w-full p-6"
+              sizes="(max-width: 1024px) 100vw, 45vw"
             />
             {product.badge && (
               <span className="absolute top-4 left-4 bg-[#8C4A2F] text-white text-xs font-bold px-3 py-1.5 rounded-lg uppercase tracking-wider font-mono shadow-xl">
@@ -166,13 +168,15 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
               {product.images.map((img, idx) => (
                 <div
                   key={idx}
-                  className="aspect-[4/3] rounded-lg overflow-hidden border border-[#2B2F36] bg-stone-900 cursor-pointer hover:border-amber-500 transition"
+                  className="aspect-[4/3] rounded-lg overflow-hidden border border-[#2B2F36] bg-white cursor-pointer hover:border-amber-500 transition"
                 >
                   <SmartImage
                     src={img}
                     alt={`${product.name} view ${idx + 1}`}
                     aspectRatio="4/3"
-                    className="w-full h-full object-cover"
+                    fit="contain"
+                    className="h-full w-full p-2"
+                    sizes="120px"
                   />
                 </div>
               ))}
@@ -340,12 +344,14 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
                 href={`/shop/${item.category}/${item.slug}/`}
                 className="bg-[#17191C] border border-[#2B2F36] rounded-xl overflow-hidden hover:border-[#8C4A2F] transition p-4 space-y-3 group"
               >
-                <div className="aspect-[4/3] rounded-lg overflow-hidden bg-stone-900">
+                <div className="aspect-[4/3] rounded-lg overflow-hidden bg-white">
                   <SmartImage
                     src={item.images[0]}
                     alt={item.name}
                     aspectRatio="4/3"
-                    className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                    fit="contain"
+                    className="h-full w-full p-3"
+                    sizes="(max-width: 640px) 45vw, 22vw"
                   />
                 </div>
                 <h3 className="text-sm font-bold text-white group-hover:text-[#C87D55] transition truncate">

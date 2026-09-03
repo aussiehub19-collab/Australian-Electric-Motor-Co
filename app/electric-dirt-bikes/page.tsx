@@ -14,7 +14,7 @@ export const metadata = {
   },
   openGraph: {
     type: 'website',
-    siteName: 'VoltMoto Australia',
+    siteName: 'Australian Electric Motor Co',
     title: 'Electric Dirt Bike Collection | Buy Online in Australia',
     description:
       'Explore our complete electric dirt bike inventory. Compare 60V, 72V, and 360V electric dirt bike models from Surron, Talaria, and Stark VARG with AUD pricing.',

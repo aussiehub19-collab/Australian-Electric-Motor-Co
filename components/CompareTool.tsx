@@ -54,7 +54,9 @@ function BikeCard({
           src={bike.image}
           alt={bike.name}
           aspectRatio="4/3"
-          className="h-full w-full object-contain p-2"
+          fit="contain"
+          className="h-full w-full p-3"
+          sizes="220px"
         />
       </div>
       {bike.brandName && (
