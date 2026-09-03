@@ -1,9 +1,8 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
-import Link from 'next/link';
-import { SmartImage } from '@/components/SmartImage';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { ProductCard } from '@/components/ProductCard';
+import { Pagination } from '@/components/Pagination';
 
 interface Product {
   slug: string;
@@ -11,6 +10,7 @@ interface Product {
   price: number;
   category: string;
   brand?: string;
+  brandName?: string;
   parentCategories?: string[];
   shortDescription: string;
   description: string;
@@ -19,7 +19,9 @@ interface Product {
   images: string[];
   specs?: Record<string, any>;
   sizes?: string[];
+  sizesAvailable?: string[];
   safetyStandard?: string;
+  certifications?: string[];
   riderCategory?: string;
 }
 
@@ -29,378 +31,334 @@ interface CategoryProductGridProps {
   categoryName: string;
 }
 
+const PAGE_SIZE = 16;
+
 export function CategoryProductGrid({
   initialProducts,
   categorySlug,
   categoryName,
 }: CategoryProductGridProps) {
-  const isRidingGear =
-    categorySlug === 'riding-gear' ||
-    categorySlug === 'helmets' ||
-    categorySlug === 'body-armour' ||
-    categorySlug === 'body-armour-protection' ||
-    categorySlug === 'gloves-goggles' ||
-    categorySlug === 'boots';
+  const isRidingGear = [
+    'riding-gear',
+    'helmets',
+    'body-armour',
+    'body-armour-protection',
+    'gloves-goggles',
+    'boots',
+  ].includes(categorySlug);
 
-  // State
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedSubcategory, setSelectedSubcategory] = useState('all');
-  const [selectedRiderCategory, setSelectedRiderCategory] = useState('all');
+  const [selectedBrand, setSelectedBrand] = useState('all');
+  const [selectedRiderCategory, setSelectedRiderCategory] = useState<'all' | 'adult' | 'kids-youth'>('all');
   const [selectedSize, setSelectedSize] = useState('all');
-  const [selectedSafetyStandard, setSelectedSafetyStandard] = useState('all');
+  const [selectedSafety, setSelectedSafety] = useState('all');
   const [sortBy, setSortBy] = useState<'default' | 'price-asc' | 'price-desc' | 'name'>('default');
+  const [page, setPage] = useState(1);
+  const gridTop = useRef<HTMLDivElement>(null);
 
-  // Subcategories for Riding Gear
-  const ridingGearSubcategories = [
-    { id: 'all', label: 'All Riding Gear' },
-    { id: 'helmets', label: 'Helmets' },
-    { id: 'body-armour', label: 'Body Armour' },
-    { id: 'gloves-goggles', label: 'Gloves & Goggles' },
-    { id: 'boots', label: 'Boots' },
-  ];
+  // Brand list actually present in this category
+  const brands = useMemo(() => {
+    const set = new Map<string, string>();
+    initialProducts.forEach((p) => {
+      const b = p.brandName || p.brand;
+      if (b) set.set(b, b);
+    });
+    return [...set.values()].sort((a, b) => a.localeCompare(b));
+  }, [initialProducts]);
 
-  // Size Matrix options
-  const sizeOptions = [
-    { id: 'all', label: 'All Sizes' },
-    { id: 'Youth S', label: 'Youth S' },
-    { id: 'Youth M', label: 'Youth M' },
-    { id: 'Youth L', label: 'Youth L' },
-    { id: 'Adult S', label: 'Adult S' },
-    { id: 'Adult M', label: 'Adult M' },
-    { id: 'Adult L', label: 'Adult L' },
-    { id: 'Adult XL', label: 'Adult XL' },
-    { id: 'Adult 2XL', label: 'Adult 2XL' },
-  ];
+  // Sizes actually present
+  const sizes = useMemo(() => {
+    const set = new Set<string>();
+    initialProducts.forEach((p) => (p.sizesAvailable || p.sizes || []).forEach((s) => set.add(s)));
+    return [...set].sort();
+  }, [initialProducts]);
 
-  // Safety Standards options
-  const safetyStandardOptions = [
-    { id: 'all', label: 'All Standards' },
+  const safetyOptions = [
     { id: 'ECE 22.06', label: 'ECE 22.06 / AS 1698' },
     { id: 'CE Level 2', label: 'CE Level 2' },
     { id: 'CE Level 1', label: 'CE Level 1' },
   ];
 
-  // Filtered and Sorted products
-  const filteredProducts = useMemo(() => {
-    return initialProducts.filter((product) => {
-      // Search query
+  const filtered = useMemo(() => {
+    const list = initialProducts.filter((p) => {
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase();
-        const matchesName = product.name.toLowerCase().includes(q);
-        const matchesDesc = product.shortDescription.toLowerCase().includes(q);
-        const matchesBrand = product.brand?.toLowerCase().includes(q);
-        if (!matchesName && !matchesDesc && !matchesBrand) return false;
+        if (
+          !p.name.toLowerCase().includes(q) &&
+          !p.shortDescription?.toLowerCase().includes(q) &&
+          !(p.brandName || p.brand || '').toLowerCase().includes(q)
+        )
+          return false;
       }
 
-      // Subcategory filter (on riding-gear parent)
-      if (selectedSubcategory !== 'all') {
-        const matchesCat =
-          product.category === selectedSubcategory ||
-          (selectedSubcategory === 'body-armour' && product.category === 'body-armour-protection') ||
-          product.parentCategories?.includes(selectedSubcategory);
-        if (!matchesCat) return false;
-      }
+      if (selectedBrand !== 'all' && (p.brandName || p.brand) !== selectedBrand) return false;
 
-      // Rider Category (Adult vs Kids/Youth)
       if (selectedRiderCategory !== 'all') {
-        const prodRider = product.riderCategory || (product.specs as any)?.RiderCategory || (product.specs as any)?.Fitment || '';
-        const isYouthProduct =
-          prodRider.toLowerCase().includes('youth') ||
-          prodRider.toLowerCase().includes('kids') ||
-          product.name.toLowerCase().includes('youth') ||
-          product.name.toLowerCase().includes('kids') ||
-          product.sizes?.some((s) => s.startsWith('Youth'));
-
-        if (selectedRiderCategory === 'kids-youth' && !isYouthProduct) return false;
-        if (selectedRiderCategory === 'adult' && isYouthProduct) return false;
+        const rider = (p.riderCategory || p.specs?.RiderCategory || '').toLowerCase();
+        const youth =
+          rider.includes('youth') ||
+          rider.includes('kid') ||
+          p.name.toLowerCase().includes('youth') ||
+          p.name.toLowerCase().includes('kids') ||
+          (p.sizesAvailable || p.sizes || []).some((s) => s.toLowerCase().startsWith('youth'));
+        if (selectedRiderCategory === 'kids-youth' && !youth) return false;
+        if (selectedRiderCategory === 'adult' && youth) return false;
       }
 
-      // Size Filter
       if (selectedSize !== 'all') {
-        const hasSize =
-          product.sizes?.includes(selectedSize) ||
-          (product.specs as any)?.AvailableSizes?.includes(selectedSize) ||
-          (product.specs as any)?.SizeMatrix?.includes(selectedSize) ||
-          (product.specs as any)?.Sizing?.includes(selectedSize) ||
-          (product.specs as any)?.Sizes?.includes(selectedSize);
-        if (!hasSize) return false;
+        if (!(p.sizesAvailable || p.sizes || []).includes(selectedSize)) return false;
       }
 
-      // Safety Standard Filter
-      if (selectedSafetyStandard !== 'all') {
-        const std =
-          product.safetyStandard ||
-          (product.specs as any)?.SafetyStandard ||
-          (product.specs as any)?.ChestProtection ||
-          (product.specs as any)?.BackProtection ||
-          '';
-        const stdLower = std.toLowerCase();
-        if (selectedSafetyStandard === 'ECE 22.06') {
-          if (!stdLower.includes('ece 22.06') && !stdLower.includes('as/nzs 1698')) return false;
-        } else if (selectedSafetyStandard === 'CE Level 2') {
-          if (!stdLower.includes('level 2')) return false;
-        } else if (selectedSafetyStandard === 'CE Level 1') {
-          if (!stdLower.includes('level 1')) return false;
-        }
+      if (selectedSafety !== 'all') {
+        const hay = [
+          p.safetyStandard || '',
+          ...(p.certifications || []),
+          p.specs?.SafetyStandard || '',
+          p.specs?.SafetyCertification || '',
+          p.specs?.ChestProtection || '',
+          p.specs?.BackProtection || '',
+        ]
+          .join(' ')
+          .toLowerCase();
+        if (selectedSafety === 'ECE 22.06' && !hay.includes('ece 22.06') && !hay.includes('1698')) return false;
+        if (selectedSafety === 'CE Level 2' && !hay.includes('level 2')) return false;
+        if (selectedSafety === 'CE Level 1' && !hay.includes('level 1')) return false;
       }
 
       return true;
-    }).sort((a, b) => {
+    });
+
+    return list.sort((a, b) => {
       if (sortBy === 'price-asc') return a.price - b.price;
       if (sortBy === 'price-desc') return b.price - a.price;
       if (sortBy === 'name') return a.name.localeCompare(b.name);
-      return 0;
+      // default: featured first, then price ascending
+      if (!!b.featured !== !!a.featured) return b.featured ? 1 : -1;
+      return a.price - b.price;
     });
   }, [
     initialProducts,
     searchQuery,
-    selectedSubcategory,
+    selectedBrand,
     selectedRiderCategory,
     selectedSize,
-    selectedSafetyStandard,
+    selectedSafety,
     sortBy,
   ]);
 
   const hasActiveFilters =
     searchQuery.trim() !== '' ||
-    selectedSubcategory !== 'all' ||
+    selectedBrand !== 'all' ||
     selectedRiderCategory !== 'all' ||
     selectedSize !== 'all' ||
-    selectedSafetyStandard !== 'all';
+    selectedSafety !== 'all';
 
   const resetFilters = () => {
     setSearchQuery('');
-    setSelectedSubcategory('all');
+    setSelectedBrand('all');
     setSelectedRiderCategory('all');
     setSelectedSize('all');
-    setSelectedSafetyStandard('all');
+    setSelectedSafety('all');
     setSortBy('default');
   };
 
+  // whenever the filtered set changes, jump back to page 1
+  useEffect(() => {
+    setPage(1);
+  }, [searchQuery, selectedBrand, selectedRiderCategory, selectedSize, selectedSafety, sortBy]);
+
+  const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const safePage = Math.min(page, pageCount);
+  const pageItems = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
+  const rangeStart = filtered.length === 0 ? 0 : (safePage - 1) * PAGE_SIZE + 1;
+  const rangeEnd = Math.min(safePage * PAGE_SIZE, filtered.length);
+
+  const changePage = (p: number) => {
+    setPage(p);
+    gridTop.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  const selectClass =
+    'w-full rounded-lg border border-[#2B2F36] bg-[#121417] px-3 py-2 text-xs font-mono text-stone-200 transition-colors focus-visible:border-[#C87D55] focus-visible:outline-none';
+
   return (
-    <div className="space-y-8">
-      {/* Interactive Filter Suite */}
-      <div className="bg-[#17191C] border border-[#2B2F36] rounded-2xl p-5 sm:p-6 space-y-6 shadow-xl">
-        {/* Top Filter Row: Search + Sort + Reset */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 pb-4 border-b border-[#23272E]">
-          {/* Search bar */}
-          <div className="relative flex-1 max-w-md">
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={`Search ${categoryName}...`}
-              className="w-full bg-[#121417] border border-[#2B2F36] rounded-xl px-4 py-2.5 pl-10 text-sm text-stone-100 placeholder-stone-500 focus:outline-none focus:border-[#C87D55] focus:ring-1 focus:ring-[#C87D55] font-sans"
-            />
+    <div className="space-y-8" ref={gridTop}>
+      {/* ---------------- Filter bar ---------------- */}
+      <div className="space-y-4 rounded-2xl border border-[#2B2F36] bg-[#17191C] p-5 shadow-xl sm:p-6">
+        {/* Row 1 — search + sort */}
+        <div className="flex flex-col gap-3 border-b border-[#23272E] pb-4 sm:flex-row sm:items-center">
+          <div className="relative flex-1">
             <svg
-              className="w-4 h-4 text-stone-500 absolute left-3.5 top-3.5"
+              className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-500"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
             >
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder={`Search ${categoryName}…`}
+              aria-label={`Search ${categoryName}`}
+              className="w-full rounded-xl border border-[#2B2F36] bg-[#121417] py-2.5 pl-10 pr-9 text-sm text-stone-100 placeholder-stone-500 transition-colors focus-visible:border-[#C87D55] focus-visible:outline-none"
+            />
             {searchQuery && (
               <button
                 type="button"
                 onClick={() => setSearchQuery('')}
-                className="absolute right-3 top-3 text-xs text-stone-400 hover:text-white"
+                aria-label="Clear search"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-stone-400 hover:text-white"
               >
                 ✕
               </button>
             )}
           </div>
 
-          {/* Sort dropdown and Clear */}
-          <div className="flex items-center gap-3">
-            <label className="text-xs font-mono text-stone-400 shrink-0">Sort By:</label>
+          <div className="flex items-center gap-2 sm:shrink-0">
+            <label htmlFor="sort" className="font-mono text-xs text-stone-400">
+              Sort
+            </label>
             <select
+              id="sort"
               value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as any)}
-              className="bg-[#121417] border border-[#2B2F36] rounded-xl px-3 py-2 text-xs font-mono text-stone-200 focus:outline-none focus:border-[#C87D55]"
+              onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
+              className={`${selectClass} w-auto`}
             >
-              <option value="default">Featured / Recommended</option>
-              <option value="price-asc">Price: Low to High</option>
-              <option value="price-desc">Price: High to Low</option>
-              <option value="name">Name (A-Z)</option>
+              <option value="default">Featured</option>
+              <option value="price-asc">Price: low to high</option>
+              <option value="price-desc">Price: high to low</option>
+              <option value="name">Name A–Z</option>
             </select>
-
-            {hasActiveFilters && (
-              <button
-                type="button"
-                onClick={resetFilters}
-                className="text-xs font-mono text-rose-400 hover:text-rose-300 underline py-1 px-2"
-              >
-                Reset All
-              </button>
-            )}
           </div>
         </div>
 
-        {/* Riding Gear Specific Filter Controls */}
-        {isRidingGear ? (
-          <div className="space-y-4">
-            {/* Subcategory Filter Tabs if on parent */}
-            {categorySlug === 'riding-gear' && (
-              <div className="space-y-2">
-                <span className="text-xs font-mono uppercase tracking-wider text-stone-400 font-semibold">
-                  Gear Discipline:
+        {/* Row 2 — dimension filters */}
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {brands.length > 1 && (
+            <div className="space-y-1.5">
+              <label htmlFor="f-brand" className="font-mono text-[11px] font-semibold uppercase tracking-wider text-stone-400">
+                Brand
+              </label>
+              <select id="f-brand" value={selectedBrand} onChange={(e) => setSelectedBrand(e.target.value)} className={selectClass}>
+                <option value="all">All brands</option>
+                {brands.map((b) => (
+                  <option key={b} value={b}>
+                    {b}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {isRidingGear && (
+            <>
+              <div className="space-y-1.5">
+                <span className="font-mono text-[11px] font-semibold uppercase tracking-wider text-stone-400">
+                  Rider
                 </span>
-                <div className="flex flex-wrap gap-2">
-                  {ridingGearSubcategories.map((sub) => (
+                <div className="flex gap-1.5">
+                  {([
+                    ['all', 'All'],
+                    ['adult', 'Adult'],
+                    ['kids-youth', 'Youth'],
+                  ] as const).map(([id, label]) => (
                     <button
-                      key={sub.id}
+                      key={id}
                       type="button"
-                      onClick={() => setSelectedSubcategory(sub.id)}
-                      className={`px-3.5 py-1.5 rounded-lg text-xs font-mono transition font-medium ${
-                        selectedSubcategory === sub.id
-                          ? 'bg-[#8C4A2F] text-white shadow-md'
-                          : 'bg-[#121417] border border-[#2B2F36] text-stone-300 hover:border-stone-500'
+                      onClick={() => setSelectedRiderCategory(id)}
+                      className={`flex-1 rounded-lg px-2 py-2 text-xs font-mono transition-colors ${
+                        selectedRiderCategory === id
+                          ? 'bg-[#8C4A2F] font-bold text-white'
+                          : 'border border-[#2B2F36] bg-[#121417] text-stone-400 hover:text-white'
                       }`}
                     >
-                      {sub.label}
+                      {label}
                     </button>
                   ))}
                 </div>
               </div>
-            )}
 
-            {/* 3 Matrix Filters: Rider Category, Size Matrix, Safety Standards */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
-              {/* 1. Rider Category */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-mono text-stone-400 uppercase font-semibold">
-                  Rider Division:
-                </label>
-                <div className="flex gap-1.5">
-                  <button
-                    type="button"
-                    onClick={() => setSelectedRiderCategory('all')}
-                    className={`flex-1 py-1.5 px-2 rounded text-xs font-mono transition ${
-                      selectedRiderCategory === 'all'
-                        ? 'bg-[#8C4A2F] text-white font-bold'
-                        : 'bg-[#121417] border border-[#2B2F36] text-stone-400 hover:text-white'
-                    }`}
-                  >
-                    All
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setSelectedRiderCategory('adult')}
-                    className={`flex-1 py-1.5 px-2 rounded text-xs font-mono transition ${
-                      selectedRiderCategory === 'adult'
-                        ? 'bg-[#8C4A2F] text-white font-bold'
-                        : 'bg-[#121417] border border-[#2B2F36] text-stone-400 hover:text-white'
-                    }`}
-                  >
-                    Adult
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setSelectedRiderCategory('kids-youth')}
-                    className={`flex-1 py-1.5 px-2 rounded text-xs font-mono transition ${
-                      selectedRiderCategory === 'kids-youth'
-                        ? 'bg-[#8C4A2F] text-white font-bold'
-                        : 'bg-[#121417] border border-[#2B2F36] text-stone-400 hover:text-white'
-                    }`}
-                  >
-                    Youth / Kids
-                  </button>
+              {sizes.length > 0 && (
+                <div className="space-y-1.5">
+                  <label htmlFor="f-size" className="font-mono text-[11px] font-semibold uppercase tracking-wider text-stone-400">
+                    Size
+                  </label>
+                  <select id="f-size" value={selectedSize} onChange={(e) => setSelectedSize(e.target.value)} className={selectClass}>
+                    <option value="all">All sizes</option>
+                    {sizes.map((s) => (
+                      <option key={s} value={s}>
+                        {s}
+                      </option>
+                    ))}
+                  </select>
                 </div>
-              </div>
+              )}
 
-              {/* 2. Size Matrix Dropdown/Pills */}
               <div className="space-y-1.5">
-                <label className="text-xs font-mono text-stone-400 uppercase font-semibold">
-                  Size Matrix:
+                <label htmlFor="f-safety" className="font-mono text-[11px] font-semibold uppercase tracking-wider text-stone-400">
+                  Safety standard
                 </label>
-                <select
-                  value={selectedSize}
-                  onChange={(e) => setSelectedSize(e.target.value)}
-                  className="w-full bg-[#121417] border border-[#2B2F36] rounded-lg px-3 py-1.5 text-xs font-mono text-stone-200 focus:outline-none focus:border-[#C87D55]"
-                >
-                  {sizeOptions.map((s) => (
-                    <option key={s.id} value={s.id}>
-                      {s.label}
+                <select id="f-safety" value={selectedSafety} onChange={(e) => setSelectedSafety(e.target.value)} className={selectClass}>
+                  <option value="all">All standards</option>
+                  {safetyOptions.map((o) => (
+                    <option key={o.id} value={o.id}>
+                      {o.label}
                     </option>
                   ))}
                 </select>
               </div>
+            </>
+          )}
+        </div>
 
-              {/* 3. Safety Standards */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-mono text-stone-400 uppercase font-semibold">
-                  Safety Standard:
-                </label>
-                <select
-                  value={selectedSafetyStandard}
-                  onChange={(e) => setSelectedSafetyStandard(e.target.value)}
-                  className="w-full bg-[#121417] border border-[#2B2F36] rounded-lg px-3 py-1.5 text-xs font-mono text-stone-200 focus:outline-none focus:border-[#C87D55]"
-                >
-                  {safetyStandardOptions.map((std) => (
-                    <option key={std.id} value={std.id}>
-                      {std.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-          </div>
-        ) : (
-          /* General Category Quick Filter Pills */
-          <div className="flex flex-wrap items-center gap-2 pt-1">
-            <span className="text-xs font-mono text-stone-400">Inventory Status:</span>
-            <span className="text-xs font-mono text-emerald-400 bg-emerald-950/40 border border-emerald-500/30 px-2.5 py-1 rounded-md">
-              ✓ In Stock &amp; Australian Crate Ready
-            </span>
-            <span className="text-xs font-mono text-amber-400 bg-amber-950/40 border border-amber-500/30 px-2.5 py-1 rounded-md">
-              ⚡ 10% Crypto Discount Applicable
-            </span>
-          </div>
-        )}
-
-        {/* Results Counter & Active Indicator */}
-        <div className="flex items-center justify-between text-xs font-mono text-stone-400 pt-2 border-t border-[#23272E]">
-          <div>
-            Showing <strong className="text-white font-bold">{filteredProducts.length}</strong> of{' '}
-            {initialProducts.length} items
-          </div>
-          {isRidingGear && (
-            <div className="text-emerald-400 flex items-center gap-1.5">
-              <span>🇦🇺</span>
-              <span>All Helmets ECE 22.06 / AS 1698 Approved</span>
-            </div>
+        {/* Row 3 — result count + reset */}
+        <div className="flex flex-wrap items-center justify-between gap-2 border-t border-[#23272E] pt-3 font-mono text-xs text-stone-400">
+          <span>
+            {filtered.length === 0
+              ? 'No matches'
+              : `Showing ${rangeStart}–${rangeEnd} of ${filtered.length}`}
+            {filtered.length !== initialProducts.length && ` (of ${initialProducts.length} total)`}
+          </span>
+          {hasActiveFilters && (
+            <button
+              type="button"
+              onClick={resetFilters}
+              className="rounded px-2 py-1 text-rose-400 underline transition-colors hover:text-rose-300"
+            >
+              Reset filters
+            </button>
           )}
         </div>
       </div>
 
-      {/* Products Grid */}
-      {filteredProducts.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredProducts.map((product) => (
-            <ProductCard key={product.slug} product={product} />
-          ))}
-        </div>
+      {/* ---------------- Grid ---------------- */}
+      {pageItems.length > 0 ? (
+        <>
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {pageItems.map((product) => (
+              <ProductCard key={product.slug} product={product} />
+            ))}
+          </div>
+          <Pagination page={safePage} pageCount={pageCount} onChange={changePage} className="pt-4" />
+        </>
       ) : (
-        <div className="bg-[#17191C] border border-[#2B2F36] rounded-2xl p-10 text-center space-y-4">
-          <div className="w-12 h-12 mx-auto rounded-full bg-stone-900 flex items-center justify-center text-amber-400 text-xl font-bold">
+        <div className="space-y-4 rounded-2xl border border-[#2B2F36] bg-[#17191C] p-10 text-center">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#121417] text-xl text-amber-400">
             🔍
           </div>
-          <h3 className="text-lg font-bold text-white uppercase">
-            No Products Match Your Selected Filters
-          </h3>
-          <p className="text-xs text-stone-400 max-w-md mx-auto">
-            Try adjusting your search criteria, clearing size matrix restrictions, or resetting filters to browse full inventory.
+          <h3 className="text-lg font-bold uppercase text-white">Nothing matches those filters</h3>
+          <p className="mx-auto max-w-md text-xs text-stone-400">
+            Try a broader search, clear the size or brand filter, or reset to browse the full range.
           </p>
-          <div className="pt-2">
-            <button
-              type="button"
-              onClick={resetFilters}
-              className="bg-[#8C4A2F] hover:bg-[#A35839] text-white text-xs font-bold py-2.5 px-5 rounded-lg transition uppercase tracking-wider"
-            >
-              Reset All Filters
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={resetFilters}
+            className="rounded-lg bg-[#8C4A2F] px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-white transition-colors hover:bg-[#A35839]"
+          >
+            Reset filters
+          </button>
         </div>
       )}
     </div>

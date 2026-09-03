@@ -6,6 +6,7 @@ import { useSearchParams } from 'next/navigation';
 import { SmartImage } from '@/components/SmartImage';
 import { JsonLd } from '@/components/JsonLd';
 import { ProductCard } from '@/components/ProductCard';
+import { Pagination } from '@/components/Pagination';
 import { CATEGORIES, PRODUCTS, SITE } from '@/config/site';
 
 // 6 Strict Australian Electric Dirt Bike subcategories
@@ -275,6 +276,26 @@ function ShopContent() {
     });
   }, [selectedDepartment, selectedSubcategory, selectedBrand, selectedRoadLegal, selectedPriceRange, searchQuery, sortBy]);
 
+  // Pagination — 16 products per page
+  const PAGE_SIZE = 16;
+  const [page, setPage] = useState(1);
+  const gridTopRef = React.useRef<HTMLDivElement>(null);
+  const filterKey = `${selectedDepartment}|${selectedSubcategory}|${selectedBrand}|${selectedRoadLegal}|${selectedPriceRange}|${searchQuery}|${sortBy}`;
+  const [prevFilterKey, setPrevFilterKey] = useState(filterKey);
+  if (filterKey !== prevFilterKey) {
+    setPrevFilterKey(filterKey);
+    setPage(1);
+  }
+  const pageCount = Math.max(1, Math.ceil(filteredProducts.length / PAGE_SIZE));
+  const safePage = Math.min(page, pageCount);
+  const pagedProducts = filteredProducts.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
+  const rangeStart = filteredProducts.length === 0 ? 0 : (safePage - 1) * PAGE_SIZE + 1;
+  const rangeEnd = Math.min(safePage * PAGE_SIZE, filteredProducts.length);
+  const changePage = (p: number) => {
+    setPage(p);
+    gridTopRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
   const handleResetFilters = () => {
     setSelectedDepartment('all');
     setSelectedSubcategory('all');
@@ -347,7 +368,7 @@ function ShopContent() {
               href="/brands/"
               className="text-xs font-mono font-bold text-[#E89569] bg-[#8C4A2F]/20 hover:bg-[#8C4A2F]/30 border border-[#8C4A2F]/40 px-3.5 py-2 rounded-xl transition flex items-center gap-1.5"
             >
-              <span>🏷️</span> All 16 Brands &rarr;
+              <span>🏷️</span> All 15 Brands &rarr;
             </Link>
             <div className="text-xs font-mono text-stone-400 bg-[#17191C] px-3.5 py-2 rounded-xl border border-[#2B2F36]">
               Showing <strong className="text-white">{filteredProducts.length}</strong> of {PRODUCTS.length} Models
@@ -539,7 +560,7 @@ function ShopContent() {
                 onChange={(e) => setSelectedBrand(e.target.value)}
                 className="w-full appearance-none bg-[#131518] border border-[#2B2F36] text-stone-200 text-xs rounded-xl pl-3.5 pr-8 h-11 font-mono focus:outline-none focus:ring-2 focus:ring-[#C87D55] cursor-pointer"
               >
-                <option value="all">All 16 Brands</option>
+                <option value="all">All 15 Brands</option>
                 {allBrands.map((b) => (
                   <option key={b.slug} value={b.slug}>
                     {b.name}
@@ -740,10 +761,17 @@ function ShopContent() {
 
       {/* Product Grid */}
       {filteredProducts.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {filteredProducts.map((product: any) => (
-            <ProductCard key={product.slug} product={product} />
-          ))}
+        <div ref={gridTopRef} className="scroll-mt-24 space-y-8">
+          <p className="font-mono text-xs text-stone-400">
+            Showing {rangeStart}–{rangeEnd} of {filteredProducts.length}
+            {filteredProducts.length !== PRODUCTS.length && ` (${PRODUCTS.length} total)`}
+          </p>
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {pagedProducts.map((product: any) => (
+              <ProductCard key={product.slug} product={product} />
+            ))}
+          </div>
+          <Pagination page={safePage} pageCount={pageCount} onChange={changePage} className="pt-4" />
         </div>
       ) : (
         <div className="bg-[#17191C] border border-[#2B2F36] rounded-2xl p-12 text-center space-y-4">
@@ -774,7 +802,7 @@ export default function ShopPage() {
     <Suspense
       fallback={
         <div className="min-h-screen bg-[#0E1012] flex items-center justify-center text-stone-400 font-mono text-xs">
-          Loading Dirt &amp; Co Inventory...
+          Loading inventory...
         </div>
       }
     >

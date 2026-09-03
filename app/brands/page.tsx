@@ -3,21 +3,21 @@ import Link from 'next/link';
 import { Metadata } from 'next';
 import { SmartImage } from '@/components/SmartImage';
 import { JsonLd } from '@/components/JsonLd';
-import { CATEGORIES, PRODUCTS, SITE, BRAND, CONTACT } from '@/config/site';
+import { CATEGORIES, PRODUCTS, SITE } from '@/config/site';
 
 export const metadata: Metadata = {
-  title: 'Electric Dirt Bike Brands Australia | Surron, Talaria, Stark, Dirt & Co',
+  title: 'Electric Dirt Bike Brands Australia | Surron, Talaria, Stark, KTM & more',
   description:
-    'Explore leading electric dirt bike brands in Australia. Official Australian warranties, spare parts warehouse in Queensland, and national crated delivery on Surron, Talaria, Stark Future, Dirt & Co, and more.',
+    'Explore 15 leading electric dirt bike brands stocked in Australia. Official factory warranties, an NSW spare-parts inventory, and national crated delivery on Surron, Talaria, Stark Future, KTM and more.',
   alternates: {
     canonical: `https://${SITE.domain}/brands/`,
   },
   openGraph: {
     type: 'website',
     siteName: SITE.name,
-    title: 'Electric Dirt Bike Brands Australia | Surron, Talaria, Stark, Dirt & Co',
+    title: 'Electric Dirt Bike Brands Australia | Surron, Talaria, Stark, KTM & more',
     description:
-      'Compare and shop the world\'s leading electric dirt bike brands with Australian factory support, local spare parts stock, and fast crated dispatch.',
+      "Compare and shop the world's leading electric dirt bike brands with Australian factory support, local spare-parts stock and fast crated dispatch.",
     url: `https://${SITE.domain}/brands/`,
     images: [
       {
@@ -27,9 +27,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Electric Dirt Bike Brands Australia | Dirt & Co',
+    title: 'Electric Dirt Bike Brands Australia | Australian Electric Motor Co',
     description:
-      'Compare leading electric dirt bike brands with Australian factory warranties and local spare parts.',
+      'Compare 15 leading electric dirt bike brands with Australian factory warranties and local spare parts.',
     images: ['https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=1200&q=80'],
   },
   other: {
@@ -202,17 +202,19 @@ export default function BrandsPage() {
             Electric Dirt Bike Brands in Australia
           </h1>
           <p className="text-xs sm:text-sm text-stone-300 leading-relaxed">
-            Dirt &amp; Co stocks and supports Australia’s premier collection of 75 electric dirt bikes across 15 manufacturers. Every bike is backed by local spare parts in Queensland, comprehensive factory warranties, and national crated delivery.
+            Australian Electric Motor Co stocks and supports Australia’s premier collection of electric
+            dirt bikes across 15 manufacturers. Every bike is backed by local spare parts held in NSW,
+            comprehensive factory warranties, and national crated delivery.
           </p>
           <div className="flex flex-wrap items-center gap-2 pt-1 text-[11px] font-mono">
             <span className="bg-[#8C4A2F]/20 text-[#E89569] border border-[#8C4A2F]/40 px-2.5 py-0.5 rounded-full font-bold">
               15 Authorised Brands
             </span>
             <span className="bg-amber-500/10 text-amber-300 border border-amber-500/20 px-2.5 py-0.5 rounded-full">
-              75 Australian Spec Models
+              75 Australian-Spec Models
             </span>
             <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2.5 py-0.5 rounded-full">
-              100% Genuine Spare Parts Stocked
+              Genuine Spare Parts Stocked
             </span>
           </div>
         </div>
@@ -226,11 +228,11 @@ export default function BrandsPage() {
               All 15 Authorised Showrooms
             </h2>
             <p className="text-xs text-stone-400 font-mono mt-0.5">
-              Select any brand to explore its 5 model lineup, specifications, and genuine accessories
+              Select any brand to explore its full model lineup, specifications and genuine accessories
             </p>
           </div>
           <span className="text-xs font-mono text-[#C87D55] hidden sm:inline-block">
-            15 Brands · 5 Bikes Each
+            15 Brands
           </span>
         </div>
 
@@ -244,10 +246,11 @@ export default function BrandsPage() {
               powerRange: 'High Output',
             };
 
-            // Count products matching this brand (5 models each)
+            // Count products matching this brand (mirror the brand-page filter)
             const matchingCount = PRODUCTS.filter(
               (p: any) =>
                 p.brand === brand.slug ||
+                p.category === brand.slug ||
                 (p.parentCategories && p.parentCategories.includes(brand.slug))
             ).length;
 
@@ -263,8 +266,8 @@ export default function BrandsPage() {
                     <SmartImage
                       src={brand.image}
                       alt={`${brand.name} electric dirt bikes Australia`}
-                      aspectRatio="4/3"
-                      className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-500"
+                      aspectRatio="16/10"
+                      className="h-full w-full transition-transform duration-500 group-hover:scale-105"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-[#17191C] via-[#17191C]/30 to-transparent" />
 
@@ -276,7 +279,7 @@ export default function BrandsPage() {
 
                     {/* Model Count Tag */}
                     <div className="absolute top-2 right-2 bg-[#8C4A2F]/90 text-white text-[10px] font-mono font-bold px-1.5 py-0.5 rounded shadow">
-                      {matchingCount > 0 ? `${matchingCount} Bikes` : '5 Bikes'}
+                      {matchingCount} {matchingCount === 1 ? 'Model' : 'Models'}
                     </div>
                   </div>
 
@@ -331,18 +334,18 @@ export default function BrandsPage() {
             Australian Warranty &amp; Spare Parts
           </span>
           <h2 className="text-2xl sm:text-3xl font-extrabold uppercase text-white">
-            Why Purchase Your Brand E-Moto Through Dirt &amp; Co?
+            Why buy your brand e-moto through Australian Electric Motor Co?
           </h2>
           <p className="text-sm text-stone-300 leading-relaxed">
-            Gray-market and unverified imports leave riders stranded when controllers pop or batteries degrade. Every brand bike purchased through Dirt &amp; Co includes official Australian factory warranty coverage, certified ADR road compliance on road-legal models, and immediate access to our Queensland spare parts warehouse.
+            Grey-market and unverified imports leave riders stranded when controllers pop or batteries degrade. Every brand bike purchased through Australian Electric Motor Co includes official Australian factory warranty coverage, certified ADR road compliance on road-legal models, and immediate access to our NSW spare-parts inventory.
           </p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-4 border-t border-[#23272E]">
           <div className="space-y-1">
-            <h3 className="text-sm font-bold text-white uppercase font-mono">1. Local AU Warehouse</h3>
+            <h3 className="text-sm font-bold text-white uppercase font-mono">1. Local AU Inventory</h3>
             <p className="text-xs text-stone-400">
-              Spare battery packs, fast chargers, sprockets, brake rotors, and controllers on shelf in Sunshine Coast QLD.
+              Spare battery packs, fast chargers, sprockets, brake rotors and controllers held in our NSW facility.
             </p>
           </div>
           <div className="space-y-1">

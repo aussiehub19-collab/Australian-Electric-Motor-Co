@@ -2,9 +2,8 @@ import React from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
-import { SmartImage } from '@/components/SmartImage';
 import { JsonLd } from '@/components/JsonLd';
-import { ProductCard } from '@/components/ProductCard';
+import { PaginatedProductGrid } from '@/components/PaginatedProductGrid';
 import { CATEGORIES, PRODUCTS, SITE } from '@/config/site';
 
 interface BrandPageProps {
@@ -28,13 +27,13 @@ export async function generateMetadata({ params }: BrandPageProps): Promise<Meta
   if (!brand) return { title: 'Brand Not Found' };
 
   return {
-    title: `${brand.name} Electric Dirt Bikes Australia | Models, Specs & Parts | Dirt & Co`,
-    description: `Shop genuine ${brand.name} electric dirt bikes in Australia. Backed by Dirt & Co official factory warranty, Queensland spare parts inventory, and national crated delivery.`,
+    title: `${brand.name} Electric Dirt Bikes Australia | Models, Specs & Parts | AEMC`,
+    description: `Shop genuine ${brand.name} electric dirt bikes in Australia. Backed by the Australian Electric Motor Co factory warranty, NSW spare parts inventory, and national crated delivery.`,
     alternates: {
       canonical: `https://${SITE.domain}/brands/${brand.slug}/`,
     },
     openGraph: {
-      title: `${brand.name} Electric Dirt Bikes Australia | Dirt & Co`,
+      title: `${brand.name} Electric Dirt Bikes Australia | Australian Electric Motor Co`,
       description: brand.description,
       images: [{ url: brand.image }],
     },
@@ -127,11 +126,7 @@ export default async function BrandIndividualPage({ params }: BrandPageProps) {
 
       {/* Products Grid */}
       {brandProducts.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {brandProducts.map((product) => (
-            <ProductCard key={product.slug} product={product} />
-          ))}
-        </div>
+        <PaginatedProductGrid products={brandProducts} />
       ) : (
         <div className="bg-[#17191C] border border-[#2B2F36] rounded-2xl p-10 text-center space-y-4">
           <h2 className="text-xl font-bold text-white uppercase">
