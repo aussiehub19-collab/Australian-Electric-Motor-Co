@@ -1,0 +1,80 @@
+{
+  "ucp": "1.0",
+  "protocol_version": "1.0",
+  "spec": "https://ucp.dev/specification/overview/",
+  "schema": "https://ucp.dev/schema/v1.json",
+  "site": "https://australianelectricmotorco.com.au",
+  "name": "Australian Electric Motor Co",
+  "description": "Australian Electric Motor Co (AEMC) engineers and supplies competition-grade electric dirt bikes, heavy-duty outback agricultural e-motos, 72V lithium battery architectures, and CNC billet performance parts designed to conquer red bull-dust, creek crossings, and steep Australian singletrack. Registered for GST in NSW with nationwide crate logistics.",
+  "services": [
+    {
+      "id": "product-catalog",
+      "type": "catalog",
+      "url": "https://australianelectricmotorco.com.au/shop/",
+      "description": "Full electric dirt bike and components catalog"
+    },
+    {
+      "id": "wholesale",
+      "type": "b2b",
+      "url": "https://australianelectricmotorco.com.au/wholesale/",
+      "description": "Wholesale pricing and commercial fleet ordering"
+    },
+    {
+      "id": "mcp-server",
+      "type": "mcp",
+      "url": "https://australianelectricmotorco.com.au/api/mcp/",
+      "description": "MCP Streamable HTTP server"
+    },
+    {
+      "id": "order",
+      "type": "commerce",
+      "url": "https://wa.me/61480031899",
+      "description": "Place orders via WhatsApp or human order draft"
+    },
+    {
+      "id": "compare",
+      "type": "tool",
+      "url": "https://australianelectricmotorco.com.au/compare/",
+      "description": "Side-by-side product specifications matrix"
+    },
+    {
+      "id": "finance",
+      "type": "tool",
+      "url": "https://australianelectricmotorco.com.au/finance/",
+      "description": "Australian electric dirt bike Pay in 4 and finance calculator"
+    }
+  ],
+  "capabilities": [
+    "browse",
+    "search",
+    "inquiry",
+    "wholesale",
+    "compare",
+    "finance",
+    "content",
+    "mcp"
+  ],
+  "endpoints": {
+    "mcp": "https://australianelectricmotorco.com.au/api/mcp/",
+    "catalog": "https://australianelectricmotorco.com.au/shop/",
+    "contact": "https://australianelectricmotorco.com.au/contact/",
+    "agent_skills": "https://australianelectricmotorco.com.au/.well-known/agent-skills/index.json",
+    "mcp_server_card": "https://australianelectricmotorco.com.au/.well-known/mcp/server-card.json",
+    "api_catalog": "https://australianelectricmotorco.com.au/.well-known/api-catalog",
+    "llms_txt": "https://australianelectricmotorco.com.au/llms.txt"
+  },
+  "currency": "AUD",
+  "minimum_order_usd": "0",
+  "payment_methods": [
+    "crypto-BTC",
+    "crypto-USDT",
+    "pay-in-4",
+    "bank-transfer",
+    "payid"
+  ],
+  "legal": {
+    "age_restriction": "none",
+    "product_type": "electric-dirt-bikes",
+    "compliance": "Australian Design Rules (ADR)"
+  }
+}

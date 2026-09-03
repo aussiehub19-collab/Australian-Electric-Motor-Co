@@ -1,0 +1,6 @@
+{
+  "name": "Australian Electric Motor Co",
+  "description": "Australian Electric Motor Co — Premier electric dirt bikes, 72V lithium power systems, and off-road e-motos engineered for Australia. ABN 97 628 671 689, NSW dispatch, GST inclusive.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

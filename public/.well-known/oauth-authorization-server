@@ -1,0 +1,32 @@
+{
+  "issuer": "https://australianelectricmotorco.com.au",
+  "authorization_endpoint": null,
+  "token_endpoint": null,
+  "jwks_uri": null,
+  "grant_types_supported": [],
+  "response_types_supported": [],
+  "scopes_supported": [],
+  "note": "Australian Electric Motor Co has no protected APIs. All resources publicly accessible.",
+  "public_resources": [
+    "https://australianelectricmotorco.com.au/shop/",
+    "https://australianelectricmotorco.com.au/wholesale/",
+    "https://australianelectricmotorco.com.au/blog/",
+    "https://australianelectricmotorco.com.au/faq/",
+    "https://australianelectricmotorco.com.au/compare/",
+    "https://australianelectricmotorco.com.au/finance/",
+    "https://australianelectricmotorco.com.au/llms.txt",
+    "https://australianelectricmotorco.com.au/.well-known/api-catalog",
+    "https://australianelectricmotorco.com.au/.well-known/agent-skills/index.json",
+    "https://australianelectricmotorco.com.au/.well-known/mcp/server-card.json"
+  ],
+  "agent_auth": {
+    "register_uri": null,
+    "identity_types_supported": [
+      "none"
+    ],
+    "credential_types_supported": [
+      "none"
+    ],
+    "notes": "No registration required. All content publicly accessible to agents."
+  }
+}

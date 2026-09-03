@@ -1,0 +1,365 @@
+import React from 'react';
+import Link from 'next/link';
+import { notFound } from 'next/navigation';
+import { SmartImage } from '@/components/SmartImage';
+import { JsonLd } from '@/components/JsonLd';
+import { AddToCartButton } from './AddToCartButton';
+import { PRODUCTS, CATEGORIES, SITE, CONTACT, SHOP, FINANCE } from '@/config/site';
+
+interface ProductPageProps {
+  params: Promise<{
+    category: string;
+    slug: string;
+  }>;
+}
+
+export async function generateStaticParams() {
+  return PRODUCTS.map((p) => ({
+    category: p.category,
+    slug: p.slug,
+  }));
+}
+
+export async function generateMetadata({ params }: ProductPageProps) {
+  const { slug } = await params;
+  const product = PRODUCTS.find((p) => p.slug === slug);
+  if (!product) return { title: 'Product Not Found' };
+
+  return {
+    title: `${product.name} | Electric Dirt Bike Australia | Dirt & Co`,
+    description: `${product.shortDescription.slice(0, 150)}...`,
+    alternates: {
+      canonical: `https://${SITE.domain}/shop/${product.category}/${product.slug}/`,
+    },
+    openGraph: {
+      title: `${product.name} | Dirt & Co Electric Dirt Bike`,
+      description: product.shortDescription,
+      images: [{ url: product.images[0] }],
+    },
+    other: {
+      'og:updated_time': new Date().toISOString(),
+    },
+  };
+}
+
+export default async function ProductDetailPage({ params }: ProductPageProps) {
+  const { slug } = await params;
+  const product = PRODUCTS.find((p) => p.slug === slug);
+
+  if (!product) {
+    notFound();
+  }
+
+  const category = CATEGORIES.find((c) => c.slug === product.category);
+  const related = PRODUCTS.filter((p) => p.category === product.category && p.slug !== product.slug).slice(0, 3);
+
+  // Pay in 4 calculation: 4 equal fortnightly instalments, 0% interest
+  const payIn4Amount = Math.round(product.price / 4);
+  const cryptoDiscountPrice = Math.round(product.price * (1 - SHOP.cryptoDiscount / 100));
+  const cryptoSavings = product.price - cryptoDiscountPrice;
+
+  // Pre-fill WhatsApp message
+  const whatsappUrl = `https://wa.me/${CONTACT.whatsapp.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(
+    `G'day Dirt & Co team! I'm inquiring about the ${product.name} ($${product.price.toLocaleString()} AUD). Could you confirm current availability, Pay in 4 terms, or test rides at your Sunshine Coast workshop?`
+  )}`;
+
+  // Product Schema
+  const productSchema = [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Product',
+      name: product.name,
+      description: product.description,
+      image: product.images,
+      sku: product.slug,
+      brand: {
+        '@type': 'Brand',
+        name: SITE.name,
+      },
+      offers: {
+        '@type': 'Offer',
+        url: `https://${SITE.domain}/shop/${product.category}/${product.slug}/`,
+        priceCurrency: SITE.currency,
+        price: product.price,
+        availability: 'https://schema.org/InStock',
+        seller: {
+          '@type': 'Organization',
+          name: SITE.name,
+        },
+      },
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: 'Home',
+          item: `https://${SITE.domain}/`,
+        },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: 'Shop',
+          item: `https://${SITE.domain}/shop/`,
+        },
+        {
+          '@type': 'ListItem',
+          position: 3,
+          name: category ? category.name : 'Category',
+          item: `https://${SITE.domain}/shop/${product.category}/`,
+        },
+        {
+          '@type': 'ListItem',
+          position: 4,
+          name: product.name,
+          item: `https://${SITE.domain}/shop/${product.category}/${product.slug}/`,
+        },
+      ],
+    },
+  ];
+
+  return (
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 space-y-12">
+      <JsonLd data={productSchema} />
+
+      {/* Breadcrumb nav */}
+      <nav aria-label="Breadcrumb" className="text-xs text-stone-400 font-mono flex flex-wrap items-center gap-2">
+        <Link href="/" className="hover:text-white">Home</Link>
+        <span>/</span>
+        <Link href="/shop/" className="hover:text-white">Shop</Link>
+        <span>/</span>
+        {category && (
+          <>
+            <Link href={`/shop/${category.slug}/`} className="hover:text-white">
+              {category.name}
+            </Link>
+            <span>/</span>
+          </>
+        )}
+        <span className="text-[#C87D55] truncate max-w-xs">{product.name}</span>
+      </nav>
+
+      {/* Main Product Layout: 2 Columns */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+        {/* Left: Product Media Gallery */}
+        <div className="space-y-4">
+          <div className="relative aspect-[4/3] w-full rounded-2xl overflow-hidden bg-stone-900 border border-[#2B2F36]">
+            <SmartImage
+              src={product.images[0]}
+              alt={`${product.name} electric dirt bike`}
+              aspectRatio="4/3"
+              priority={true}
+              className="w-full h-full object-cover"
+            />
+            {product.badge && (
+              <span className="absolute top-4 left-4 bg-[#8C4A2F] text-white text-xs font-bold px-3 py-1.5 rounded-lg uppercase tracking-wider font-mono shadow-xl">
+                {product.badge}
+              </span>
+            )}
+          </div>
+
+          {/* Additional gallery thumbnails if available */}
+          {product.images.length > 1 && (
+            <div className="grid grid-cols-4 gap-3">
+              {product.images.map((img, idx) => (
+                <div
+                  key={idx}
+                  className="aspect-[4/3] rounded-lg overflow-hidden border border-[#2B2F36] bg-stone-900 cursor-pointer hover:border-amber-500 transition"
+                >
+                  <SmartImage
+                    src={img}
+                    alt={`${product.name} view ${idx + 1}`}
+                    aspectRatio="4/3"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Quick Features Highlight Box */}
+          <div className="p-4 rounded-xl bg-[#17191C] border border-[#2B2F36] grid grid-cols-2 gap-4 text-xs font-mono">
+            <div className="flex items-center gap-2 text-stone-300">
+              <span className="text-emerald-400 font-bold">✓</span>
+              <span>2-Year AU Factory Warranty</span>
+            </div>
+            <div className="flex items-center gap-2 text-stone-300">
+              <span className="text-emerald-400 font-bold">✓</span>
+              <span>Nationwide Enclosed Crate Freight</span>
+            </div>
+            <div className="flex items-center gap-2 text-stone-300">
+              <span className="text-emerald-400 font-bold">✓</span>
+              <span>IP67 Dust &amp; Creek Water Sealed</span>
+            </div>
+            <div className="flex items-center gap-2 text-stone-300">
+              <span className="text-emerald-400 font-bold">✓</span>
+              <span>240V Aussie Wall Fast Charger</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Right: Product Info, Price & Actions */}
+        <div className="space-y-6">
+          <div className="space-y-2">
+            <span className="text-xs font-mono uppercase tracking-widest text-[#C87D55] font-bold">
+              {category?.name || 'Electric Dirt Bike'}
+            </span>
+            {/* Exactly ONE <h1> per page */}
+            <h1 className="text-2xl sm:text-4xl font-black uppercase text-white tracking-tight leading-tight font-sans">
+              {product.name}
+            </h1>
+          </div>
+
+          {/* Price Strip */}
+          <div className="p-5 rounded-2xl bg-[#17191C] border border-[#2B2F36] space-y-3">
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="text-xs text-stone-400 font-mono">Outright Purchase (AUD)</div>
+                <div className="text-3xl font-black text-amber-400 font-mono">
+                  ${product.price.toLocaleString()}
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="text-xs font-mono text-emerald-400 font-bold bg-emerald-500/15 border border-emerald-500/30 px-3 py-1.5 rounded-full">
+                  ⚡ 10% Crypto Off: ${cryptoDiscountPrice.toLocaleString()} AUD
+                </div>
+                <div className="text-[11px] text-emerald-300/80 mt-1 font-mono">
+                  Save ${cryptoSavings.toLocaleString()} AUD paying with BTC or USDT
+                </div>
+              </div>
+            </div>
+
+            {/* Pay in 4 Highlight Box */}
+            <div className="pt-3 border-t border-[#24272E] flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs font-mono bg-[#141619] p-3 rounded-xl">
+              <div className="flex items-center gap-2">
+                <span className="bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded font-bold border border-amber-500/40">
+                  Pay in 4
+                </span>
+                <span className="text-stone-300">
+                  or 4 interest-free payments of <strong className="text-white">${payIn4Amount.toLocaleString()} AUD</strong>
+                </span>
+              </div>
+              <Link
+                href="/finance/"
+                className="text-amber-300 hover:underline font-semibold flex items-center gap-1"
+              >
+                <span>View Schedule</span>
+                <span>&rarr;</span>
+              </Link>
+            </div>
+          </div>
+
+          {/* Helmet Law & Australian Standards Compliance Box */}
+          {(product.category === 'helmets' ||
+            product.parentCategories?.includes('helmets') ||
+            product.name.toLowerCase().includes('helmet')) && (
+            <div className="p-4 rounded-xl bg-emerald-950/40 border-2 border-emerald-500/50 space-y-2.5">
+              <div className="flex items-center gap-2 text-emerald-400 font-bold font-mono text-sm">
+                <span className="text-base">🇦🇺</span>
+                <span>Australian Standards &amp; Motorsport Approved</span>
+              </div>
+              <p className="text-xs text-emerald-200/95 leading-relaxed font-sans">
+                <strong>Complies with Australian Road &amp; Motorsport Standards (ECE 22.06 / AS/NZS 1698)</strong>. Certified for street-legal e-moto riding, off-road state forestry trails, and Motorcycling Australia (MA) sanctioned race events.
+              </p>
+              <div className="flex flex-wrap gap-2 pt-1 text-[11px] font-mono text-emerald-300">
+                <span className="bg-emerald-900/60 px-2.5 py-0.5 rounded border border-emerald-600/40">ECE 22.06 Standard</span>
+                <span className="bg-emerald-900/60 px-2.5 py-0.5 rounded border border-emerald-600/40">AS/NZS 1698 Compliant</span>
+                <span className="bg-emerald-900/60 px-2.5 py-0.5 rounded border border-emerald-600/40">100% Street &amp; Track Legal</span>
+              </div>
+            </div>
+          )}
+
+          {/* Description */}
+          <div className="text-sm text-stone-300 leading-relaxed space-y-3">
+            <p>{product.description}</p>
+          </div>
+
+          {/* Add to Cart & Checkout Buttons (Client Component) */}
+          <div className="space-y-3 pt-2">
+            <AddToCartButton product={product} />
+
+            <a
+              href={whatsappUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full flex items-center justify-center gap-2 bg-[#25D366]/15 hover:bg-[#25D366]/25 border border-[#25D366]/40 text-[#25D366] font-bold py-3.5 px-6 rounded-xl text-sm transition"
+            >
+              <span>Chat With Technician on WhatsApp (+61 480 031 899)</span>
+            </a>
+
+            <div className="text-center">
+              <Link
+                href="/finance/"
+                className="text-xs text-stone-400 hover:text-white underline font-mono inline-flex items-center gap-1"
+              >
+                <span>Need tailored station asset finance? Use our Finance Calculator</span>
+                <span>&rarr;</span>
+              </Link>
+            </div>
+          </div>
+
+          {/* Full Specifications Table */}
+          {product.specs && (
+            <div className="pt-6 border-t border-[#23272E] space-y-4">
+              <h3 className="text-base font-bold text-white uppercase tracking-wider font-mono">
+                Technical Specifications &amp; Build Details
+              </h3>
+              <div className="divide-y divide-[#23272E] border border-[#2B2F36] rounded-xl overflow-hidden bg-[#141619] text-xs font-mono">
+                {Object.entries(product.specs).map(([key, value]) => (
+                  <div key={key} className="flex flex-col sm:flex-row sm:items-center justify-between p-3 gap-1">
+                    <span className="text-stone-400 capitalize">
+                      {key.replace(/([A-Z])/g, ' $1').trim()}
+                    </span>
+                    <span className="text-stone-100 font-semibold sm:text-right">{value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Related Products */}
+      {related.length > 0 && (
+        <div className="pt-12 border-t border-[#23272E] space-y-6">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl sm:text-2xl font-black uppercase text-white tracking-tight">
+              Related Electric Dirt Bikes &amp; Upgrades
+            </h2>
+            <Link href="/shop/" className="text-xs font-bold text-[#C87D55] hover:text-white">
+              View All &rarr;
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            {related.map((item) => (
+              <Link
+                key={item.slug}
+                href={`/shop/${item.category}/${item.slug}/`}
+                className="bg-[#17191C] border border-[#2B2F36] rounded-xl overflow-hidden hover:border-[#8C4A2F] transition p-4 space-y-3 group"
+              >
+                <div className="aspect-[4/3] rounded-lg overflow-hidden bg-stone-900">
+                  <SmartImage
+                    src={item.images[0]}
+                    alt={item.name}
+                    aspectRatio="4/3"
+                    className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                  />
+                </div>
+                <h3 className="text-sm font-bold text-white group-hover:text-[#C87D55] transition truncate">
+                  {item.name}
+                </h3>
+                <div className="flex justify-between items-center text-xs font-mono">
+                  <span className="text-amber-400 font-bold">${item.price.toLocaleString()} AUD</span>
+                  <span className="text-[#C87D55]">View Specs &rarr;</span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

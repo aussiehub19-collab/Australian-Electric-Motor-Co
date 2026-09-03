@@ -1,0 +1,125 @@
+{
+  "$schema": "https://modelcontextprotocol.io/schemas/server-card/v1.json",
+  "serverInfo": {
+    "name": "Australian Electric Motor Co",
+    "version": "1.0.0",
+    "description": "Australian Electric Motor Co (AEMC) engineers and supplies competition-grade electric dirt bikes, heavy-duty outback agricultural e-motos, 72V lithium battery architectures, and CNC billet performance parts designed to conquer red bull-dust, creek crossings, and steep Australian singletrack. Registered for GST in NSW with nationwide crate logistics.",
+    "homepage": "https://australianelectricmotorco.com.au",
+    "contact": {
+      "email": "riders@australianelectricmotorco.com.au",
+      "whatsapp": "+61480031899"
+    }
+  },
+  "transport": {
+    "type": "streamable-http",
+    "endpoint": "https://australianelectricmotorco.com.au/api/mcp/"
+  },
+  "capabilities": {
+    "tools": [
+      {
+        "name": "search_products",
+        "description": "Search products by keyword, category, max_price",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string"
+            },
+            "category": {
+              "type": "string"
+            },
+            "max_price": {
+              "type": "number"
+            }
+          }
+        }
+      },
+      {
+        "name": "get_product",
+        "description": "Get full product details by slug",
+        "inputSchema": {
+          "type": "object",
+          "required": [
+            "slug"
+          ],
+          "properties": {
+            "slug": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      {
+        "name": "list_categories",
+        "description": "List all product categories",
+        "inputSchema": {
+          "type": "object",
+          "properties": {}
+        }
+      },
+      {
+        "name": "get_policies",
+        "description": "Get shipping, payment, returns policies",
+        "inputSchema": {
+          "type": "object",
+          "properties": {}
+        }
+      },
+      {
+        "name": "create_order_draft",
+        "description": "Create prefilled order URL. Human completes — never captures payment.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "items": {
+              "type": "array"
+            },
+            "notes": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    ],
+    "resources": [
+      {
+        "name": "product-catalog",
+        "description": "Full product catalog",
+        "uri": "https://australianelectricmotorco.com.au/shop/"
+      },
+      {
+        "name": "wholesale",
+        "description": "Wholesale pricing and commercial fleets",
+        "uri": "https://australianelectricmotorco.com.au/wholesale/"
+      },
+      {
+        "name": "compare",
+        "description": "Product comparison matrix",
+        "uri": "https://australianelectricmotorco.com.au/compare/"
+      },
+      {
+        "name": "blog",
+        "description": "Educational outback content",
+        "uri": "https://australianelectricmotorco.com.au/blog/"
+      }
+    ],
+    "commerce": {
+      "ordering": "human-assisted-whatsapp-or-form",
+      "payment": [
+        "crypto-BTC",
+        "crypto-USDT",
+        "pay-in-4",
+        "bank-transfer",
+        "payid"
+      ],
+      "currency": "AUD",
+      "minimumOrder": "0",
+      "freeShipping": "150"
+    }
+  },
+  "legal": {
+    "ageRestriction": "none",
+    "productType": "electric-dirt-bikes",
+    "compliance": "Australian Design Rules and Off-Road Competition Standards"
+  }
+}

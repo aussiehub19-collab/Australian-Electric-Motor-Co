@@ -1,0 +1,58 @@
+{
+  "linkset": [
+    {
+      "anchor": "https://australianelectricmotorco.com.au/",
+      "https://www.iana.org/assignments/link-relations/service-doc": [
+        {
+          "href": "https://australianelectricmotorco.com.au/faq/"
+        }
+      ],
+      "title": "Australian Electric Motor Co — Australia's Premier Electric Dirt Bike Specialist & High-Voltage Moto Engineering"
+    },
+    {
+      "anchor": "https://australianelectricmotorco.com.au/shop/",
+      "type": "text/html",
+      "title": "Australian Electric Motor Co Product Catalog"
+    },
+    {
+      "anchor": "https://australianelectricmotorco.com.au/wholesale/",
+      "type": "text/html",
+      "title": "Australian Electric Motor Co Wholesale"
+    },
+    {
+      "anchor": "https://australianelectricmotorco.com.au/compare/",
+      "type": "text/html",
+      "title": "Australian Electric Motor Co Product Comparison Tool"
+    },
+    {
+      "anchor": "https://australianelectricmotorco.com.au/finance/",
+      "type": "text/html",
+      "title": "Australian Electric Motor Co Finance Calculator"
+    },
+    {
+      "anchor": "https://australianelectricmotorco.com.au/api/products/",
+      "type": "application/json",
+      "title": "Australian Electric Motor Co Products API"
+    },
+    {
+      "anchor": "https://australianelectricmotorco.com.au/api/categories/",
+      "type": "application/json",
+      "title": "Australian Electric Motor Co Categories API"
+    },
+    {
+      "anchor": "https://australianelectricmotorco.com.au/api/search/",
+      "type": "application/json",
+      "title": "Australian Electric Motor Co Search API"
+    },
+    {
+      "anchor": "https://australianelectricmotorco.com.au/api/mcp/",
+      "type": "application/json",
+      "https://www.iana.org/assignments/link-relations/service-desc": [
+        {
+          "href": "https://australianelectricmotorco.com.au/.well-known/mcp/server-card.json"
+        }
+      ],
+      "title": "Australian Electric Motor Co MCP Server"
+    }
+  ]
+}

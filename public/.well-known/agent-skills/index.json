@@ -1,0 +1,57 @@
+{
+  "$schema": "https://agentskills.io/schema/v0.2.0/index.json",
+  "name": "Australian Electric Motor Co",
+  "url": "https://australianelectricmotorco.com.au",
+  "description": "Australia's Premier Electric Dirt Bike Specialist & High-Voltage Moto Engineering",
+  "skills": [
+    {
+      "name": "search-products",
+      "type": "commerce",
+      "description": "Search electric dirt bikes and upgrades by keyword, category, or price",
+      "url": "https://australianelectricmotorco.com.au/api/mcp/",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "browse-catalog",
+      "type": "navigation",
+      "description": "Browse the full electric dirt bike and components catalog by category",
+      "url": "https://australianelectricmotorco.com.au/shop/",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "order-draft",
+      "type": "commerce",
+      "description": "Create a prefilled Australian order draft. Human completes the order via WhatsApp or Form.",
+      "url": "https://australianelectricmotorco.com.au/api/mcp/",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "wholesale-inquiry",
+      "type": "commerce",
+      "description": "Wholesale pricing tiers, pastoral station fleets, and bulk dealer ordering",
+      "url": "https://australianelectricmotorco.com.au/wholesale/",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "compare-products",
+      "type": "commerce",
+      "description": "Compare technical specifications across electric dirt bikes, power outputs, and battery capacities",
+      "url": "https://australianelectricmotorco.com.au/compare/",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "product-education",
+      "type": "content",
+      "description": "Educational outback guides, battery charging tips, and electrical engineering advice",
+      "url": "https://australianelectricmotorco.com.au/blog/",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "contact",
+      "type": "support",
+      "description": "Contact Queensland moto technicians for custom fitment or order inquiries",
+      "url": "https://australianelectricmotorco.com.au/contact/",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

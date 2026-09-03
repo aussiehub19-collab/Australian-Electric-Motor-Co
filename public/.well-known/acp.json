@@ -1,0 +1,46 @@
+{
+  "protocol": {
+    "name": "acp",
+    "version": "0.1.0"
+  },
+  "name": "Australian Electric Motor Co",
+  "description": "Australian Electric Motor Co (AEMC) engineers and supplies competition-grade electric dirt bikes, heavy-duty outback agricultural e-motos, 72V lithium battery architectures, and CNC billet performance parts designed to conquer red bull-dust, creek crossings, and steep Australian singletrack. Registered for GST in NSW with nationwide crate logistics.",
+  "api_base_url": "https://australianelectricmotorco.com.au",
+  "homepage": "https://australianelectricmotorco.com.au",
+  "transports": [
+    "https"
+  ],
+  "capabilities": {
+    "services": [
+      "product-catalog",
+      "wholesale",
+      "compare",
+      "finance",
+      "blog",
+      "faq",
+      "mcp-server"
+    ],
+    "ordering": "human-assisted",
+    "payment_methods": [
+      "crypto-BTC",
+      "crypto-USDT",
+      "pay-in-4",
+      "bank-transfer",
+      "payid"
+    ],
+    "currency": "AUD",
+    "minimum_order_usd": "0",
+    "free_shipping_threshold_usd": "150"
+  },
+  "contact": {
+    "whatsapp": "https://wa.me/61480031899",
+    "email": "riders@australianelectricmotorco.com.au"
+  },
+  "legal": {
+    "age_restriction": "none",
+    "region": "Australia",
+    "ships_to": "Australia & Worldwide",
+    "product_type": "electric-dirt-bikes",
+    "compliance": "Australian Design Rules (ADR)"
+  }
+}
