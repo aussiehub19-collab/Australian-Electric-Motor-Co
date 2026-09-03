@@ -189,7 +189,7 @@ export const CATEGORIES = [
     section: 'electric-dirt-bikes',
     parent: 'electric-dirt-bikes',
     description: 'High-power 60V, 72V, and 360V machines delivering up to 60kW peak output for adult riders tackling demanding Australian motocross tracks and bush singletrack.',
-    image: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/home/cat-adult-electric-dirt-bikes.webp',
     count: 29,
   },
   {
@@ -198,7 +198,7 @@ export const CATEGORIES = [
     section: 'electric-dirt-bikes',
     parent: 'electric-dirt-bikes',
     description: 'Competition-level full-size electric motocross bikes matching and exceeding 450cc four-strokes with 21"/18" wheelsets, long-travel suspension, and holeshot-winning torque.',
-    image: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/home/cat-full-size-motocross.webp',
     count: 10,
   },
   {
@@ -216,7 +216,7 @@ export const CATEGORIES = [
     section: 'electric-dirt-bikes',
     parent: 'electric-dirt-bikes',
     description: 'Agile electric trail and enduro dirt bikes for bush singletrack and mountain trails.',
-    image: 'https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/home/cat-trail-enduro.webp',
     count: 13,
   },
   {
@@ -225,7 +225,7 @@ export const CATEGORIES = [
     section: 'electric-dirt-bikes',
     parent: 'electric-dirt-bikes',
     description: 'Safe, durable, governor-controlled electric dirt bikes that build skill and confidence in young Aussie groms without hot exhaust pipes or loud engine noise.',
-    image: 'https://images.unsplash.com/photo-1547038577-da80abbc4f19?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/home/cat-kids-youth-electric-dirt-bikes.webp',
     count: 40,
   },
   {
@@ -261,7 +261,7 @@ export const CATEGORIES = [
     section: 'electric-dirt-bikes',
     parent: 'electric-dirt-bikes',
     description: 'ADR-compliant road registerable (rego) electric dirt bikes equipped with high/low beam headlights, blinkers, mirrors, and dual-sport DOT tyres.',
-    image: 'https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/home/cat-adr-road-legal-dirt-bikes.webp',
     count: 6,
   },
   {

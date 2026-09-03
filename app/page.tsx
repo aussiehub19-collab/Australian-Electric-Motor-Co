@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { SmartImage } from '@/components/SmartImage';
 import { JsonLd } from '@/components/JsonLd';
 import { ProductCard } from '@/components/ProductCard';
+import { ReviewSlider } from '@/components/ReviewSlider';
 import {
   SITE,
   BRAND,
@@ -10,7 +11,6 @@ import {
   PRODUCTS,
   POSTS,
   FAQ,
-  REVIEWS,
   TRUSTPILOT_DATA,
 } from '@/config/site';
 
@@ -53,17 +53,19 @@ const CONTAINER = 'mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8';
 function Section({
   children,
   tinted = false,
+  bare = false,
   className = '',
 }: {
   children: React.ReactNode;
   tinted?: boolean;
+  bare?: boolean;
   className?: string;
 }) {
   return (
     <section
       className={`py-16 sm:py-24 ${tinted ? 'bg-[#121417] border-y border-[#1E2228]' : 'bg-[#0f1012]'} ${className}`}
     >
-      <div className={CONTAINER}>{children}</div>
+      {bare ? children : <div className={CONTAINER}>{children}</div>}
     </section>
   );
 }
@@ -111,7 +113,6 @@ function CtaLink({ href, children }: { href: string; children: React.ReactNode }
 export default function HomePage() {
   const featuredProducts = PRODUCTS.filter((p) => p.featured).slice(0, 8);
   const recentPosts = POSTS.slice(0, 3);
-  const homeReviews = REVIEWS.slice(0, 3);
 
   const homepageCategorySlugs = [
     'adult-electric-dirt-bikes',
@@ -181,10 +182,12 @@ export default function HomePage() {
       <section className="relative flex min-h-[85vh] items-center justify-center overflow-hidden border-b border-[#23272E] bg-[#101214]">
         <div className="absolute inset-0 z-0">
           <SmartImage
-            src="https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=1920&q=85"
+            src="/images/home/hero-1.webp"
             alt="Australian Electric Motor Co electric dirt bike on Australian outback singletrack"
+            width={2000}
+            height={1333}
             priority={true}
-            className="h-full w-full object-cover opacity-35 brightness-90"
+            className="h-full w-full object-cover opacity-40 brightness-90"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-[#0f1012] via-[#0f1012]/80 to-[#0f1012]/40" />
           <div className="absolute inset-0 bg-gradient-to-r from-[#0f1012] via-transparent to-[#0f1012]" />
@@ -323,45 +326,10 @@ export default function HomePage() {
       </Section>
 
       {/* ============================================================ *
-       * RIDER REVIEWS — static, uniform 3-up grid
+       * RIDER REVIEWS — Trustpilot-style review grid (self-contained)
        * ============================================================ */}
-      <Section>
-        <SectionHeader
-          eyebrow="Rider Feedback"
-          title="What Australian Riders Say"
-          intro={`Rated ${TRUSTPILOT_DATA.ratingText} ${TRUSTPILOT_DATA.score} out of 5 across ${TRUSTPILOT_DATA.totalReviews} reviews from Australian trail riders and powersports owners.`}
-        />
-
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-          {homeReviews.map((review) => (
-            <figure
-              key={review.id}
-              className="flex flex-col justify-between rounded-2xl border border-[#2B2F36] bg-[#17191C] p-6"
-            >
-              <div className="space-y-3">
-                <div
-                  className="flex items-center gap-1"
-                  aria-label={`${review.rating} out of 5 stars`}
-                >
-                  {Array.from({ length: review.rating }).map((_, i) => (
-                    <span key={i} className="text-sm text-amber-400" aria-hidden="true">
-                      ★
-                    </span>
-                  ))}
-                </div>
-                <figcaption className="text-sm font-bold text-white">
-                  &ldquo;{review.title}&rdquo;
-                </figcaption>
-                <blockquote className="text-sm leading-relaxed text-stone-300">
-                  {review.body}
-                </blockquote>
-              </div>
-              <div className="mt-5 border-t border-[#23272E] pt-4 font-mono text-[11px] text-stone-400">
-                {review.author} • {review.location} • {review.date}
-              </div>
-            </figure>
-          ))}
-        </div>
+      <Section bare>
+        <ReviewSlider />
       </Section>
 
       {/* ============================================================ *
