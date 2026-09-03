@@ -1,10 +1,10 @@
 import React from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { SmartImage } from '@/components/SmartImage';
 import { JsonLd } from '@/components/JsonLd';
 import { ProductCard } from '@/components/ProductCard';
 import { ReviewSlider } from '@/components/ReviewSlider';
+import { HeroSlider } from '@/components/HeroSlider';
 import {
   SITE,
   BRAND,
@@ -178,24 +178,20 @@ export default function HomePage() {
       <JsonLd data={jsonLdData} />
 
       {/* ============================================================ *
-       * HERO — full-bleed image + scrim, content centered
+       * HERO — rotating 4-image slider, content centered over it
        * ============================================================ */}
       <section className="relative flex min-h-[85vh] items-center justify-center overflow-hidden border-b border-[#23272E] bg-[#101214]">
-        <div className="absolute inset-0 z-0">
-          <Image
-            src="/images/home/hero-1.webp"
-            alt="Australian Electric Motor Co electric dirt bike on Australian outback singletrack"
-            fill
-            priority
-            sizes="100vw"
-            className="object-cover object-center"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0f1012] via-[#0f1012]/70 to-[#0f1012]/45" />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#0f1012]/95 via-[#0f1012]/30 to-[#0f1012]/95" />
-        </div>
+        <HeroSlider
+          images={[
+            { src: '/images/home/hero-1.webp', alt: 'Australian Electric Motor Co electric dirt bike on Australian outback singletrack' },
+            { src: '/images/home/hero-2.webp', alt: '' },
+            { src: '/images/home/hero-3.webp', alt: '' },
+            { src: '/images/home/hero-4.webp', alt: '' },
+          ]}
+        />
 
         <div className={`relative z-10 ${CONTAINER} py-24 text-center sm:py-28`}>
-          <div className="mx-auto max-w-3xl space-y-8">
+          <div className="mx-auto max-w-3xl space-y-8 [text-shadow:0_2px_24px_rgba(0,0,0,0.55)]">
             <div className="inline-flex items-center gap-2 rounded-full border border-[#8C4A2F]/50 bg-[#1D2024]/90 px-3.5 py-1.5 font-mono text-xs text-[#C87D55] backdrop-blur-md">
               <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-400" />
               <span>AUSTRALIA&apos;S E-MOTO SUPERSTORE &bull; 60V, 72V &amp; 360V PLATFORMS</span>
