@@ -250,10 +250,7 @@ export const ACCESSORIES_PRODUCTS = [
     badge: '420D Oxford Shield',
     featured: false,
     isAccessory: true,
-    images: [
-      'https://images.unsplash.com/photo-1508873696983-2df5293cb32b?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1547038577-da80abbc4f19?auto=format&fit=crop&w=1200&q=80',
-    ],
+    images: ['/images/products/e-moto-heavy-duty-weatherproof-storage-cover.webp'],
     shortDescription: 'Heavy-duty 420D Oxford polyester with PU waterproof coating, lock security grommets, and heat-resistant battery cover panel.',
     description: 'Shield your prized electric dirt bike from intense Australian UV rays, rainstorms, and garage dust. Tailored to fit high-handlebar e-motos with front fenders. Features double-stitched taped seams, windproof under-frame buckle strap, elastic hem cords, and reinforced front lock grommets for chain cable locks.',
     specs: {
@@ -281,10 +278,7 @@ export const ACCESSORIES_PRODUCTS = [
     badge: '21 mil Armor Vinyl',
     featured: true,
     isAccessory: true,
-    images: [
-      'https://images.unsplash.com/photo-1547038577-da80abbc4f19?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=1200&q=80',
-    ],
+    images: ['/images/products/backyard-design-surron-light-bee-custom-graphics-kit.webp'],
     shortDescription: 'Ultra-thick 21 mil moto-grade vinyl with sub-surface print, FLO air-release technology, and high-tack adhesive.',
     description: 'Transform your Surron Light Bee X with pro factory looks and heavy-duty scratch protection. Printed on sub-surface 21 mil armor vinyl with ultra-high-bond adhesive formulated specifically for low-surface-energy plastics and powder-coated frames. FLO technology micro-groove channels allow trapped air to escape easily during dry DIY installation without air bubbles.',
     specs: {

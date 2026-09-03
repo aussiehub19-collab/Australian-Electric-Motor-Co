@@ -113,10 +113,7 @@ export const BATTERIES_PRODUCTS = [
     ],
     voltage: '60V Nominal',
     capacity: '40Ah (2,400Wh)',
-    images: [
-      'https://images.unsplash.com/photo-1508873696983-2df5293cb32b?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?auto=format&fit=crop&w=1200&q=80',
-    ],
+    images: ['/images/products/surron-light-bee-x-oem-battery-60v-40ah.webp'],
     shortDescription: 'Genuine Surron factory replacement with 21700 LG/Samsung high-rate cells and genuine smart BMS.',
     description: 'The genuine factory 60V 40Ah powerpack for the Surron Light Bee X. Built with high-discharge 21700 cells from LG and Samsung, this pack slides straight into your factory chassis rails with zero modifications required. Features a genuine Surron smart BMS that protects against over-discharge, cell imbalances, and temperature extremes.',
     specs: {
@@ -185,10 +182,7 @@ export const BATTERIES_PRODUCTS = [
     ],
     voltage: '74V Nominal',
     capacity: '55Ah (4,070Wh)',
-    images: [
-      'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1508873696983-2df5293cb32b?auto=format&fit=crop&w=1200&q=80',
-    ],
+    images: ['/images/products/surron-ultra-bee-oem-battery-74v-55ah.webp'],
     shortDescription: 'Automotive-grade pouch cells with CAN-bus communication, integrated carry handle, and IP67 sealing.',
     description: 'Original factory replacement battery pack for the Surron Ultra Bee. Houses automotive-grade pouch cells in a rigid aluminium alloy framework, complete with heavy-duty rubberised top handles and IP67 water sealing. Features full CAN-bus communication with the Ultra Bee dash cluster.',
     specs: {
@@ -256,10 +250,7 @@ export const BATTERIES_PRODUCTS = [
     ],
     voltage: '96V Nominal',
     capacity: '48Ah (4,608Wh)',
-    images: [
-      'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1508873696983-2df5293cb32b?auto=format&fit=crop&w=1200&q=80',
-    ],
+    images: ['/images/products/surron-storm-bee-oem-battery-96v-48ah.webp'],
     shortDescription: 'Heavy-duty 96V system, IP67 sealed aluminium enclosure, high-voltage interlock plug.',
     description: 'Factory OEM replacement power pack for the flagship full-size Surron Storm Bee. Operating at 96V nominal (109.2V peak), this pack provides the immense current demanded by the Storm Bee’s 22.5kW liquid-cooled powertrain. Built inside a structural die-cast aluminium casing with safety interlock pins.',
     specs: {
@@ -291,10 +282,7 @@ export const BATTERIES_PRODUCTS = [
     ],
     voltage: '60V Nominal',
     capacity: '45Ah (2,700Wh)',
-    images: [
-      'https://images.unsplash.com/photo-1508873696983-2df5293cb32b?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?auto=format&fit=crop&w=1200&q=80',
-    ],
+    images: ['/images/products/talaria-sting-r-mx4-oem-battery-60v-45ah.webp'],
     shortDescription: 'Samsung 50E 21700 cells, genuine Talaria smart BMS, key-locking chassis slide fit.',
     description: 'Factory OEM 60V 45Ah battery replacement for the Talaria Sting R MX4. Packed with genuine Samsung 50E 21700 cells, this 2.7 kWh battery provides excellent range and reliable current delivery for both trail riding and track laps. Also serves as a direct capacity upgrade for older Talaria Sting MX3 models.',
     specs: {
@@ -325,10 +313,7 @@ export const BATTERIES_PRODUCTS = [
     ],
     voltage: '72V Nominal',
     capacity: '40Ah (2,880Wh)',
-    images: [
-      'https://images.unsplash.com/photo-1508873696983-2df5293cb32b?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=1200&q=80',
-    ],
+    images: ['/images/products/talaria-sting-pro-mx5-oem-battery-72v-40ah.webp'],
     shortDescription: 'High-discharge cells designed for 13.5kW peak power with reinforced terminal block.',
     description: 'The genuine Talaria factory 72V 40Ah powerpack engineered specifically for the 13.5kW Talaria Sting Pro MX5. Features ultra-low resistance internal connections, reinforced copper-plated terminal blocks, and smart CAN communication linked directly with the MX5 full-color digital cockpit.',
     specs: {
@@ -396,10 +381,7 @@ export const BATTERIES_PRODUCTS = [
     ],
     voltage: '60V Nominal',
     capacity: '40Ah (2,400Wh)',
-    images: [
-      'https://images.unsplash.com/photo-1508873696983-2df5293cb32b?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=1200&q=80',
-    ],
+    images: ['/images/products/talaria-x3-xxx-oem-battery-60v-40ah.webp'],
     shortDescription: 'Slimline in-frame slide design with quick-release locking latch and factory BMS.',
     description: 'Genuine factory replacement 60V 40Ah battery pack for the ultra-compact Talaria X3 Concept (XXX). Specifically shaped to slide vertically into the mono-frame spine of the XXX chassis, featuring a secure bottom lock latch and quick-disconnect harness.',
     specs: {
@@ -432,10 +414,7 @@ export const BATTERIES_PRODUCTS = [
     ],
     voltage: '72V Nominal',
     capacity: '40Ah (2,880Wh)',
-    images: [
-      'https://images.unsplash.com/photo-1508873696983-2df5293cb32b?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?auto=format&fit=crop&w=1200&q=80',
-    ],
+    images: ['/images/products/e-ride-pro-ss-replacement-battery-72v-40ah.webp'],
     shortDescription: 'Samsung 50S high-drain cells with heavy-duty dual discharge terminal and CNC top plate.',
     description: 'Built for riders extracting maximum speed from the E-Ride Pro-SS platform. Utilizing Samsung 50S high-current cells, this 72V 40Ah pack delivers 12 kW continuous power without overheating. Features a reinforced CNC anodized top plate with an ergonomic grab handle.',
     specs: {
@@ -467,10 +446,7 @@ export const BATTERIES_PRODUCTS = [
     ],
     voltage: '72V Nominal',
     capacity: '30Ah (2,160Wh)',
-    images: [
-      'https://images.unsplash.com/photo-1508873696983-2df5293cb32b?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=1200&q=80',
-    ],
+    images: ['/images/products/e-ride-pro-s-replacement-battery-72v-30ah.webp'],
     shortDescription: 'Lightweight 72V compact pack with direct factory drop-in fitment.',
     description: 'Factory OEM replacement for the E Ride Pro-S. At only 11.8 kg, this lightweight 72V 30Ah pack maintains nimble handling while delivering genuine 72V throttle snap across motocross tracks and forestry trails.',
     specs: {
@@ -648,10 +624,7 @@ export const BATTERIES_PRODUCTS = [
     ],
     voltage: '20V Max',
     capacity: '5.0Ah each (Twin Pack)',
-    images: [
-      'https://images.unsplash.com/photo-1547038577-da80abbc4f19?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=1200&q=80',
-    ],
+    images: ['/images/products/stacyc-20v-5-0ah-high-output-battery-twin-pack.webp'],
     shortDescription: 'Twin pack quick-swap tool-style slide locking with integrated LED charge indicator.',
     description: 'Double the riding fun for your junior grom. Genuine STACYC 20V 5.0Ah lithium-ion battery twin pack with tool-style slide lock fitment. Keep one charging while the other is shredding in the backyard.',
     specs: {
@@ -766,10 +739,7 @@ export const CHARGERS_PRODUCTS = [
     ],
     output: '67.2V 10A (670W)',
     voltage: '60V System',
-    images: [
-      'https://images.unsplash.com/photo-1508873696983-2df5293cb32b?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?auto=format&fit=crop&w=1200&q=80',
-    ],
+    images: ['/images/products/surron-light-bee-67-2v-10a-oem-fast-charger.webp'],
     shortDescription: 'Quiet dual-bearing cooling fan, auto balancing shutoff, and AS/NZS 3112 3-pin AU plug.',
     description: 'Genuine Surron 10A fast charger for standard 60V Light Bee X battery packs. Delivers 670W of clean continuous power, charging an empty 40Ah battery to 100% in approximately 3.5 hours. Fitted with Australian standard AS/NZS 3112 3-pin wall plug.',
     specs: {
@@ -807,10 +777,7 @@ export const CHARGERS_PRODUCTS = [
     ],
     output: '84V (Selectable 5A/10A/15A)',
     voltage: '72V System',
-    images: [
-      'https://images.unsplash.com/photo-1508873696983-2df5293cb32b?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=1200&q=80',
-    ],
+    images: ['/images/products/ebmx-72v-15a-adjustable-high-power-fast-charger.webp'],
     shortDescription: 'Extruded alloy casing, digital amp readout, QS8 connector, and 240V AU plug for all 72V packs.',
     description: 'The benchmark performance charger for all 72V aftermarket electric dirt bike batteries. Features an anodized aluminium chassis with a built-in digital display showing charge voltage and real-time amperage. Allows toggling between gentle 5A trickle, 10A standard, and rapid 15A high-current modes. Terminated with a spark-resistant QS8 connector and AS/NZS 3112 plug.',
     specs: {
@@ -844,10 +811,7 @@ export const CHARGERS_PRODUCTS = [
     ],
     output: '84V 12A',
     voltage: '74V System',
-    images: [
-      'https://images.unsplash.com/photo-1508873696983-2df5293cb32b?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?auto=format&fit=crop&w=1200&q=80',
-    ],
+    images: ['/images/products/surron-ultra-bee-74v-oem-fast-charger.webp'],
     shortDescription: 'Genuine Surron 4-pin connector, ruggedized impact bumpers, and 240V AU wall plug.',
     description: 'Factory OEM replacement fast charger for the Surron Ultra Bee 74V 55Ah system. Equipped with corner shock-absorbing silicone bumpers for paddock durability, high-pressure smart cooling fans, and the genuine Surron keyed 4-pin charge terminal.',
     specs: {
@@ -955,10 +919,7 @@ export const CHARGERS_PRODUCTS = [
     ],
     output: '84V 10A',
     voltage: '72V System',
-    images: [
-      'https://images.unsplash.com/photo-1508873696983-2df5293cb32b?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=1200&q=80',
-    ],
+    images: ['/images/products/e-ride-pro-72v-10a-oem-replacement-charger.webp'],
     shortDescription: 'Factory E Ride Pro connector, heavy-gauge copper wiring, 240V AU 3-pin plug.',
     description: 'Original factory replacement charger for E Ride Pro-SS and Pro-S electric dirt bikes. Features a durable extruded casing, factory keyed charge plug, and full compliance with Australian electrical safety guidelines.',
     specs: {
