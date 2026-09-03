@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { SmartImage } from '@/components/SmartImage';
 import { JsonLd } from '@/components/JsonLd';
 import { ProductCard } from '@/components/ProductCard';
@@ -181,16 +182,16 @@ export default function HomePage() {
        * ============================================================ */}
       <section className="relative flex min-h-[85vh] items-center justify-center overflow-hidden border-b border-[#23272E] bg-[#101214]">
         <div className="absolute inset-0 z-0">
-          <SmartImage
+          <Image
             src="/images/home/hero-1.webp"
             alt="Australian Electric Motor Co electric dirt bike on Australian outback singletrack"
-            width={2000}
-            height={1333}
-            priority={true}
-            className="h-full w-full object-cover opacity-40 brightness-90"
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover object-center"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0f1012] via-[#0f1012]/80 to-[#0f1012]/40" />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#0f1012] via-transparent to-[#0f1012]" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0f1012] via-[#0f1012]/70 to-[#0f1012]/45" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#0f1012]/95 via-[#0f1012]/30 to-[#0f1012]/95" />
         </div>
 
         <div className={`relative z-10 ${CONTAINER} py-24 text-center sm:py-28`}>

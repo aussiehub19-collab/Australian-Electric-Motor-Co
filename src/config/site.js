@@ -279,7 +279,7 @@ export const CATEGORIES = [
     section: 'electric-dirt-bikes',
     parent: 'electric-dirt-bikes',
     description: 'Silent, heavy-duty electric workhorses built for Australian cattle stations, paddock mustering, fence inspections, and property maintenance without scaring livestock.',
-    image: 'https://images.unsplash.com/photo-1508873696983-2df5293cb32b?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/home/cat-utility-farm-e-bikes.webp',
     count: 6,
   },
   {
@@ -683,7 +683,7 @@ export const CATEGORIES = [
     section: 'accessories',
     parent: null,
     description: 'Australian outback transportation accessories, heavy-duty ute hitch haulers, foldable pit stands, custom moto graphics kits, and electrical-safe cleaning bundles.',
-    image: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/home/cat-accessories.webp',
     count: 12,
   },
   {
