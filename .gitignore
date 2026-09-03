@@ -5,3 +5,8 @@ coverage/
 *.log
 .env*
 !.env.example
+
+# build info
+tsconfig.tsbuildinfo
+out/
+package-lock.json

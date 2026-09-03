@@ -28,6 +28,7 @@ const jsDir = path.resolve(publicDir, 'js');
 // 1. Generate vercel.json
 const vercelConfig = {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "nextjs",
   "trailingSlash": true,
   "redirects": [
     {
@@ -154,7 +155,7 @@ ${productList}
 - [Frequently Asked Questions](${baseUrl}/faq/): Warranty, battery range, charging, and national crate shipping
 - [Product Comparison Matrix](${baseUrl}/compare/): Side-by-side electric dirt bike specification comparison
 - [Pay in 4 & Finance Calculator](${baseUrl}/finance/): Pay in 4 schedule and commercial station asset loan breakdown
-- [Contact & Workshop Support](${baseUrl}/contact/): Direct inquiry form and Sunshine Coast workshop location
+- [Contact & Workshop Support](${baseUrl}/contact/): Direct inquiry form and NSW workshop location
 
 ## Optional
 - [API Catalog](${baseUrl}/.well-known/api-catalog): Machine-readable endpoint directory (RFC 9727)
@@ -230,7 +231,7 @@ const agentSkills = {
     { "name": "wholesale-inquiry", "type": "commerce", "description": "Wholesale pricing tiers, pastoral station fleets, and bulk dealer ordering", "url": `${baseUrl}/wholesale/`, "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855" },
     { "name": "compare-products", "type": "commerce", "description": "Compare technical specifications across electric dirt bikes, power outputs, and battery capacities", "url": `${baseUrl}/compare/`, "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855" },
     { "name": "product-education", "type": "content", "description": "Educational outback guides, battery charging tips, and electrical engineering advice", "url": `${baseUrl}/blog/`, "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855" },
-    { "name": "contact", "type": "support", "description": "Contact Queensland moto technicians for custom fitment or order inquiries", "url": `${baseUrl}/contact/`, "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855" }
+    { "name": "contact", "type": "support", "description": "Contact our NSW moto technicians for custom fitment or order inquiries", "url": `${baseUrl}/contact/`, "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855" }
   ]
 };
 fs.writeFileSync(path.resolve(agentSkillsDir, 'index.json'), JSON.stringify(agentSkills, null, 2) + '\n');
@@ -533,7 +534,7 @@ const webmcpJs = `(function () {
       },
       {
         name: "contact",
-        description: "Contact ${SITE.name} Queensland technicians for fitment or questions",
+        description: "Contact ${SITE.name} NSW technicians for fitment or questions",
         inputSchema: { type: "object", properties: {} },
         execute: async () => {
           window.location.href = \`${baseUrl}/contact/\`;

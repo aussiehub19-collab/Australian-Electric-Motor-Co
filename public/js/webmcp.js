@@ -73,7 +73,7 @@
       },
       {
         name: "contact",
-        description: "Contact Australian Electric Motor Co Queensland technicians for fitment or questions",
+        description: "Contact Australian Electric Motor Co NSW technicians for fitment or questions",
         inputSchema: { type: "object", properties: {} },
         execute: async () => {
           window.location.href = `https://australianelectricmotorco.com.au/contact/`;

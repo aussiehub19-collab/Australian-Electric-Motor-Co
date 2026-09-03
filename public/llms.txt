@@ -227,7 +227,7 @@ Australian Electric Motor Co (AEMC) engineers and supplies competition-grade ele
 - [Frequently Asked Questions](https://australianelectricmotorco.com.au/faq/): Warranty, battery range, charging, and national crate shipping
 - [Product Comparison Matrix](https://australianelectricmotorco.com.au/compare/): Side-by-side electric dirt bike specification comparison
 - [Pay in 4 & Finance Calculator](https://australianelectricmotorco.com.au/finance/): Pay in 4 schedule and commercial station asset loan breakdown
-- [Contact & Workshop Support](https://australianelectricmotorco.com.au/contact/): Direct inquiry form and Sunshine Coast workshop location
+- [Contact & Workshop Support](https://australianelectricmotorco.com.au/contact/): Direct inquiry form and NSW workshop location
 
 ## Optional
 - [API Catalog](https://australianelectricmotorco.com.au/.well-known/api-catalog): Machine-readable endpoint directory (RFC 9727)

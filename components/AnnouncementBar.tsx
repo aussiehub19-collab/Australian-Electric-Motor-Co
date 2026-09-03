@@ -7,8 +7,8 @@ const ANNOUNCEMENTS = [
   { text: '⚡ 10% Instant Discount on Bitcoin (BTC) & Tether (USDT) Orders', link: '/shop/' },
   { text: '💳 Pay in 4 Available: 4 Interest-Free Fortnightly Payments (0% Interest)', link: '/finance/' },
   { text: '🚚 Nationwide Enclosed Crate Freight Across Australia & Regional Depots', link: '/faq/' },
-  { text: '🇦🇺 Queensland Engineered 72V High-Output Powertrains — 2-Year Warranty', link: '/about/' },
-  { text: '💬 Sunshine Coast Workshop Test Rides Available — Chat on WhatsApp', link: '/contact/' },
+  { text: '🇦🇺 NSW-Engineered 72V High-Output Powertrains — 2-Year Australian Warranty', link: '/about/' },
+  { text: '💬 NSW Workshop Test Rides Available — Chat on WhatsApp', link: '/contact/' },
 ];
 
 export function AnnouncementBar() {
@@ -36,7 +36,7 @@ export function AnnouncementBar() {
           </Link>
         </div>
         <div className="hidden md:flex items-center gap-4 text-stone-300 text-xs pl-4 border-l border-amber-900/40">
-          <span>Sunshine Coast, QLD</span>
+          <span>Prestons, NSW</span>
           <span className="text-amber-400 font-semibold">AUD ($)</span>
         </div>
       </div>

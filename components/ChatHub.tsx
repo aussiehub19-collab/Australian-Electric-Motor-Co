@@ -1,15 +1,17 @@
 'use client';
 
 import React, { useState } from 'react';
-import { CONTACT } from '@/config/site';
+import { CONTACT, SITE } from '@/config/site';
 
 export function ChatHub() {
   const [open, setOpen] = useState(false);
 
   const whatsappNumber = CONTACT.whatsapp.replace(/[^0-9]/g, '');
   const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
-    "G'day Dirt & Co! I have a question regarding your electric dirt bikes and test rides in Queensland."
+    `G'day ${SITE.name}! I have a question about your electric dirt bikes and NSW test rides.`
   )}`;
+  const emailUser = CONTACT.email.split('@')[0];
+  const emailDomain = CONTACT.email.split('@')[1];
 
   return (
     <div className="fixed bottom-6 right-6 z-40 flex flex-col items-end">
@@ -19,7 +21,7 @@ export function ChatHub() {
           <div className="flex items-center justify-between pb-3 border-b border-[#2B2F36]">
             <div>
               <h4 className="text-sm font-bold text-white">Technician Chat</h4>
-              <p className="text-xs text-stone-400">Sunshine Coast Workshop</p>
+              <p className="text-xs text-stone-400">NSW Workshop &amp; Dispatch</p>
             </div>
             <button
               type="button"
@@ -66,7 +68,7 @@ export function ChatHub() {
 
             {/* Email */}
             <a
-              href="mailto:riders&#64;dirtandco.com.au?subject=Electric%20Dirt%20Bike%20Inquiry"
+              href={`mailto:${emailUser}&#64;${emailDomain}?subject=Electric%20Dirt%20Bike%20Inquiry`}
               className="flex items-center gap-3 p-2.5 rounded-xl bg-[#1D2024] hover:bg-[#24282E] border border-[#2B2F36] text-white transition"
             >
               <div className="w-8 h-8 rounded-lg bg-stone-700 flex items-center justify-center text-white flex-shrink-0">
@@ -74,7 +76,9 @@ export function ChatHub() {
               </div>
               <div className="text-xs">
                 <div className="font-semibold text-stone-200">Email Inquiry</div>
-                <div className="text-stone-400 font-mono text-[11px]">riders&#64;dirtandco.com.au</div>
+                <div className="text-stone-400 font-mono text-[11px]">
+                  {emailUser}&#64;{emailDomain}
+                </div>
               </div>
             </a>
           </div>

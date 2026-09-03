@@ -76,7 +76,7 @@ export function Nav() {
           <Link
             href="/"
             className="flex items-center group focus-visible:ring-2 focus-visible:ring-amber-500 rounded-lg p-1"
-            aria-label="Dirt & Co Homepage"
+            aria-label={`${SITE.name} Homepage`}
           >
             <Logo variant="full" />
           </Link>
@@ -430,7 +430,7 @@ export function Nav() {
                 href="/about/"
                 className="block py-2 px-1 text-sm font-semibold text-stone-100 hover:text-[#C87D55]"
               >
-                About Dirt &amp; Co Australia
+                About Australian Electric Motor Co
               </Link>
               <Link
                 href="/blog/"
