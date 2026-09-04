@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation';
 import { SmartImage } from '@/components/SmartImage';
 import { JsonLd } from '@/components/JsonLd';
 import { CategoryProductGrid } from './CategoryProductGrid';
-import { CATEGORIES, PRODUCTS, SITE } from '@/config/site';
+import { CATEGORIES, PRODUCTS, SITE, getShopCategoryNav } from '@/config/site';
 
 interface CategoryPageProps {
   params: Promise<{
@@ -254,6 +254,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
           categorySlug={category.slug}
           categoryName={category.name}
           subcategories={subcategories}
+          categoryNav={getShopCategoryNav()}
         />
       </section>
     </div>

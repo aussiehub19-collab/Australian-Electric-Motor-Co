@@ -476,10 +476,7 @@ export const BATTERIES_PRODUCTS = [
     ],
     voltage: '74V Nominal',
     capacity: '35Ah (2,590Wh)',
-    images: [
-      'https://images.unsplash.com/photo-1508873696983-2df5293cb32b?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?auto=format&fit=crop&w=1200&q=80',
-    ],
+    images: ['/images/products/rfn-ares-rally-pro-oem-battery-74v-35ah.webp'],
     shortDescription: 'High-rate LG cells, quick-release security handle, IP65 housing for RFN Rally and Road models.',
     description: 'Factory replacement battery pack for the RFN (Apollo) Ares Rally Pro and Road Legal e-dirt bikes. Featuring high-rate LG chem cells encased in a shock-resistant IP65 alloy shell with an integrated keyed locking system.',
     specs: {
@@ -551,10 +548,7 @@ export const BATTERIES_PRODUCTS = [
     ],
     voltage: '48V Nominal',
     capacity: '20Ah (960Wh)',
-    images: [
-      'https://images.unsplash.com/photo-1508873696983-2df5293cb32b?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?auto=format&fit=crop&w=1200&q=80',
-    ],
+    images: ['/images/products/oset-48v-20ah-lithium-battery-conversion-pack.webp'],
     shortDescription: 'Replaces heavy OEM AGM lead-acid batteries, saves 12kg of dead weight with high-amp BMS.',
     description: 'The single most effective performance upgrade for OSET 20.0 and 24.0 trials bikes. Sheds 12 kg of dead weight compared to stock lead-acid AGM batteries, dramatically improving bunny hops, rear-wheel balance, and runtime.',
     specs: {
@@ -1034,10 +1028,7 @@ export const CHARGERS_PRODUCTS = [
     ],
     output: '48V 3A',
     voltage: '48V System',
-    images: [
-      'https://images.unsplash.com/photo-1508873696983-2df5293cb32b?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?auto=format&fit=crop&w=1200&q=80',
-    ],
+    images: ['/images/products/oset-48v-standard-smart-charger-3pin-xlr.webp'],
     shortDescription: 'Multi-stage CC/CV charging, LED status indicator, 3-pin XLR port, and 240V AU plug.',
     description: 'Compact smart charger for OSET 48V electric trials bikes. Employs 3-stage smart charging algorithms suitable for both original lead-acid packs and modern lithium upgrade batteries. Fitted with an industry-standard 3-pin XLR connector and Australian wall plug.',
     specs: {

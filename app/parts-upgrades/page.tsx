@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { JsonLd } from '@/components/JsonLd';
 import { SubcategoryCards } from '@/components/SubcategoryCards';
 import { CategoryProductGrid } from '@/app/shop/[category]/CategoryProductGrid';
-import { CATEGORIES, PRODUCTS, SITE } from '@/config/site';
+import { CATEGORIES, PRODUCTS, SITE, getShopCategoryNav } from '@/config/site';
 
 export const metadata = {
   title: 'Electric Dirt Bike Parts & Upgrades | Batteries, Chargers, Brakes & Wheels',
@@ -93,7 +93,7 @@ export default function PartsUpgradesRootPage() {
           initialProducts={partsProducts}
           categorySlug="parts-upgrades"
           categoryName="Parts & Upgrades"
-          subcategories={groups.map((g) => ({ slug: g.slug, name: g.name }))}
+          categoryNav={getShopCategoryNav()}
         />
       </section>
     </div>

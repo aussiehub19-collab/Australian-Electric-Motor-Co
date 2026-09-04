@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 import { JsonLd } from '@/components/JsonLd';
 import { SubcategoryCards } from '@/components/SubcategoryCards';
 import { CategoryProductGrid } from '@/app/shop/[category]/CategoryProductGrid';
-import { CATEGORIES, PRODUCTS, SITE } from '@/config/site';
+import { CATEGORIES, PRODUCTS, SITE, getShopCategoryNav } from '@/config/site';
 
 export const metadata: Metadata = {
   title: 'Shop Electric Dirt Bikes, Parts & Gear | Australian Electric Motor Co',
@@ -23,48 +23,8 @@ export const metadata: Metadata = {
   other: { 'og:updated_time': new Date().toISOString() },
 };
 
-// The visible "Category" facet, grouped by department. Slugs must exist in CATEGORIES.
-const FACET_GROUPS: { group: string; slugs: string[] }[] = [
-  {
-    group: 'Electric Dirt Bikes',
-    slugs: [
-      'full-size-motocross',
-      'trail-mid-weight-enduro',
-      'junior-trials-youth-dirt-bikes',
-      'balance-mini-bikes',
-      'adr-road-legal-dirt-bikes',
-      'utility-farm-e-bikes',
-    ],
-  },
-  {
-    group: 'Parts & Upgrades',
-    slugs: [
-      'high-capacity-batteries',
-      'fast-chargers',
-      'controllers-electronics',
-      'suspension-steering',
-      'brakes-rotors',
-      'wheels-drivetrain',
-    ],
-  },
-  {
-    group: 'Riding Gear',
-    slugs: ['helmets', 'body-armour', 'gloves-goggles', 'boots'],
-  },
-  {
-    group: 'Accessories',
-    slugs: ['graphics-plastics-kits', 'bike-stands-tools', 'storage-transport', 'maintenance-chemicals'],
-  },
-];
-
 export default function ShopPage() {
-  const nameOf = (slug: string) => CATEGORIES.find((c) => c.slug === slug)?.name || slug;
-
-  const subcategories = FACET_GROUPS.flatMap((g) =>
-    g.slugs
-      .filter((slug) => CATEGORIES.some((c) => c.slug === slug))
-      .map((slug) => ({ slug, name: nameOf(slug), group: g.group })),
-  );
+  const categoryNav = getShopCategoryNav();
 
   const departmentCards = [
     { slug: 'electric-dirt-bikes', name: 'Electric Dirt Bikes' },
@@ -134,7 +94,7 @@ export default function ShopPage() {
           initialProducts={PRODUCTS as any}
           categorySlug="all"
           categoryName="the full range"
-          subcategories={subcategories}
+          categoryNav={categoryNav}
         />
       </section>
     </div>

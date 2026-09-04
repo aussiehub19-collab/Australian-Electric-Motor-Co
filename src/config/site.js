@@ -430,15 +430,6 @@ export const CATEGORIES = [
     image: '/images/brands/ubco.webp',
     count: 5,
   },
-  {
-    slug: 'takani',
-    name: 'Takani',
-    section: 'brands',
-    parent: 'brands',
-    description: 'Australian designed electric dirt and balance bikes for kids and youth, delivering exceptional value and local support.',
-    image: '/images/brands/takani.webp',
-    count: 5,
-  },
 
   // 3. Parts & Upgrades Root & Sub-branches
   {
@@ -727,7 +718,7 @@ export const CATEGORIES = [
 ];
 
 export const PRODUCTS = [
-  // Exactly 75 E-Bike Models across 15 Brands
+  // Every e-bike model, spread across our brands
   ...EBIKES_DATA.map((bike) => ({
     ...bike,
     isBike: true,
@@ -856,6 +847,62 @@ export const PRODUCTS = [
     },
   },
 ];
+
+// ---------------------------------------------------------------------------
+// Shop category navigation — the single grouped list of shoppable categories
+// shown as the "Category" filter on EVERY shop page (/shop, /shop/<cat>,
+// /parts-upgrades). Each entry links to its own indexable page.
+// ---------------------------------------------------------------------------
+export const SHOP_FACET_GROUPS = [
+  {
+    group: 'Electric Dirt Bikes',
+    slugs: [
+      'full-size-motocross',
+      'trail-mid-weight-enduro',
+      'junior-trials-youth-dirt-bikes',
+      'balance-mini-bikes',
+      'adr-road-legal-dirt-bikes',
+      'utility-farm-e-bikes',
+    ],
+  },
+  {
+    group: 'Parts & Upgrades',
+    slugs: [
+      'high-capacity-batteries',
+      'fast-chargers',
+      'controllers-electronics',
+      'suspension-steering',
+      'brakes-rotors',
+      'wheels-drivetrain',
+    ],
+  },
+  {
+    group: 'Riding Gear',
+    slugs: ['helmets', 'body-armour', 'body-armour-protection', 'gloves-goggles', 'boots'],
+  },
+  {
+    group: 'Accessories',
+    slugs: ['graphics-plastics-kits', 'bike-stands-tools', 'storage-transport', 'maintenance-chemicals'],
+  },
+];
+
+/** Grouped category list with GLOBAL product counts — pass to <CategoryProductGrid categoryNav>. */
+export function getShopCategoryNav() {
+  const nameOf = (slug) => CATEGORIES.find((c) => c.slug === slug)?.name || slug;
+  const belongs = (p, slug) =>
+    p.category === slug || (Array.isArray(p.parentCategories) && p.parentCategories.includes(slug));
+  return SHOP_FACET_GROUPS.flatMap((g) =>
+    g.slugs
+      .filter((slug) => CATEGORIES.some((c) => c.slug === slug))
+      .map((slug) => ({
+        slug,
+        name: nameOf(slug),
+        group: g.group,
+        count: PRODUCTS.filter((p) => belongs(p, slug)).length,
+      }))
+      .filter((c) => c.count > 0),
+  );
+}
 
 export const POSTS = [
   {

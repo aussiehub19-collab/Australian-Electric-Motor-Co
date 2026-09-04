@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
-import { SmartImage } from '@/components/SmartImage';
 import { JsonLd } from '@/components/JsonLd';
+import { Logo } from '@/components/Logo';
 import { BRAND, CONTACT, SITE, LEGAL } from '@/config/site';
 
 export const metadata = {
@@ -64,15 +64,23 @@ export default function AboutPage() {
         </p>
       </div>
 
-      {/* Hero Image */}
-      <div className="relative aspect-[16/9] rounded-3xl overflow-hidden border border-[#2B2F36]">
-        <SmartImage
-          src="https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=1600&q=80"
-          alt="Australian Electric Motor Co engineering workshop and testing tracks in NSW"
-          aspectRatio="16/9"
-          priority={true}
-          className="w-full h-full object-cover"
-        />
+      {/* Brand mark */}
+      <div className="flex flex-col items-center gap-4 rounded-3xl border border-[#2B2F36] bg-[#17191C] px-6 py-8 text-center sm:flex-row sm:gap-6 sm:py-6 sm:text-left">
+        <div className="h-20 w-20 shrink-0 sm:h-24 sm:w-24">
+          <Logo variant="icon" className="!h-full !w-full" />
+        </div>
+        <div className="space-y-1">
+          <div className="text-lg font-black uppercase tracking-tight text-white sm:text-xl">
+            {SITE.name}
+          </div>
+          <p className="text-xs font-mono uppercase tracking-widest text-[#C87D55]">
+            Est. {BRAND.foundingYear} · {BRAND.foundingLocation}
+          </p>
+          <p className="max-w-md text-xs leading-relaxed text-stone-400">
+            High-performance electric dirt bikes, batteries, chargers and gear — engineered and
+            supported in New South Wales.
+          </p>
+        </div>
       </div>
 
       {/* Narrative Section 1: The Founding Vision (>700 words content) */}

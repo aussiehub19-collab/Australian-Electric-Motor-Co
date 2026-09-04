@@ -8,7 +8,7 @@ import { CATEGORIES, PRODUCTS, SITE } from '@/config/site';
 export const metadata: Metadata = {
   title: 'Electric Dirt Bike Brands Australia | Surron, Talaria, Stark, KTM & more',
   description:
-    'Explore 15 leading electric dirt bike brands stocked in Australia. Official factory warranties, an NSW spare-parts inventory, and national crated delivery on Surron, Talaria, Stark Future, KTM and more.',
+    'Explore the leading electric dirt bike brands stocked in Australia. Official factory warranties, an NSW spare-parts inventory, and national crated delivery on Surron, Talaria, Stark Future, KTM and more.',
   alternates: {
     canonical: `https://${SITE.domain}/brands/`,
   },
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Electric Dirt Bike Brands Australia | Australian Electric Motor Co',
     description:
-      'Compare 15 leading electric dirt bike brands with Australian factory warranties and local spare parts.',
+      'Compare the leading electric dirt bike brands with Australian factory warranties and local spare parts.',
     images: ['https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=1200&q=80'],
   },
   other: {
@@ -146,19 +146,14 @@ const BRAND_DETAILS: Record<
     flagship: '2X2 Work & Adventure',
     powerRange: 'Dual 1kW Hubs (3.1kWh)',
   },
-  takani: {
-    origin: 'Australia',
-    flag: '🇦🇺',
-    specialty: 'Accessible Youth & Junior Trail E-Dirt Bikes',
-    flagship: 'TK-16 Trail & TK-20',
-    powerRange: '500W – 1.5kW Junior',
-  },
 };
 
 export default function BrandsPage() {
   const brandCategories = CATEGORIES.filter(
     (c) => c.section === 'brands' && c.parent === 'brands'
   );
+  const brandCount = brandCategories.length;
+  const bikeCount = PRODUCTS.filter((p: any) => p.isBike).length;
 
   const breadcrumbsSchema = {
     '@context': 'https://schema.org',
@@ -203,15 +198,15 @@ export default function BrandsPage() {
           </h1>
           <p className="text-xs sm:text-sm text-stone-300 leading-relaxed">
             Australian Electric Motor Co stocks and supports Australia’s premier collection of electric
-            dirt bikes across 15 manufacturers. Every bike is backed by local spare parts held in NSW,
+            dirt bikes across {brandCount} manufacturers. Every bike is backed by local spare parts held in NSW,
             comprehensive factory warranties, and national crated delivery.
           </p>
           <div className="flex flex-wrap items-center gap-2 pt-1 text-[11px] font-mono">
             <span className="bg-[#8C4A2F]/20 text-[#E89569] border border-[#8C4A2F]/40 px-2.5 py-0.5 rounded-full font-bold">
-              15 Authorised Brands
+              {brandCount} Authorised Brands
             </span>
             <span className="bg-amber-500/10 text-amber-300 border border-amber-500/20 px-2.5 py-0.5 rounded-full">
-              75 Australian-Spec Models
+              {bikeCount} Australian-Spec Models
             </span>
             <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2.5 py-0.5 rounded-full">
               Genuine Spare Parts Stocked
@@ -225,14 +220,14 @@ export default function BrandsPage() {
         <div className="flex items-center justify-between">
           <div>
             <h2 id="all-brands-heading" className="text-lg sm:text-xl font-bold uppercase text-white tracking-tight">
-              All 15 Authorised Showrooms
+              All {brandCount} Authorised Showrooms
             </h2>
             <p className="text-xs text-stone-400 font-mono mt-0.5">
               Select any brand to explore its full model lineup, specifications and genuine accessories
             </p>
           </div>
           <span className="text-xs font-mono text-[#C87D55] hidden sm:inline-block">
-            15 Brands
+            {brandCount} Brands
           </span>
         </div>
 

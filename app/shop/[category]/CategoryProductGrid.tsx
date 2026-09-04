@@ -4,6 +4,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { ProductCard } from '@/components/ProductCard';
 import { Pagination } from '@/components/Pagination';
+import { productMatchesQuery } from '@/lib/search';
 
 interface Product {
   slug: string;
@@ -29,40 +30,17 @@ interface Product {
   subcategoryName?: string;
 }
 
-const normalize = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
-
-/** Build a searchable text blob for a product. */
-const haystack = (p: Product) =>
-  normalize(
-    [
-      p.name,
-      p.brandName,
-      p.brand,
-      p.category,
-      p.subcategoryName,
-      p.shortDescription,
-      p.description,
-      ...(p.fitment || []),
-      ...(p.specs ? Object.values(p.specs) : []),
-    ]
-      .filter(Boolean)
-      .join(' '),
-  );
-
-/** Match if the query (or each of its words) is a substring of, or word-prefix within, the product text. Works from the first character. */
-const matchesSearch = (p: Product, rawQuery: string) => {
-  const q = normalize(rawQuery);
-  if (!q) return true;
-  const text = haystack(p);
-  if (text.includes(q)) return true;
-  const words = text.split(' ');
-  return q.split(' ').every((qw) => words.some((w) => w.startsWith(qw)));
-};
-
 interface SubCat {
   slug: string;
   name: string;
   group?: string;
+}
+
+interface CategoryNavItem {
+  slug: string;
+  name: string;
+  group?: string;
+  count: number;
 }
 
 interface CategoryProductGridProps {
@@ -71,6 +49,12 @@ interface CategoryProductGridProps {
   categoryName: string;
   /** Child categories exposed as a visible "Category" facet (hub / shop pages). */
   subcategories?: SubCat[];
+  /**
+   * Full site-wide category list (grouped, with global counts). When provided it
+   * renders as the persistent "Category" nav on every shop page — links, current
+   * one highlighted — instead of the page-local drill-down.
+   */
+  categoryNav?: CategoryNavItem[];
 }
 
 const PAGE_SIZE = 16;
@@ -83,6 +67,7 @@ export function CategoryProductGrid({
   categorySlug,
   categoryName,
   subcategories = [],
+  categoryNav = [],
 }: CategoryProductGridProps) {
   const isRidingGear = GEAR_SLUGS.includes(categorySlug);
 
@@ -155,7 +140,7 @@ export function CategoryProductGrid({
 
   // one predicate per dimension — used both for the final list and for dependent facet counts
   const preds = {
-    search: (p: Product) => matchesSearch(p, searchQuery),
+    search: (p: Product) => productMatchesQuery(p, searchQuery),
     sub: (p: Product) => selectedSub === 'all' || inSub(p, selectedSub),
     brand: (p: Product) => selectedBrand === 'all' || (p.brandName || p.brand) === selectedBrand,
     price: (p: Product) => {
@@ -305,7 +290,7 @@ export function CategoryProductGrid({
   const selectClass =
     'w-full rounded-lg border border-[#2B2F36] bg-[#121417] px-3 py-2 text-sm text-stone-200 transition-colors focus-visible:border-[#C87D55] focus-visible:outline-none';
 
-  // grouped subcategory list
+  // grouped subcategory list (page-local drill-down fallback)
   const groups = useMemo(() => {
     const g = new Map<string, SubCat[]>();
     subOptions.forEach((s) => {
@@ -315,6 +300,21 @@ export function CategoryProductGrid({
     });
     return [...g.entries()];
   }, [subOptions]);
+
+  // persistent site-wide category nav, grouped by department
+  const navGroups = useMemo(() => {
+    const g = new Map<string, CategoryNavItem[]>();
+    categoryNav.forEach((c) => {
+      const key = c.group || '';
+      if (!g.has(key)) g.set(key, []);
+      g.get(key)!.push(c);
+    });
+    return [...g.entries()];
+  }, [categoryNav]);
+  const totalNavCount = useMemo(
+    () => categoryNav.reduce((sum, c) => sum + c.count, 0),
+    [categoryNav],
+  );
 
   const OptionRow = ({
     active,
@@ -369,7 +369,7 @@ export function CategoryProductGrid({
 
   const FilterControls = (
     <div className="space-y-6">
-      {subOptions.length > 1 && (
+      {navGroups.length > 0 ? (
         <div>
           <span className={groupLabel}>Category</span>
           <div className="space-y-3">
@@ -377,9 +377,9 @@ export function CategoryProductGrid({
               href="/shop/"
               active={categorySlug === 'all'}
               label="All categories"
-              count={initialProducts.length}
+              count={totalNavCount}
             />
-            {groups.map(([groupName, items], gi) => (
+            {navGroups.map(([groupName, items], gi) => (
               <div key={groupName || gi} className="space-y-0.5">
                 {groupName && (
                   <p className="px-2.5 pb-0.5 pt-1 font-mono text-[10px] font-bold uppercase tracking-wider text-[#C87D55]">
@@ -392,13 +392,45 @@ export function CategoryProductGrid({
                     href={`/shop/${s.slug}/`}
                     active={categorySlug === s.slug}
                     label={s.name}
-                    count={subCount[s.slug]}
+                    count={s.count}
                   />
                 ))}
               </div>
             ))}
           </div>
         </div>
+      ) : (
+        subOptions.length > 1 && (
+          <div>
+            <span className={groupLabel}>Category</span>
+            <div className="space-y-3">
+              <CategoryLinkRow
+                href="/shop/"
+                active={categorySlug === 'all'}
+                label="All categories"
+                count={initialProducts.length}
+              />
+              {groups.map(([groupName, items], gi) => (
+                <div key={groupName || gi} className="space-y-0.5">
+                  {groupName && (
+                    <p className="px-2.5 pb-0.5 pt-1 font-mono text-[10px] font-bold uppercase tracking-wider text-[#C87D55]">
+                      {groupName}
+                    </p>
+                  )}
+                  {items.map((s) => (
+                    <CategoryLinkRow
+                      key={s.slug}
+                      href={`/shop/${s.slug}/`}
+                      active={categorySlug === s.slug}
+                      label={s.name}
+                      count={subCount[s.slug]}
+                    />
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+        )
       )}
 
       {brands.length > 1 && (

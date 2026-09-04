@@ -6,6 +6,7 @@ import { useSearchParams } from 'next/navigation';
 import { SmartImage } from '@/components/SmartImage';
 import { ProductCard } from '@/components/ProductCard';
 import { PRODUCTS, POSTS, SITE } from '@/config/site';
+import { productMatchesQuery, textMatchesQuery, buildHaystack } from '@/lib/search';
 
 function SearchContent() {
   const searchParams = useSearchParams();
@@ -18,26 +19,11 @@ function SearchContent() {
     setQuery(paramQ);
   }
 
-  const lowerQuery = query.toLowerCase().trim();
+  const matchingProducts = PRODUCTS.filter((p) => productMatchesQuery(p, query));
 
-  const matchingProducts = PRODUCTS.filter((p) => {
-    if (!lowerQuery) return true;
-    return (
-      p.name.toLowerCase().includes(lowerQuery) ||
-      p.description.toLowerCase().includes(lowerQuery) ||
-      p.category.toLowerCase().includes(lowerQuery) ||
-      (p.badge && p.badge.toLowerCase().includes(lowerQuery))
-    );
-  });
-
-  const matchingPosts = POSTS.filter((post) => {
-    if (!lowerQuery) return true;
-    return (
-      post.title.toLowerCase().includes(lowerQuery) ||
-      post.excerpt.toLowerCase().includes(lowerQuery) ||
-      post.category.toLowerCase().includes(lowerQuery)
-    );
-  });
+  const matchingPosts = POSTS.filter((post) =>
+    textMatchesQuery(buildHaystack([post.title, post.excerpt, post.category]), query),
+  );
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 space-y-10">
