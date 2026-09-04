@@ -30,14 +30,14 @@ export const metadata = {
     description:
       'Shop the ultimate electric dirt bike range. From high-torque 72V adult electric dirt bike models to youth mini-motos. Fast AU dispatch and local warranty.',
     url: `https://${SITE.domain}/`,
-    images: [{ url: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=1200&q=80' }],
+    images: [{ url: '/images/home/hero-1.webp' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Electric Dirt Bike Superstore Australia | Australian Electric Motor Co',
     description:
       'Shop the ultimate electric dirt bike range. From high-torque 72V adult electric dirt bike models to youth mini-motos. Fast AU dispatch and local warranty.',
-    images: ['https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=1200&q=80'],
+    images: ['/images/home/hero-1.webp'],
   },
   other: {
     'og:updated_time': new Date().toISOString(),
