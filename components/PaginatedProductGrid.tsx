@@ -34,8 +34,8 @@ export function PaginatedProductGrid({ products, pageSize = 16 }: PaginatedProdu
         </p>
       )}
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {items.map((product) => (
-          <ProductCard key={product.slug} product={product} />
+        {items.map((product, i) => (
+          <ProductCard key={product.slug} product={product} priority={i < 8} />
         ))}
       </div>
       <Pagination page={safePage} pageCount={pageCount} onChange={changePage} className="pt-4" />

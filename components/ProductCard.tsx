@@ -26,9 +26,11 @@ export interface ProductCardProps {
     [key: string]: any;
   };
   className?: string;
+  /** Load the image eagerly (use for the first row of a grid). */
+  priority?: boolean;
 }
 
-export function ProductCard({ product, className = '' }: ProductCardProps) {
+export function ProductCard({ product, className = '', priority = false }: ProductCardProps) {
   const router = useRouter();
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
@@ -122,6 +124,7 @@ export function ProductCard({ product, className = '' }: ProductCardProps) {
             alt={product.name}
             fill
             fit="contain"
+            priority={priority}
             className="p-5"
             sizes="(max-width: 640px) 90vw, (max-width: 1024px) 45vw, 22vw"
           />

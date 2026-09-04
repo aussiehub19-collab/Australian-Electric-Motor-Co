@@ -16,6 +16,7 @@ interface Product {
   description: string;
   badge?: string;
   featured?: boolean;
+  roadLegal?: boolean;
   images: string[];
   specs?: Record<string, any>;
   sizes?: string[];
@@ -25,15 +26,22 @@ interface Product {
   riderCategory?: string;
 }
 
+interface SubCat {
+  slug: string;
+  name: string;
+  group?: string;
+}
+
 interface CategoryProductGridProps {
   initialProducts: Product[];
   categorySlug: string;
   categoryName: string;
-  /** Child categories to expose as a "Category" drill-down filter (hub pages). */
-  subcategories?: { slug: string; name: string }[];
+  /** Child categories exposed as a visible "Category" facet (hub / shop pages). */
+  subcategories?: SubCat[];
 }
 
 const PAGE_SIZE = 16;
+const EAGER = 8;
 
 const GEAR_SLUGS = ['riding-gear', 'helmets', 'body-armour', 'body-armour-protection', 'gloves-goggles', 'boots'];
 
@@ -52,18 +60,24 @@ export function CategoryProductGrid({
   const [selectedSize, setSelectedSize] = useState('all');
   const [selectedSafety, setSelectedSafety] = useState('all');
   const [selectedPrice, setSelectedPrice] = useState('all');
+  const [selectedLegal, setSelectedLegal] = useState<'all' | 'legal' | 'offroad'>('all');
   const [sortBy, setSortBy] = useState<'default' | 'price-asc' | 'price-desc' | 'name'>('default');
   const [page, setPage] = useState(1);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const gridTop = useRef<HTMLDivElement>(null);
 
+  const inSub = (p: Product, slug: string) =>
+    p.category === slug || !!p.parentCategories?.includes(slug);
+
   const subOptions = useMemo(
-    () =>
-      subcategories.filter((s) =>
-        initialProducts.some((p) => p.category === s.slug || p.parentCategories?.includes(s.slug)),
-      ),
+    () => subcategories.filter((s) => initialProducts.some((p) => inSub(p, s.slug))),
     [subcategories, initialProducts],
   );
+  const subCount = useMemo(() => {
+    const m: Record<string, number> = {};
+    subOptions.forEach((s) => (m[s.slug] = initialProducts.filter((p) => inSub(p, s.slug)).length));
+    return m;
+  }, [subOptions, initialProducts]);
 
   const brands = useMemo(() => {
     const set = new Set<string>();
@@ -82,24 +96,34 @@ export function CategoryProductGrid({
 
   const priceBands = useMemo(() => {
     const max = Math.max(0, ...initialProducts.map((p) => p.price));
-    const bands: { id: string; label: string; test: (n: number) => boolean }[] = [];
-    if (max <= 500) {
-      bands.push(
-        { id: '0-100', label: 'Under $100', test: (n) => n < 100 },
-        { id: '100-250', label: '$100 – $250', test: (n) => n >= 100 && n < 250 },
-        { id: '250-500', label: '$250 – $500', test: (n) => n >= 250 && n < 500 },
-        { id: '500+', label: '$500+', test: (n) => n >= 500 },
-      );
-    } else {
-      bands.push(
-        { id: '0-500', label: 'Under $500', test: (n) => n < 500 },
-        { id: '500-2000', label: '$500 – $2,000', test: (n) => n >= 500 && n < 2000 },
-        { id: '2000-5000', label: '$2,000 – $5,000', test: (n) => n >= 2000 && n < 5000 },
-        { id: '5000-10000', label: '$5,000 – $10,000', test: (n) => n >= 5000 && n < 10000 },
-        { id: '10000+', label: '$10,000+', test: (n) => n >= 10000 },
-      );
-    }
-    return bands.filter((b) => initialProducts.some((p) => b.test(p.price)));
+    const raw =
+      max <= 600
+        ? [
+            { id: '0-50', label: 'Under $50', lo: 0, hi: 50 },
+            { id: '50-150', label: '$50 – $150', lo: 50, hi: 150 },
+            { id: '150-350', label: '$150 – $350', lo: 150, hi: 350 },
+            { id: '350+', label: '$350+', lo: 350, hi: Infinity },
+          ]
+        : [
+            { id: '0-500', label: 'Under $500', lo: 0, hi: 500 },
+            { id: '500-2000', label: '$500 – $2,000', lo: 500, hi: 2000 },
+            { id: '2000-5000', label: '$2,000 – $5,000', lo: 2000, hi: 5000 },
+            { id: '5000-10000', label: '$5,000 – $10,000', lo: 5000, hi: 10000 },
+            { id: '10000+', label: '$10,000+', lo: 10000, hi: Infinity },
+          ];
+    return raw
+      .map((b) => ({ ...b, count: initialProducts.filter((p) => p.price >= b.lo && p.price < b.hi).length }))
+      .filter((b) => b.count > 0);
+  }, [initialProducts]);
+
+  const hasRoadLegalMix = useMemo(() => {
+    let legal = false;
+    let off = false;
+    initialProducts.forEach((p) => {
+      if (p.roadLegal === true || /road[-\s]?legal/i.test(p.badge || '') || p.category.includes('road-legal')) legal = true;
+      else off = true;
+    });
+    return legal && off;
   }, [initialProducts]);
 
   const safetyOptions = [
@@ -109,7 +133,7 @@ export function CategoryProductGrid({
   ];
 
   const filtered = useMemo(() => {
-    const priceBand = priceBands.find((b) => b.id === selectedPrice);
+    const band = priceBands.find((b) => b.id === selectedPrice);
     const list = initialProducts.filter((p) => {
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase();
@@ -120,14 +144,18 @@ export function CategoryProductGrid({
         )
           return false;
       }
-      if (
-        selectedSub !== 'all' &&
-        p.category !== selectedSub &&
-        !p.parentCategories?.includes(selectedSub)
-      )
-        return false;
+      if (selectedSub !== 'all' && !inSub(p, selectedSub)) return false;
       if (selectedBrand !== 'all' && (p.brandName || p.brand) !== selectedBrand) return false;
-      if (priceBand && !priceBand.test(p.price)) return false;
+      if (band && !(p.price >= band.lo && p.price < band.hi)) return false;
+
+      if (selectedLegal !== 'all') {
+        const legal =
+          p.roadLegal === true ||
+          /road[-\s]?legal/i.test(p.badge || '') ||
+          p.category.includes('road-legal');
+        if (selectedLegal === 'legal' && !legal) return false;
+        if (selectedLegal === 'offroad' && legal) return false;
+      }
 
       if (selectedRider !== 'all') {
         const rider = (p.riderCategory || p.specs?.RiderCategory || '').toLowerCase();
@@ -140,8 +168,7 @@ export function CategoryProductGrid({
         if (selectedRider === 'kids-youth' && !youth) return false;
         if (selectedRider === 'adult' && youth) return false;
       }
-      if (selectedSize !== 'all' && !(p.sizesAvailable || p.sizes || []).includes(selectedSize))
-        return false;
+      if (selectedSize !== 'all' && !(p.sizesAvailable || p.sizes || []).includes(selectedSize)) return false;
 
       if (selectedSafety !== 'all') {
         const hay = [
@@ -175,6 +202,7 @@ export function CategoryProductGrid({
     selectedSub,
     selectedBrand,
     selectedPrice,
+    selectedLegal,
     selectedRider,
     selectedSize,
     selectedSafety,
@@ -186,6 +214,7 @@ export function CategoryProductGrid({
     (selectedSub !== 'all' ? 1 : 0) +
     (selectedBrand !== 'all' ? 1 : 0) +
     (selectedPrice !== 'all' ? 1 : 0) +
+    (selectedLegal !== 'all' ? 1 : 0) +
     (selectedRider !== 'all' ? 1 : 0) +
     (selectedSize !== 'all' ? 1 : 0) +
     (selectedSafety !== 'all' ? 1 : 0);
@@ -195,6 +224,7 @@ export function CategoryProductGrid({
     setSelectedSub('all');
     setSelectedBrand('all');
     setSelectedPrice('all');
+    setSelectedLegal('all');
     setSelectedRider('all');
     setSelectedSize('all');
     setSelectedSafety('all');
@@ -203,7 +233,7 @@ export function CategoryProductGrid({
 
   useEffect(() => {
     setPage(1);
-  }, [searchQuery, selectedSub, selectedBrand, selectedPrice, selectedRider, selectedSize, selectedSafety, sortBy]);
+  }, [searchQuery, selectedSub, selectedBrand, selectedPrice, selectedLegal, selectedRider, selectedSize, selectedSafety, sortBy]);
 
   const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const safePage = Math.min(page, pageCount);
@@ -216,22 +246,77 @@ export function CategoryProductGrid({
     gridTop.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
+  const groupLabel = 'mb-2 block font-mono text-[11px] font-semibold uppercase tracking-wider text-stone-400';
   const selectClass =
     'w-full rounded-lg border border-[#2B2F36] bg-[#121417] px-3 py-2 text-sm text-stone-200 transition-colors focus-visible:border-[#C87D55] focus-visible:outline-none';
-  const groupLabel = 'mb-1.5 block font-mono text-[11px] font-semibold uppercase tracking-wider text-stone-400';
 
-  /* -------- the filter controls, shared between the desktop rail and the mobile panel -------- */
+  // grouped subcategory list
+  const groups = useMemo(() => {
+    const g = new Map<string, SubCat[]>();
+    subOptions.forEach((s) => {
+      const key = s.group || '';
+      if (!g.has(key)) g.set(key, []);
+      g.get(key)!.push(s);
+    });
+    return [...g.entries()];
+  }, [subOptions]);
+
+  const OptionRow = ({
+    active,
+    onClick,
+    label,
+    count,
+  }: {
+    active: boolean;
+    onClick: () => void;
+    label: string;
+    count?: number;
+  }) => (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`flex w-full items-center justify-between gap-2 rounded-lg px-2.5 py-1.5 text-left text-[13px] transition-colors ${
+        active ? 'bg-[#8C4A2F] font-semibold text-white' : 'text-stone-300 hover:bg-[#20242A]'
+      }`}
+    >
+      <span className="truncate">{label}</span>
+      {typeof count === 'number' && (
+        <span className={`font-mono text-[11px] ${active ? 'text-white/80' : 'text-stone-500'}`}>{count}</span>
+      )}
+    </button>
+  );
+
   const FilterControls = (
-    <div className="space-y-5">
+    <div className="space-y-6">
       {subOptions.length > 1 && (
         <div>
-          <label htmlFor="f-sub" className={groupLabel}>Category</label>
-          <select id="f-sub" value={selectedSub} onChange={(e) => setSelectedSub(e.target.value)} className={selectClass}>
-            <option value="all">All categories</option>
-            {subOptions.map((s) => (
-              <option key={s.slug} value={s.slug}>{s.name}</option>
+          <span className={groupLabel}>Category</span>
+          <div className="space-y-3">
+            <OptionRow
+              active={selectedSub === 'all'}
+              onClick={() => setSelectedSub('all')}
+              label="All categories"
+              count={initialProducts.length}
+            />
+            {groups.map(([groupName, items], gi) => (
+              <div key={groupName || gi} className="space-y-0.5">
+                {groupName && (
+                  <p className="px-2.5 pb-0.5 pt-1 font-mono text-[10px] font-bold uppercase tracking-wider text-[#C87D55]">
+                    {groupName}
+                  </p>
+                )}
+                {items.map((s) => (
+                  <OptionRow
+                    key={s.slug}
+                    active={selectedSub === s.slug}
+                    onClick={() => setSelectedSub(s.slug)}
+                    label={s.name}
+                    count={subCount[s.slug]}
+                  />
+                ))}
+              </div>
             ))}
-          </select>
+          </div>
         </div>
       )}
 
@@ -247,15 +332,43 @@ export function CategoryProductGrid({
         </div>
       )}
 
+      {hasRoadLegalMix && (
+        <div>
+          <span className={groupLabel}>Road use</span>
+          <div className="flex gap-1.5">
+            {([['all', 'All'], ['legal', 'Road-legal'], ['offroad', 'Off-road']] as const).map(([id, label]) => (
+              <button
+                key={id}
+                type="button"
+                onClick={() => setSelectedLegal(id)}
+                className={`flex-1 rounded-lg px-2 py-2 text-xs font-mono transition-colors ${
+                  selectedLegal === id
+                    ? 'bg-[#8C4A2F] font-bold text-white'
+                    : 'border border-[#2B2F36] bg-[#121417] text-stone-400 hover:text-white'
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {priceBands.length > 1 && (
         <div>
-          <label htmlFor="f-price" className={groupLabel}>Price</label>
-          <select id="f-price" value={selectedPrice} onChange={(e) => setSelectedPrice(e.target.value)} className={selectClass}>
-            <option value="all">Any price</option>
+          <span className={groupLabel}>Price</span>
+          <div className="space-y-0.5">
+            <OptionRow active={selectedPrice === 'all'} onClick={() => setSelectedPrice('all')} label="Any price" />
             {priceBands.map((b) => (
-              <option key={b.id} value={b.id}>{b.label}</option>
+              <OptionRow
+                key={b.id}
+                active={selectedPrice === b.id}
+                onClick={() => setSelectedPrice(b.id)}
+                label={b.label}
+                count={b.count}
+              />
             ))}
-          </select>
+          </div>
         </div>
       )}
 
@@ -318,8 +431,7 @@ export function CategoryProductGrid({
   );
 
   return (
-    <div ref={gridTop} className="lg:grid lg:grid-cols-[240px_1fr] lg:gap-8">
-      {/* ---------------- Left rail (filters) ---------------- */}
+    <div ref={gridTop} className="lg:grid lg:grid-cols-[256px_1fr] lg:gap-8">
       <aside className="mb-6 lg:mb-0">
         <button
           type="button"
@@ -339,26 +451,24 @@ export function CategoryProductGrid({
         </button>
 
         <div
-          className={`${mobileFiltersOpen ? 'mt-3 block' : 'hidden'} rounded-2xl border border-[#2B2F36] bg-[#17191C] p-5 lg:sticky lg:top-24 lg:mt-0 lg:block`}
+          className={`${mobileFiltersOpen ? 'mt-3 block' : 'hidden'} rounded-2xl border border-[#2B2F36] bg-[#17191C] p-5 lg:sticky lg:top-24 lg:mt-0 lg:block lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto`}
         >
-          <h2 className="mb-4 hidden font-mono text-xs font-bold uppercase tracking-widest text-[#C87D55] lg:block">
-            Refine
-          </h2>
+          <div className="mb-4 hidden items-center justify-between lg:flex">
+            <h2 className="font-mono text-xs font-bold uppercase tracking-widest text-[#C87D55]">Refine</h2>
+            {activeCount > 0 && (
+              <button type="button" onClick={resetFilters} className="font-mono text-[11px] text-rose-400 underline hover:text-rose-300">
+                Reset
+              </button>
+            )}
+          </div>
           {FilterControls}
         </div>
       </aside>
 
-      {/* ---------------- Main column ---------------- */}
       <div className="space-y-6">
-        {/* Top bar — search + sort + count */}
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
           <div className="relative flex-1">
-            <svg
-              className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-500"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+            <svg className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
             <input
@@ -397,31 +507,24 @@ export function CategoryProductGrid({
         </div>
 
         <p className="font-mono text-xs text-stone-400">
-          {filtered.length === 0
-            ? 'No matches'
-            : `Showing ${rangeStart}–${rangeEnd} of ${filtered.length}`}
+          {filtered.length === 0 ? 'No matches' : `Showing ${rangeStart}–${rangeEnd} of ${filtered.length}`}
           {filtered.length !== initialProducts.length && ` · ${initialProducts.length} total`}
         </p>
 
-        {/* Grid */}
         {pageItems.length > 0 ? (
           <>
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
-              {pageItems.map((product) => (
-                <ProductCard key={product.slug} product={product} />
+              {pageItems.map((product, i) => (
+                <ProductCard key={product.slug} product={product} priority={i < EAGER} />
               ))}
             </div>
             <Pagination page={safePage} pageCount={pageCount} onChange={changePage} className="pt-4" />
           </>
         ) : (
           <div className="space-y-4 rounded-2xl border border-[#2B2F36] bg-[#17191C] p-10 text-center">
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#121417] text-xl text-amber-400">
-              🔍
-            </div>
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#121417] text-xl text-amber-400">🔍</div>
             <h3 className="text-lg font-bold uppercase text-white">Nothing matches those filters</h3>
-            <p className="mx-auto max-w-md text-xs text-stone-400">
-              Try a broader search, or clear a filter to widen the range.
-            </p>
+            <p className="mx-auto max-w-md text-xs text-stone-400">Try a broader search, or clear a filter to widen the range.</p>
             <button
               type="button"
               onClick={resetFilters}
