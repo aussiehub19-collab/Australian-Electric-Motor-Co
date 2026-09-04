@@ -14,7 +14,7 @@ export const metadata = {
   },
   openGraph: {
     type: 'website',
-    siteName: 'VoltMoto Australia',
+    siteName: 'Australian Electric Motor Co',
     title: 'Electric Dirt Bike Battery & Fast Charger Upgrades',
     description:
       'Upgrade your electric dirt bike with 72V high-capacity lithium packs and 240V AU-standard fast chargers for Surron, Talaria, and Stark VARG.',

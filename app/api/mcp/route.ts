@@ -244,7 +244,7 @@ export async function POST(req: NextRequest) {
                       paymentMethods: SHOP.paymentMethods,
                       ordering: 'human-assisted-whatsapp-or-form',
                       currency: SITE.currency,
-                      dispatch: 'Queensland Workshop Crate Freight',
+                      dispatch: 'NSW Workshop Crate Freight',
                       warranty: '2-Year Comprehensive Australian Warranty',
                     },
                     null,
@@ -279,7 +279,7 @@ export async function POST(req: NextRequest) {
                       requiresHumanCompletion: true,
                       whatsappOrderUrl: waUrl,
                       shopUrl: `https://${SITE.domain}/shop/`,
-                      note: 'Dirt & Co never captures payment via agent. Complete order directly with our sales team.',
+                      note: 'Australian Electric Motor Co never captures payment via agent. Complete order directly with our sales team.',
                     },
                     null,
                     2

@@ -31,8 +31,8 @@ export default function FinancePage() {
 
   const whatsappUrl = `https://wa.me/${CONTACT.whatsapp.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(
     financeMode === 'pay-in-4'
-      ? `G'day Dirt & Co! I want to order a bike valued at $${selectedBikePrice.toLocaleString()} AUD using the Pay in 4 plan (4x $${payIn4Instalment.toLocaleString()} AUD fortnightly payments). Can you assist with setup and crate delivery to my address?`
-      : `G'day Dirt & Co! I am inquiring about commercial / station asset finance for $${selectedBikePrice.toLocaleString()} AUD with a $${deposit.toLocaleString()} deposit over ${termMonths} months (approx. $${weeklyPayment}/week). Can you connect me with your Australian finance broker?`
+      ? `G'day Australian Electric Motor Co! I want to order a bike valued at $${selectedBikePrice.toLocaleString()} AUD using the Pay in 4 plan (4x $${payIn4Instalment.toLocaleString()} AUD fortnightly payments). Can you assist with setup and crate delivery to my address?`
+      : `G'day Australian Electric Motor Co! I am inquiring about commercial / station asset finance for $${selectedBikePrice.toLocaleString()} AUD with a $${deposit.toLocaleString()} deposit over ${termMonths} months (approx. $${weeklyPayment}/week). Can you connect me with your Australian finance broker?`
   )}`;
 
   return (

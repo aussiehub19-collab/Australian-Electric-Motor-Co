@@ -6,7 +6,7 @@ import { ProductCard } from '@/components/ProductCard';
 import { CATEGORIES, PRODUCTS, SITE } from '@/config/site';
 
 export const metadata = {
-  title: 'Electric Dirt Bike Parts, 72V Batteries & Upgrades | VoltMoto',
+  title: 'Electric Dirt Bike Parts, 72V Batteries & Upgrades | Australian Electric Motor Co',
   description:
     'High-performance 72V Molicel batteries, programmable controllers, FastAce suspension, and Australian 240V fast chargers for electric dirt bikes.',
   alternates: {
@@ -14,8 +14,8 @@ export const metadata = {
   },
   openGraph: {
     type: 'website',
-    siteName: 'VoltMoto Australia',
-    title: 'Electric Dirt Bike Parts, 72V Batteries & Upgrades | VoltMoto',
+    siteName: 'Australian Electric Motor Co',
+    title: 'Electric Dirt Bike Parts, 72V Batteries & Upgrades | Australian Electric Motor Co',
     description:
       'High-performance 72V Molicel batteries, programmable controllers, FastAce suspension, and Australian 240V fast chargers for electric dirt bikes.',
     url: `https://${SITE.domain}/parts-upgrades/`,
@@ -23,7 +23,7 @@ export const metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Electric Dirt Bike Parts, 72V Batteries & Upgrades | VoltMoto',
+    title: 'Electric Dirt Bike Parts, 72V Batteries & Upgrades | Australian Electric Motor Co',
     description:
       'High-performance 72V Molicel batteries, programmable controllers, FastAce suspension, and Australian 240V fast chargers for electric dirt bikes.',
     images: ['https://images.unsplash.com/photo-1508873696983-2df5293cb32b?auto=format&fit=crop&w=1200&q=80'],
@@ -90,7 +90,7 @@ export default function PartsUpgradesRootPage() {
             Upgrade your e-moto with race-grade 72V Molicel lithium powerpacks, BAC/Torp programmable controllers, reinforced swingarms, oversized brake discs, and Australian 240V high-amp fast chargers.
           </p>
           <div className="pt-2 text-xs font-mono text-emerald-400">
-            &bull; {allPartsProducts.length} Upgrades In Stock in Queensland &bull; Express Dispatch
+            &bull; {allPartsProducts.length} Upgrades In Stock in NSW &bull; Express Dispatch
           </div>
         </div>
       </div>

@@ -41,7 +41,7 @@ export default function ContactPage() {
     } catch (err: any) {
       console.error('Contact submission error:', err);
       setErrorMessage(
-        'Unable to send message automatically. Please contact our Sunshine Coast workshop directly via WhatsApp or email below.'
+        'Unable to send message automatically. Please contact our NSW workshop directly via WhatsApp or email below.'
       );
       setLoading(false);
     }

@@ -5,6 +5,7 @@ import { JsonLd } from '@/components/JsonLd';
 import { ProductCard } from '@/components/ProductCard';
 import { ReviewSlider } from '@/components/ReviewSlider';
 import { HeroSlider } from '@/components/HeroSlider';
+import { FaqAccordion } from '@/components/FaqAccordion';
 import {
   SITE,
   BRAND,
@@ -460,19 +461,8 @@ export default function HomePage() {
           intro="Direct, factual answers on battery longevity, top speeds, Australian off-road compliance and logistics."
         />
 
-        <div className="mx-auto max-w-3xl space-y-4">
-          {FAQ.slice(0, 5).map((item, index) => (
-            <div
-              key={index}
-              className="space-y-2 rounded-2xl border border-[#2B2F36] bg-[#17191C] p-6 transition-colors hover:border-[#8C4A2F]/60"
-            >
-              <h3 className="flex items-start gap-3 text-base font-bold text-stone-100">
-                <span className="font-mono text-[#C87D55]">Q.</span>
-                <span>{item.question}</span>
-              </h3>
-              <p className="pl-7 text-sm leading-relaxed text-stone-300">{item.answer}</p>
-            </div>
-          ))}
+        <div className="mx-auto max-w-3xl">
+          <FaqAccordion items={FAQ.slice(0, 5)} />
         </div>
 
         <CtaLink href="/faq/">Read All Rider &amp; Logistics FAQs</CtaLink>

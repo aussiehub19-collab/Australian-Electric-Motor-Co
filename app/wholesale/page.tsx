@@ -109,7 +109,7 @@ export default function WholesalePage() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <input type="hidden" name="access_key" value={FORMS.web3formsKey || 'pending'} />
-            <input type="hidden" name="subject" value="Commercial / Wholesale Fleet Inquiry — Dirt & Co" />
+            <input type="hidden" name="subject" value="Commercial / Wholesale Fleet Inquiry — Australian Electric Motor Co" />
             <input type="hidden" name="from_name" value={SITE.name} />
             <input type="checkbox" name="botcheck" className="hidden" style={{ display: 'none' }} />
 
@@ -222,7 +222,7 @@ export default function WholesalePage() {
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-amber-400 font-bold font-mono">✓</span>
-                <span><strong>Priority Spare Parts:</strong> Dedicated Sunshine Coast inventory reserved exclusively for commercial fleets.</span>
+                <span><strong>Priority Spare Parts:</strong> Dedicated NSW inventory reserved exclusively for commercial fleets.</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-amber-400 font-bold font-mono">✓</span>

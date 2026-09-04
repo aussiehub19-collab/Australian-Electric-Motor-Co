@@ -1,11 +1,12 @@
 import React from 'react';
 import Link from 'next/link';
 import { JsonLd } from '@/components/JsonLd';
+import { FaqAccordion } from '@/components/FaqAccordion';
 import { FAQ, CONTACT, SITE } from '@/config/site';
 
 export const metadata = {
-  title: 'Electric Dirt Bike FAQ | Range, Charging & Aussie Delivery | Dirt & Co',
-  description: 'Frequently asked questions regarding Dirt & Co electric dirt bikes. Learn about real-world outback range, top speeds, lithium charging times, and warranty.',
+  title: 'Electric Dirt Bike FAQ | Range, Charging & Aussie Delivery | AEMC',
+  description: 'Frequently asked questions about Australian Electric Motor Co electric dirt bikes — real-world outback range, top speeds, lithium charging times and warranty.',
   alternates: {
     canonical: `https://${SITE.domain}/faq/`,
   },
@@ -72,23 +73,8 @@ export default function FAQPage() {
         </p>
       </div>
 
-      {/* FAQ Accordion / Direct Answer Cards */}
-      <div className="space-y-4">
-        {FAQ.map((item, index) => (
-          <div
-            key={index}
-            className="bg-[#17191C] border border-[#2B2F36] rounded-2xl p-6 space-y-2 hover:border-[#8C4A2F] transition shadow-sm"
-          >
-            <h2 className="text-base sm:text-lg font-bold text-white flex items-start gap-3">
-              <span className="text-[#C87D55] font-mono">Q.</span>
-              <span>{item.question}</span>
-            </h2>
-            <p className="text-sm text-stone-300 pl-7 leading-relaxed">
-              {item.answer}
-            </p>
-          </div>
-        ))}
-      </div>
+      {/* Collapsible FAQ — answers reveal on click */}
+      <FaqAccordion items={FAQ} />
 
       {/* Still have questions CTA */}
       <div className="bg-[#141619] border border-[#2B2F36] rounded-3xl p-8 sm:p-10 text-center space-y-4">
@@ -96,7 +82,7 @@ export default function FAQPage() {
           Still Have Technical Questions?
         </h3>
         <p className="text-xs sm:text-sm text-stone-400 max-w-lg mx-auto leading-relaxed">
-          Our Sunshine Coast technicians are available Monday through Saturday to discuss suspension tuning, battery upgrades, or booking a private test ride.
+          Our NSW technicians are available Monday through Saturday to discuss suspension tuning, battery upgrades, or booking a private test ride.
         </p>
         <div className="pt-2 flex flex-wrap justify-center gap-4">
           <a

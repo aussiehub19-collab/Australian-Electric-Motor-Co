@@ -234,7 +234,7 @@ export function Nav() {
               Bush Tech
             </Link>
 
-            {/* About Dirt & Co */}
+            {/* About Australian Electric Motor Co */}
             <Link
               href="/about/"
               className={`text-sm font-semibold tracking-wide transition ${

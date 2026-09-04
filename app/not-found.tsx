@@ -3,8 +3,8 @@ import Link from 'next/link';
 import { SITE } from '@/config/site';
 
 export const metadata = {
-  title: '404 - Trail Not Found | Dirt & Co',
-  description: 'The requested page or electric bike model could not be found on Dirt & Co.',
+  title: '404 - Trail Not Found | Australian Electric Motor Co',
+  description: 'The requested page or electric bike model could not be found on Australian Electric Motor Co.',
   robots: {
     index: false,
     follow: true,

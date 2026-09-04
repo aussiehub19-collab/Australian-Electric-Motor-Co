@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: PostPageProps) {
   if (!post) return { title: 'Post Not Found' };
 
   return {
-    title: `${post.title} | Dirt & Co Trail Tech`,
+    title: `${post.title} | Australian Electric Motor Co Trail Tech`,
     description: `${post.excerpt.slice(0, 150)}...`,
     alternates: {
       canonical: `https://${SITE.domain}/blog/${post.slug}/`,

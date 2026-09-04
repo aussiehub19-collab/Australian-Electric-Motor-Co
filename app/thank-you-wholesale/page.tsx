@@ -3,8 +3,8 @@ import Link from 'next/link';
 import { SITE } from '@/config/site';
 
 export const metadata = {
-  title: 'Wholesale Application Received | Dirt & Co',
-  description: 'Thank you for your commercial fleet application with Dirt & Co.',
+  title: 'Wholesale Application Received | Australian Electric Motor Co',
+  description: 'Thank you for your commercial fleet application with Australian Electric Motor Co.',
   robots: {
     index: false,
     follow: true,

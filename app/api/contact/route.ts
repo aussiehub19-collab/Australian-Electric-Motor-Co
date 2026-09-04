@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
     // Default Web3Forms proxy / pending acknowledgement
     return NextResponse.json({
       success: true,
-      message: 'Inquiry acknowledged. Forwarded to Dirt & Co Queensland workshop.',
+      message: 'Inquiry acknowledged. Forwarded to Australian Electric Motor Co NSW workshop.',
       recipient: CONTACT.email,
     });
   } catch (error: any) {

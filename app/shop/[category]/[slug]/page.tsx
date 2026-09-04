@@ -26,13 +26,13 @@ export async function generateMetadata({ params }: ProductPageProps) {
   if (!product) return { title: 'Product Not Found' };
 
   return {
-    title: `${product.name} | Electric Dirt Bike Australia | Dirt & Co`,
+    title: `${product.name} | Electric Dirt Bike Australia | Australian Electric Motor Co`,
     description: `${product.shortDescription.slice(0, 150)}...`,
     alternates: {
       canonical: `https://${SITE.domain}/shop/${product.category}/${product.slug}/`,
     },
     openGraph: {
-      title: `${product.name} | Dirt & Co Electric Dirt Bike`,
+      title: `${product.name} | Australian Electric Motor Co Electric Dirt Bike`,
       description: product.shortDescription,
       images: [{ url: product.images[0] }],
     },
@@ -60,7 +60,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
 
   // Pre-fill WhatsApp message
   const whatsappUrl = `https://wa.me/${CONTACT.whatsapp.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(
-    `G'day Dirt & Co team! I'm inquiring about the ${product.name} ($${product.price.toLocaleString()} AUD). Could you confirm current availability, Pay in 4 terms, or test rides at your Sunshine Coast workshop?`
+    `G'day Australian Electric Motor Co team! I'm inquiring about the ${product.name} ($${product.price.toLocaleString()} AUD). Could you confirm current availability, Pay in 4 terms, or test rides at your NSW workshop?`
   )}`;
 
   // Product Schema
@@ -145,14 +145,14 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
         {/* Left: Product Media Gallery */}
         <div className="space-y-4">
-          <div className="relative aspect-[4/3] w-full rounded-2xl overflow-hidden bg-white border border-[#2B2F36]">
+          <div className="relative aspect-square w-full rounded-2xl overflow-hidden bg-white border border-[#2B2F36]">
             <SmartImage
               src={product.images[0]}
               alt={`${product.name} electric dirt bike`}
-              aspectRatio="4/3"
               priority={true}
+              fill
               fit="contain"
-              className="h-full w-full p-6"
+              className="p-6"
               sizes="(max-width: 1024px) 100vw, 45vw"
             />
             {product.badge && (
@@ -168,14 +168,14 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
               {product.images.map((img, idx) => (
                 <div
                   key={idx}
-                  className="aspect-[4/3] rounded-lg overflow-hidden border border-[#2B2F36] bg-white cursor-pointer hover:border-amber-500 transition"
+                  className="relative aspect-square rounded-lg overflow-hidden border border-[#2B2F36] bg-white cursor-pointer hover:border-amber-500 transition"
                 >
                   <SmartImage
                     src={img}
                     alt={`${product.name} view ${idx + 1}`}
-                    aspectRatio="4/3"
+                    fill
                     fit="contain"
-                    className="h-full w-full p-2"
+                    className="p-2"
                     sizes="120px"
                   />
                 </div>
@@ -344,13 +344,13 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
                 href={`/shop/${item.category}/${item.slug}/`}
                 className="bg-[#17191C] border border-[#2B2F36] rounded-xl overflow-hidden hover:border-[#8C4A2F] transition p-4 space-y-3 group"
               >
-                <div className="aspect-[4/3] rounded-lg overflow-hidden bg-white">
+                <div className="relative aspect-square rounded-lg overflow-hidden bg-white">
                   <SmartImage
                     src={item.images[0]}
                     alt={item.name}
-                    aspectRatio="4/3"
+                    fill
                     fit="contain"
-                    className="h-full w-full p-3"
+                    className="p-3"
                     sizes="(max-width: 640px) 45vw, 22vw"
                   />
                 </div>

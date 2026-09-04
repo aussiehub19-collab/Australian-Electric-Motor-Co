@@ -49,15 +49,8 @@ function BikeCard({
   const discounted = discount ? Math.round(bike.price * (1 - discount / 100)) : bike.price;
   return (
     <div className="space-y-3 text-center">
-      <div className="relative mx-auto aspect-[4/3] w-full max-w-[220px] overflow-hidden rounded-xl bg-white">
-        <SmartImage
-          src={bike.image}
-          alt={bike.name}
-          aspectRatio="4/3"
-          fit="contain"
-          className="h-full w-full p-3"
-          sizes="220px"
-        />
+      <div className="relative mx-auto aspect-square w-full max-w-[220px] overflow-hidden rounded-xl bg-white">
+        <SmartImage src={bike.image} alt={bike.name} fill fit="contain" className="p-3" sizes="220px" />
       </div>
       {bike.brandName && (
         <div className="font-mono text-[11px] font-bold uppercase tracking-wider text-[#C87D55]">

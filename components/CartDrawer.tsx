@@ -230,17 +230,8 @@ export function CartDrawer({
                   key={item.slug}
                   className="flex gap-3.5 p-3 bg-[#1D2024] border border-[#2B2F36] rounded-xl items-center group"
                 >
-                  <div className="w-20 h-16 flex-shrink-0 bg-white rounded-lg overflow-hidden border border-stone-800">
-                    <SmartImage
-                      src={item.image}
-                      alt={item.name}
-                      width={80}
-                      height={60}
-                      aspectRatio="4/3"
-                      fit="contain"
-                      className="h-full w-full p-1"
-                      sizes="80px"
-                    />
+                  <div className="relative w-20 h-16 flex-shrink-0 bg-white rounded-lg overflow-hidden border border-stone-800">
+                    <SmartImage src={item.image} alt={item.name} fill fit="contain" className="p-1" sizes="80px" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <h3 className="text-sm font-semibold text-stone-100 truncate">{item.name}</h3>

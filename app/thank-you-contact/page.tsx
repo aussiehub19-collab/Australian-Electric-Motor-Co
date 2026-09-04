@@ -3,8 +3,8 @@ import Link from 'next/link';
 import { SITE } from '@/config/site';
 
 export const metadata = {
-  title: 'Thank You | Dirt & Co',
-  description: 'Thank you for contacting Dirt & Co.',
+  title: 'Thank You | Australian Electric Motor Co',
+  description: 'Thank you for contacting Australian Electric Motor Co.',
   robots: {
     index: false,
     follow: true,
@@ -27,7 +27,7 @@ export default function ThankYouContactPage() {
         Thank You For Reaching Out
       </h1>
       <p className="text-sm text-stone-300 leading-relaxed">
-        Our Sunshine Coast team has received your inquiry. One of our off-road technicians will review your request and be in touch within 1 business day.
+        Our NSW team has received your inquiry. One of our off-road technicians will review your request and be in touch within 1 business day.
       </p>
       <div className="pt-4 flex justify-center gap-4">
         <Link

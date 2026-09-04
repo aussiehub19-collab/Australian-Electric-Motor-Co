@@ -125,7 +125,7 @@ export default function ElectricDirtBikesPage() {
           </h1>
 
           <p className="text-base sm:text-lg text-stone-300 leading-relaxed">
-            Explore Australia&apos;s most comprehensive electric dirt bike inventory. Compare high-torque 60V, 72V, and 360V machines from premier manufacturers like Stark VARG, Surron, Talaria, and E-Ride Pro with transparent AUD pricing, local Queensland warranty, and flexible Pay in 4 financing.
+            Explore Australia&apos;s most comprehensive electric dirt bike inventory. Compare high-torque 60V, 72V, and 360V machines from premier manufacturers like Stark VARG, Surron, Talaria, and E-Ride Pro with transparent AUD pricing, local NSW warranty, and flexible Pay in 4 financing.
           </p>
 
           {/* Quick Category Anchors */}
