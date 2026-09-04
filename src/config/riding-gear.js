@@ -518,10 +518,7 @@ export const RIDING_GEAR_PRODUCTS = [
     riderCategory: 'Adult',
     sizesAvailable: ['Adult XS', 'Adult S', 'Adult M', 'Adult L', 'Adult XL', 'Adult 2XL'],
     fitmentSize: 'Adult (US 7 to US 14)',
-    images: [
-      'https://images.unsplash.com/photo-1508873696983-2df5293cb32b?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=1200&q=80',
-    ],
+    images: ['/images/products/alpinestars-tech-7-enduro-boots.webp'],
     shortDescription: 'Specially engineered compound sole with deep lugs for trail grip, dual biomechanical hinge, and TPU shin plate.',
     description: 'The Alpinestars Tech 7 Enduro Boot features a purpose-engineered vulcanized dual-compound sole with aggressive lugs for superior grip when pushing your electric dirt bike through mud, steep creek crossings, and rocky outcrops. The biomechanical ankle pivot system delivers progressive flexion control while shielding the joint from torsional twisting.',
     specs: {

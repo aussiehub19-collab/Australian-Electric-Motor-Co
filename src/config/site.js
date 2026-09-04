@@ -762,10 +762,7 @@ export const PRODUCTS = [
     description: 'The easiest way to unlock massive power from Surron, Talaria, and custom e-motos. Direct plug-and-play installation with no cutting of wires. Manage power profiles, throttle ramps, and thermal limits live from your smartphone via Bluetooth.',
     badge: 'Plug & Play',
     featured: false,
-    images: [
-      'https://images.unsplash.com/photo-1508873696983-2df5293cb32b?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=1200&q=80',
-    ],
+    images: ['/images/products/torp-tc1000-aftermarket-controller.webp'],
     specs: {
       PeakPower: 'Up to 32,000 Watts (32 kW)',
       PhaseCurrent: 'Up to 1000A Phase Current',
@@ -787,10 +784,7 @@ export const PRODUCTS = [
     description: 'Transform the handling of your electric dirt bike. Factory tuned with heavy-gauge internal springs and re-valved hydraulic damping to eliminate bottoming out on harsh Australian outback trail landings.',
     badge: 'Heavy Spring',
     featured: false,
-    images: [
-      'https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1508873696983-2df5293cb32b?auto=format&fit=crop&w=1200&q=80',
-    ],
+    images: ['/images/products/fastace-inverted-forks-48mm.webp'],
     specs: {
       Travel: '270 mm Full Stroke',
       Stanchions: '48mm Hard-Anodised Gold Aluminium',
@@ -811,10 +805,7 @@ export const PRODUCTS = [
     description: 'The definitive brake upgrade for heavyweight high-torque electric dirt bikes. Delivers maximum bite, heat dissipation, and zero lever fade down steep rocky hill descents.',
     badge: 'Quad Piston',
     featured: false,
-    images: [
-      'https://images.unsplash.com/photo-1508873696983-2df5293cb32b?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=1200&q=80',
-    ],
+    images: ['/images/products/magura-mt7-pro-quad-piston-brake-set.webp'],
     specs: {
       Calipers: 'Forged 4-Piston Monobloc Front & Rear',
       Levers: '1-Finger HC Carbon Levers with Reach Adjust',
@@ -835,10 +826,7 @@ export const PRODUCTS = [
     description: 'Upgrade your e-dirt bike from lightweight bicycle-spec wheels to true motocross-grade 21" front and 18" rear rims. Rolls effortlessly over rocky ledges, fallen gum trees, and deep sandy ruts with immense puncture resistance.',
     badge: 'Full MX Size',
     featured: false,
-    images: [
-      'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?auto=format&fit=crop&w=1200&q=80',
-    ],
+    images: ['/images/products/sm-pro-21-18-wheel-set-dunlop-tyres.webp'],
     specs: {
       FrontWheel: '21" x 1.60" SM Pro 7050 Alloy Rim with 10-Gauge Stainless Spokes',
       RearWheel: '18" x 2.15" SM Pro 7050 Alloy Rim with Rim Lock',

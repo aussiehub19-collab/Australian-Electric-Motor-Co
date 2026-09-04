@@ -362,10 +362,7 @@ export const ACCESSORIES_PRODUCTS = [
     badge: 'Swiss Pro Formula',
     featured: false,
     isAccessory: true,
-    images: [
-      'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?auto=format&fit=crop&w=1200&q=80',
-    ],
+    images: ['/images/products/motorex-off-road-chain-lube-cleaner-combo.webp'],
     shortDescription: '500ml Motorex Chain Clean degreaser + 500ml Motorex Off-Road PTFE Chain Lube, O-ring & X-ring safe.',
     description: 'Handpicked by factory race teams worldwide. Motorex Chain Clean removes caked sand, grease, and chain wax in seconds without drying out internal O-rings or X-rings. Motorex Chain Lube Off-Road features high-pressure micro-synthetic PTFE additives that adhere stubbornly to rollers and sprockets even at top motor RPM, resisting water spray and Australian bull-dust.',
     specs: {

@@ -652,10 +652,7 @@ export const CHARGERS_PRODUCTS = [
     ],
     chargeRate: '3.3 kW (Up to 16A)',
     voltage: '360V System',
-    images: [
-      'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1508873696983-2df5293cb32b?auto=format&fit=crop&w=1200&q=80',
-    ],
+    images: ['/images/products/stark-varg-stand-integrated-fast-charger-3-3kw.webp'],
     shortDescription: 'Built directly into a heavy-duty aluminium bike stand with 240V AS/NZS 3112 AU wall plug, charging in ~1.5 hours.',
     description: 'The iconic Stark VARG paddock stand charger integrates a 3.3 kW high-frequency inverter directly into a CNC welded aluminium pit stand. Simply rest the VARG on the stand and plug the magnetic high-voltage coupler into the bike’s skid plate. Recharges the 6.5 kWh pack in approximately 90 minutes from standard Australian 240V mains.',
     specs: {
@@ -692,10 +689,7 @@ export const CHARGERS_PRODUCTS = [
     ],
     chargeRate: '3.3 kW',
     voltage: '360V System',
-    images: [
-      'https://images.unsplash.com/photo-1508873696983-2df5293cb32b?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=1200&q=80',
-    ],
+    images: ['/images/products/stark-varg-portable-backpack-fast-charger-3-3kw.webp'],
     shortDescription: 'Ultra-compact (25x15x7cm, 2.2kg) backpack trackside charger supporting Type 2 EV car charger adapters.',
     description: 'Designed for track days and remote trailheads where the stationary bike stand charger is impractical to transport. Weighing only 2.2 kg, this compact 3.3 kW unit easily fits inside a rider’s backpack or ute tub. Includes an Australian 240V AS/NZS 3112 plug and is compatible with public Type-2 EV charging station adapters.',
     specs: {
@@ -838,10 +832,7 @@ export const CHARGERS_PRODUCTS = [
     ],
     output: '67.2V 10A',
     voltage: '60V System',
-    images: [
-      'https://images.unsplash.com/photo-1508873696983-2df5293cb32b?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=1200&q=80',
-    ],
+    images: ['/images/products/talaria-60v-10a-oem-smart-charger.webp'],
     shortDescription: 'Reverse polarity protection, over-current cutoff, OEM Talaria charge connector, and AU plug.',
     description: 'Original factory 10A smart charger for Talaria electric dirt bikes. Features multi-stage constant current / constant voltage charging profiles to maximize battery cell longevity. Pre-fitted with an Australian AS/NZS 3112 3-pin plug.',
     specs: {
@@ -874,10 +865,7 @@ export const CHARGERS_PRODUCTS = [
     ],
     output: '84V 12A',
     voltage: '72V System',
-    images: [
-      'https://images.unsplash.com/photo-1508873696983-2df5293cb32b?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?auto=format&fit=crop&w=1200&q=80',
-    ],
+    images: ['/images/products/talaria-sting-pro-mx5-72v-oem-fast-charger.webp'],
     shortDescription: 'Smart diagnostic LED screen, high-flow fan cooling, genuine MX5 plug, and 240V AU wall cord.',
     description: 'Factory-engineered rapid charger designed for the 72V system of the Talaria Sting Pro MX5. Pumping out 12 amps at 84V peak, this charger takes the 40Ah pack from empty to 80% in approximately 2 hours. Includes status LED diagnostics and Australian AS/NZS 3112 wall cord.',
     specs: {
@@ -947,10 +935,7 @@ export const CHARGERS_PRODUCTS = [
     ],
     output: '60V–84V Variable (Up to 20A)',
     voltage: '60V & 72V Multi-Voltage',
-    images: [
-      'https://images.unsplash.com/photo-1508873696983-2df5293cb32b?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?auto=format&fit=crop&w=1200&q=80',
-    ],
+    images: ['/images/products/chibatterysystems-chicharger-pro-variable-smart-charger.webp'],
     shortDescription: '80%/100% partial charge toggle prolonging battery lifespan by 300%, digital touch readout.',
     description: 'The smartest aftermarket charger available. Features an 80% / 100% charge toggle: stopping at 80% charge significantly reduces lithium dendrite formation and prolongs total battery cycle life by up to 3x. Built inside a robust CNC aluminium housing with a touch display and 240V AU plug.',
     specs: {
@@ -1059,10 +1044,7 @@ export const CHARGERS_PRODUCTS = [
     ],
     output: 'Dual 20V Simultaneous Charging',
     voltage: '20V System',
-    images: [
-      'https://images.unsplash.com/photo-1547038577-da80abbc4f19?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1508873696983-2df5293cb32b?auto=format&fit=crop&w=1200&q=80',
-    ],
+    images: ['/images/products/stacyc-20v-dual-bay-rapid-charging-station.webp'],
     shortDescription: 'Recharges two 5.0Ah batteries concurrently in 45 minutes with thermal sensor protection.',
     description: 'The ultimate charging dock for active moto families. Simultaneously charges two STACYC 20V 5.0Ah batteries in approximately 45 minutes. Dual independent LED progress meters let you monitor charge states at a glance. Pre-wired with an Australian 240V AS/NZS 3112 wall cord.',
     specs: {
