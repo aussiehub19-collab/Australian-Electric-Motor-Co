@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: BrandPageProps): Promise<Meta
   if (!brand) return { title: 'Brand Not Found' };
 
   return {
-    title: `${brand.name} Electric Dirt Bikes Australia | Models, Specs & Parts | AEMC`,
+    title: `${brand.name} Electric Dirt Bikes | AEMC`,
     description: `Shop genuine ${brand.name} electric dirt bikes in Australia. Backed by the Australian Electric Motor Co factory warranty, NSW spare parts inventory, and national crated delivery.`,
     alternates: {
       canonical: `https://${SITE.domain}/brands/${brand.slug}/`,
