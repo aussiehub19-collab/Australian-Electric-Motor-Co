@@ -73,10 +73,7 @@ export const BATTERIES_PRODUCTS = [
     ],
     voltage: '360V Nominal',
     capacity: '7.2 kWh',
-    images: [
-      'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1508873696983-2df5293cb32b?auto=format&fit=crop&w=1200&q=80',
-    ],
+    images: ['/images/products/stark-varg-7-2kwh-extended-range-battery-pack.webp'],
     shortDescription: '100S4P high energy density 21700 cell pack providing up to 20% additional trail endurance for hard-enduro riding.',
     description: 'Engineered for extreme Australian enduro riding and long-distance mountain missions. The 7.2 kWh Extended Range battery utilizes advanced 21700 lithium cells configured in 100S4P, extending your saddle time by up to 20% without altering the bike’s perfect 50/50 balance. Comes pre-flashed with upgraded telemetry BMS firmware.',
     specs: {
