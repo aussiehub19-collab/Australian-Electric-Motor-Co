@@ -11,8 +11,49 @@ export interface SubcategoryCard {
 }
 
 /** A tidy grid of category tiles for hub pages (Parts, Accessories, Riding Gear). */
-export function SubcategoryCards({ items }: { items: SubcategoryCard[] }) {
+export function SubcategoryCards({
+  items,
+  variant = 'default',
+}: {
+  items: SubcategoryCard[];
+  variant?: 'default' | 'compact';
+}) {
   if (!items.length) return null;
+
+  // Compact: filter-sized tiles — a thumbnail, name and count, no blurb or CTA.
+  if (variant === 'compact') {
+    return (
+      <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+        {items.map((c) => (
+          <Link
+            key={c.slug}
+            href={`/shop/${c.slug}/`}
+            className="group flex items-center gap-3 rounded-xl border border-[#2B2F36] bg-[#17191C] p-2.5 transition-all hover:border-[#8C4A2F] hover:bg-[#1D2024]"
+          >
+            <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-lg bg-[#121417]">
+              {c.image ? (
+                <SmartImage src={c.image} alt="" fill fit="cover" className="" sizes="44px" />
+              ) : (
+                <div className="flex h-full w-full items-center justify-center text-lg">⚙️</div>
+              )}
+            </div>
+            <div className="min-w-0 flex-1">
+              <h3 className="truncate text-[13px] font-bold leading-tight text-white transition-colors group-hover:text-[#C87D55]">
+                {c.name}
+              </h3>
+              <span className="font-mono text-[11px] text-stone-400">
+                {c.count} {c.count === 1 ? 'item' : 'items'}
+              </span>
+            </div>
+            <span className="shrink-0 text-stone-500 transition-transform group-hover:translate-x-0.5 group-hover:text-[#C87D55]">
+              &rarr;
+            </span>
+          </Link>
+        ))}
+      </div>
+    );
+  }
+
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {items.map((c) => (

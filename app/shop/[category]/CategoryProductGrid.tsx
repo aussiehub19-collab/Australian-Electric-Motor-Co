@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import Link from 'next/link';
 import { ProductCard } from '@/components/ProductCard';
 import { Pagination } from '@/components/Pagination';
 
@@ -340,15 +341,41 @@ export function CategoryProductGrid({
     </button>
   );
 
+  /** Category facet row that navigates to the category's own indexable page. */
+  const CategoryLinkRow = ({
+    href,
+    active,
+    label,
+    count,
+  }: {
+    href: string;
+    active: boolean;
+    label: string;
+    count?: number;
+  }) => (
+    <Link
+      href={href}
+      aria-current={active ? 'page' : undefined}
+      className={`flex w-full items-center justify-between gap-2 rounded-lg px-2.5 py-1.5 text-left text-[13px] transition-colors ${
+        active ? 'bg-[#8C4A2F] font-semibold text-white' : 'text-stone-300 hover:bg-[#20242A] hover:text-white'
+      }`}
+    >
+      <span className="truncate">{label}</span>
+      {typeof count === 'number' && (
+        <span className={`font-mono text-[11px] ${active ? 'text-white/80' : 'text-stone-500'}`}>{count}</span>
+      )}
+    </Link>
+  );
+
   const FilterControls = (
     <div className="space-y-6">
       {subOptions.length > 1 && (
         <div>
           <span className={groupLabel}>Category</span>
           <div className="space-y-3">
-            <OptionRow
-              active={selectedSub === 'all'}
-              onClick={() => setSelectedSub('all')}
+            <CategoryLinkRow
+              href="/shop/"
+              active={categorySlug === 'all'}
               label="All categories"
               count={initialProducts.length}
             />
@@ -360,10 +387,10 @@ export function CategoryProductGrid({
                   </p>
                 )}
                 {items.map((s) => (
-                  <OptionRow
+                  <CategoryLinkRow
                     key={s.slug}
-                    active={selectedSub === s.slug}
-                    onClick={() => setSelectedSub(s.slug)}
+                    href={`/shop/${s.slug}/`}
+                    active={categorySlug === s.slug}
                     label={s.name}
                     count={subCount[s.slug]}
                   />

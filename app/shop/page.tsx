@@ -125,7 +125,7 @@ export default function ShopPage() {
 
       <section className="space-y-5">
         <h2 className="text-xl font-bold uppercase tracking-tight text-white sm:text-2xl">Shop by department</h2>
-        <SubcategoryCards items={departmentCards} />
+        <SubcategoryCards items={departmentCards} variant="compact" />
       </section>
 
       <section className="space-y-5">
