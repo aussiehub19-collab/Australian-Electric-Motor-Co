@@ -19,7 +19,7 @@ if (!fs.existsSync(siteConfigPath)) {
   failures.push('B1: Missing src/config/site.js');
 }
 
-const { SITE, COMPLIANCE, PRODUCTS, CATEGORIES } = await import(`file://${siteConfigPath}`);
+const { SITE, COMPLIANCE, PRODUCTS, CATEGORIES, FORMS } = await import(`file://${siteConfigPath}`);
 
 // 2. Check Agent-Ready Files A-N (Mandatory on all sites)
 const requiredAgentFiles = [
@@ -130,8 +130,54 @@ if (!PRODUCTS || PRODUCTS.length === 0) {
     }
     if (!p.images || p.images.length === 0) {
       failures.push(`Product has no images: ${p.name}`);
+    } else {
+      const first = p.images[0];
+      // 9a. Regression guard: every product now has a real local photo — catch a
+      // reintroduced remote placeholder (e.g. Unsplash) immediately, not at audit time.
+      if (/^https?:\/\//.test(first)) {
+        failures.push(`Product still on a remote placeholder image (no local photo): ${p.name}`);
+      } else {
+        // 9b. The referenced local file must actually exist in public/.
+        const filePath = path.resolve(rootDir, 'public', first.replace(/^\//, ''));
+        if (!fs.existsSync(filePath)) {
+          failures.push(`Product image file missing on disk: ${p.name} -> ${first}`);
+        }
+      }
     }
   });
+}
+
+// 10. <title> length — mirrors lib/seo.ts buildSeoTitle(); keep in sync if that changes.
+function buildSeoTitleCheck(name) {
+  const full = `${name} | Australian Electric Motor Co`;
+  if (full.length <= 60) return full;
+  const short = `${name} | AEMC`;
+  if (short.length <= 60) return short;
+  return name;
+}
+const TITLE_WARN_MAX = 65; // hard target is 60; a couple of long product names land just over
+for (const p of PRODUCTS) {
+  const t = buildSeoTitleCheck(p.name);
+  if (t.length > TITLE_WARN_MAX) {
+    warnings.push(`Product <title> still long (${t.length} chars): ${p.name}`);
+  }
+}
+for (const c of CATEGORIES) {
+  const t = buildSeoTitleCheck(c.name);
+  if (t.length > TITLE_WARN_MAX) {
+    warnings.push(`Category <title> still long (${t.length} chars): ${c.name}`);
+  }
+}
+
+// 11. Live placeholders that block GSC / keyword-mapping work — warn every run until set.
+if (SITE.gscVerification === 'pending') {
+  warnings.push('SITE.gscVerification is still "pending" — Search Console cannot verify this site yet.');
+}
+if (FORMS?.web3formsKey === 'pending') {
+  warnings.push('FORMS.web3formsKey is still "pending" — contact/order/wholesale forms deliver nowhere; WhatsApp is the only live order channel.');
+}
+if (SITE.domain && SITE.domain.includes('DOMAIN.')) {
+  failures.push('B1: SITE.domain is still a placeholder in a production build.');
 }
 
 // Result summary
