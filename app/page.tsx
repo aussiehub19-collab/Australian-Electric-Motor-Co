@@ -147,6 +147,36 @@ export default function HomePage() {
         addressRegion: 'NSW',
         addressCountry: 'AU',
       },
+      foundingDate: BRAND.foundingYear,
+      foundingLocation: {
+        '@type': 'Place',
+        name: BRAND.foundingLocation,
+      },
+      areaServed: {
+        '@type': 'Country',
+        name: 'Australia',
+      },
+      numberOfItems: PRODUCTS.length,
+      knowsAbout: [
+        'Electric dirt bikes',
+        'Electric motocross bikes',
+        '72V lithium battery systems',
+        'Off-road riding gear',
+        'Road-legal (ADR) electric motorcycles',
+      ],
+      sameAs: BRAND.sameAs,
+      brand: {
+        '@type': 'Brand',
+        name: SITE.name,
+      },
+      logo: `https://${SITE.domain}/icon.svg`,
+      makesOffer: {
+        '@type': 'AggregateOffer',
+        priceCurrency: 'AUD',
+        lowPrice: String(Math.min(...PRODUCTS.map((p: any) => p.price))),
+        highPrice: String(Math.max(...PRODUCTS.map((p: any) => p.price))),
+        offerCount: String(PRODUCTS.length),
+      },
       aggregateRating: {
         '@type': 'AggregateRating',
         ratingValue: TRUSTPILOT_DATA.score,
