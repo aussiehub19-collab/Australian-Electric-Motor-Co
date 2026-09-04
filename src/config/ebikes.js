@@ -657,10 +657,7 @@ export const EBIKES_DATA = [
       Range: 'Up to 60 minutes',
       Weight: '9 kg',
     },
-    images: [
-      'https://images.unsplash.com/photo-1547038577-da80abbc4f19?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=1200&q=80',
-    ],
+    images: ['/images/products/ktm-sx-e-116-balance-bike.webp'],
     shortDescription: '16-inch electric balance bike for kids aged 4-8 with 3 power modes, twist throttle, and lightweight composite frame.',
     description: 'The KTM SX-E 1.16 teaches essential balance, braking, and throttle control. Features authentic KTM Factory Racing graphics and pneumatic off-road tyres.',
   },

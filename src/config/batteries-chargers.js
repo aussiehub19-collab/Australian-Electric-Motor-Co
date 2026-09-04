@@ -208,10 +208,7 @@ export const BATTERIES_PRODUCTS = [
     ],
     voltage: '80V Nominal',
     capacity: '60Ah (4,800Wh)',
-    images: [
-      'https://images.unsplash.com/photo-1508873696983-2df5293cb32b?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?auto=format&fit=crop&w=1200&q=80',
-    ],
+    images: ['/images/products/nexbat-80v-60ah-pro-race-battery-ultra-bee.webp'],
     shortDescription: 'Molicel P50B cells capable of 35kW peak discharge in reinforced powder-coated alloy shell.',
     description: 'The ultimate high-voltage upgrade for the Surron Ultra Bee. Nexbat harnesses next-generation Molicel P50B cells to sustain a staggering 35 kW of peak discharge power when paired with high-phase aftermarket controllers (Torp TC1000 or EBMX X-9000). Features smart Bluetooth health monitoring and powder-coated steel casing.',
     specs: {
