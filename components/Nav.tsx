@@ -244,16 +244,6 @@ export function Nav() {
               About
             </Link>
 
-            {/* FAQ */}
-            <Link
-              href="/faq/"
-              className={`text-sm font-semibold tracking-wide transition ${
-                pathname === '/faq/' || pathname === '/faq' ? 'text-[#C87D55]' : 'text-stone-300 hover:text-white'
-              }`}
-            >
-              FAQ
-            </Link>
-
             {/* Contact */}
             <Link
               href="/contact/"
@@ -437,12 +427,6 @@ export function Nav() {
                 className="block py-2 px-1 text-sm font-semibold text-stone-100 hover:text-[#C87D55]"
               >
                 Bush Tech &amp; Outing Guides
-              </Link>
-              <Link
-                href="/faq/"
-                className="block py-2 px-1 text-sm font-semibold text-stone-100 hover:text-[#C87D55]"
-              >
-                Frequently Asked Questions
               </Link>
               <Link
                 href="/contact/"

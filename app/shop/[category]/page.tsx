@@ -123,6 +123,12 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 
   const pageHeading = customSeo?.h1 || category.name;
 
+  // Child categories to expose as a drill-down "Category" filter on hub pages
+  const subcategories = CATEGORIES.filter((c) => c.parent === category.slug).map((c) => ({
+    slug: c.slug,
+    name: c.name,
+  }));
+
   const breadcrumbsSchema = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
@@ -246,6 +252,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
           initialProducts={categoryProducts}
           categorySlug={category.slug}
           categoryName={category.name}
+          subcategories={subcategories}
         />
       </section>
     </div>

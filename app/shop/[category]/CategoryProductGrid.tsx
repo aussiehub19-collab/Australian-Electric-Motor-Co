@@ -29,6 +29,8 @@ interface CategoryProductGridProps {
   initialProducts: Product[];
   categorySlug: string;
   categoryName: string;
+  /** Child categories to expose as a "Category" drill-down filter (hub pages). */
+  subcategories?: { slug: string; name: string }[];
 }
 
 const PAGE_SIZE = 16;
@@ -37,6 +39,7 @@ export function CategoryProductGrid({
   initialProducts,
   categorySlug,
   categoryName,
+  subcategories = [],
 }: CategoryProductGridProps) {
   const isRidingGear = [
     'riding-gear',
@@ -48,6 +51,7 @@ export function CategoryProductGrid({
   ].includes(categorySlug);
 
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedSub, setSelectedSub] = useState('all');
   const [selectedBrand, setSelectedBrand] = useState('all');
   const [selectedRiderCategory, setSelectedRiderCategory] = useState<'all' | 'adult' | 'kids-youth'>('all');
   const [selectedSize, setSelectedSize] = useState('all');
@@ -55,6 +59,13 @@ export function CategoryProductGrid({
   const [sortBy, setSortBy] = useState<'default' | 'price-asc' | 'price-desc' | 'name'>('default');
   const [page, setPage] = useState(1);
   const gridTop = useRef<HTMLDivElement>(null);
+
+  // Only show subcategories that actually contain products here
+  const subOptions = useMemo(() => {
+    return subcategories.filter((s) =>
+      initialProducts.some((p) => p.category === s.slug || p.parentCategories?.includes(s.slug)),
+    );
+  }, [subcategories, initialProducts]);
 
   // Brand list actually present in this category
   const brands = useMemo(() => {
@@ -90,6 +101,13 @@ export function CategoryProductGrid({
         )
           return false;
       }
+
+      if (
+        selectedSub !== 'all' &&
+        p.category !== selectedSub &&
+        !p.parentCategories?.includes(selectedSub)
+      )
+        return false;
 
       if (selectedBrand !== 'all' && (p.brandName || p.brand) !== selectedBrand) return false;
 
@@ -139,6 +157,7 @@ export function CategoryProductGrid({
   }, [
     initialProducts,
     searchQuery,
+    selectedSub,
     selectedBrand,
     selectedRiderCategory,
     selectedSize,
@@ -148,6 +167,7 @@ export function CategoryProductGrid({
 
   const hasActiveFilters =
     searchQuery.trim() !== '' ||
+    selectedSub !== 'all' ||
     selectedBrand !== 'all' ||
     selectedRiderCategory !== 'all' ||
     selectedSize !== 'all' ||
@@ -155,6 +175,7 @@ export function CategoryProductGrid({
 
   const resetFilters = () => {
     setSearchQuery('');
+    setSelectedSub('all');
     setSelectedBrand('all');
     setSelectedRiderCategory('all');
     setSelectedSize('all');
@@ -165,7 +186,7 @@ export function CategoryProductGrid({
   // whenever the filtered set changes, jump back to page 1
   useEffect(() => {
     setPage(1);
-  }, [searchQuery, selectedBrand, selectedRiderCategory, selectedSize, selectedSafety, sortBy]);
+  }, [searchQuery, selectedSub, selectedBrand, selectedRiderCategory, selectedSize, selectedSafety, sortBy]);
 
   const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const safePage = Math.min(page, pageCount);
@@ -236,6 +257,22 @@ export function CategoryProductGrid({
 
         {/* Row 2 — dimension filters */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {subOptions.length > 1 && (
+            <div className="space-y-1.5">
+              <label htmlFor="f-sub" className="font-mono text-[11px] font-semibold uppercase tracking-wider text-stone-400">
+                Category
+              </label>
+              <select id="f-sub" value={selectedSub} onChange={(e) => setSelectedSub(e.target.value)} className={selectClass}>
+                <option value="all">All categories</option>
+                {subOptions.map((s) => (
+                  <option key={s.slug} value={s.slug}>
+                    {s.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
           {brands.length > 1 && (
             <div className="space-y-1.5">
               <label htmlFor="f-brand" className="font-mono text-[11px] font-semibold uppercase tracking-wider text-stone-400">
