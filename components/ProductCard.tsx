@@ -213,6 +213,14 @@ export function ProductCard({ product, className = '', priority = false }: Produ
             </div>
           )}
 
+          {/* Fitment — which bikes this battery / charger / part fits */}
+          {Array.isArray(product.fitment) && product.fitment.length > 0 && (
+            <p className="text-[10px] font-mono text-emerald-300/90 line-clamp-1 pt-0.5">
+              ✓ Fits: {product.fitment.slice(0, 2).join(', ')}
+              {product.fitment.length > 2 ? ` +${product.fitment.length - 2}` : ''}
+            </p>
+          )}
+
           {/* Sizing badges if available */}
           {product.sizes && product.sizes.length > 0 && (
             <div className="pt-1 flex flex-wrap gap-1">
@@ -251,6 +259,15 @@ export function ProductCard({ product, className = '', priority = false }: Produ
           <div className="text-[10px] font-mono text-stone-400">
             or 4x ${fortnightly.toLocaleString()} with Pay in 4
           </div>
+          {!product.isBike && (
+            <div className="mt-1.5 text-[10px] font-mono text-emerald-300 bg-emerald-500/10 border border-emerald-500/25 rounded px-1.5 py-1 flex items-center gap-1">
+              <span>🎁</span>
+              <span>
+                −5% with a bike:{' '}
+                <strong>${Math.round(product.price * 0.95).toLocaleString()} AUD</strong>
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Quantity Stepper & Add to Cart */}

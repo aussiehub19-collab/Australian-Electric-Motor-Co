@@ -69,6 +69,36 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     });
   };
 
+  // ---- Confirmed fitment: which bikes does this battery / charger / part fit? --
+  const bikeProducts = PRODUCTS.filter((p: any) => p.isBike);
+  const normName = (s: any): string =>
+    (s || '')
+      .toString()
+      .toLowerCase()
+      .replace(/sur[\s-]?ron/g, 'surron')
+      .replace(/[^a-z0-9]+/g, ' ')
+      .trim();
+  const matchBike = (entry: string) => {
+    for (const cand of entry.split('/')) {
+      const c = normName(cand);
+      if (c.length < 3) continue;
+      const cWords = c.split(' ').filter((w) => w.length >= 3);
+      const hit = bikeProducts.find((b: any) => {
+        const bn = normName(b.name);
+        if (bn.includes(c) || c.includes(bn)) return true;
+        return cWords.filter((w) => bn.includes(w)).length >= 2;
+      });
+      if (hit) return hit;
+    }
+    return undefined;
+  };
+  const fitmentList: { label: string; bike?: any }[] = ((product as any).fitment || []).map(
+    (entry: string) => ({ label: entry, bike: matchBike(entry) }),
+  );
+  const fitmentBikes = dedupe(
+    fitmentList.map((f) => f.bike).filter(Boolean) as any[],
+  );
+
   let related: any[] = [];
   let relatedHeading = 'Related products';
   let relatedBlurb = '';
@@ -103,11 +133,14 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
           ),
       ),
     );
-    const bikes = dedupe(sameBrandFirst(PRODUCTS.filter((p: any) => p.isBike)));
-    related = dedupe([...siblings, ...bikes]).slice(0, 4);
-    relatedHeading = 'Pairs well with';
-    relatedBlurb =
-      'Buy any part or accessory together with an electric dirt bike and it comes off 5% cheaper in your cart.';
+    const bikes = fitmentBikes.length
+      ? dedupe(fitmentBikes)
+      : dedupe(sameBrandFirst(PRODUCTS.filter((p: any) => p.isBike)));
+    related = dedupe([...bikes, ...siblings]).slice(0, 4);
+    relatedHeading = fitmentBikes.length ? 'Fits these bikes — and 5% off with one' : 'Pairs well with';
+    relatedBlurb = fitmentBikes.length
+      ? 'This is a confirmed fit for the bikes below. Add it to the same order as any electric dirt bike and it comes off 5% cheaper automatically in your cart.'
+      : 'Buy any part or accessory together with an electric dirt bike and it comes off 5% cheaper in your cart.';
   }
 
   // Pay in 4 calculation: 4 equal fortnightly instalments, 0% interest
@@ -311,6 +344,60 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
               </Link>
             </div>
           </div>
+
+          {/* Bundle-saver: 5% off this item when it ships with a bike */}
+          {!(product as any).isBike && (
+            <div className="p-4 rounded-xl bg-gradient-to-br from-emerald-950/50 via-[#17191C] to-[#17191C] border border-emerald-500/40 space-y-1.5">
+              <div className="flex items-center gap-2 text-emerald-300 font-bold font-mono text-sm">
+                <span className="text-base">🎁</span>
+                <span>Buying a bike? Take 5% off this.</span>
+              </div>
+              <p className="text-xs text-emerald-100/90 leading-relaxed font-sans">
+                Add this to the same cart as any electric dirt bike and{' '}
+                <strong>
+                  ${product.price.toLocaleString()} becomes $
+                  {Math.round(product.price * 0.95).toLocaleString()} AUD
+                </strong>{' '}
+                — the bundle discount is applied automatically at checkout, on every part, battery,
+                charger and accessory in the order.
+              </p>
+            </div>
+          )}
+
+          {/* Confirmed fitment — which bikes this battery / charger / part fits */}
+          {fitmentList.length > 0 && (
+            <div className="p-4 rounded-xl bg-[#17191C] border border-[#2B2F36] space-y-3">
+              <div className="flex items-center gap-2 text-white font-bold font-mono text-sm">
+                <span className="text-emerald-400">✓</span>
+                <span>Confirmed fitment — fits these bikes</span>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {fitmentList.map((f, i) =>
+                  f.bike ? (
+                    <Link
+                      key={i}
+                      href={`/shop/${f.bike.category}/${f.bike.slug}/`}
+                      className="text-[11px] font-mono px-2.5 py-1 rounded-lg bg-emerald-500/12 border border-emerald-500/35 text-emerald-200 hover:bg-emerald-500/25 transition inline-flex items-center gap-1"
+                    >
+                      <span>{f.label}</span>
+                      <span aria-hidden>&rarr;</span>
+                    </Link>
+                  ) : (
+                    <span
+                      key={i}
+                      className="text-[11px] font-mono px-2.5 py-1 rounded-lg bg-[#20242A] border border-[#2B2F36] text-stone-300"
+                    >
+                      {f.label}
+                    </span>
+                  ),
+                )}
+              </div>
+              <p className="text-[11px] text-stone-400 font-sans leading-relaxed">
+                Not sure it matches your build? Message the workshop on WhatsApp with your bike model
+                and we&apos;ll confirm before you order.
+              </p>
+            </div>
+          )}
 
           {/* Helmet Law & Australian Standards Compliance Box */}
           {(product.category === 'helmets' ||
