@@ -153,6 +153,13 @@ export function CartDrawer({
   const displayedShipping = isPayIn4 ? payIn4ShippingInstalment : shippingCost;
   const displayedTotal = isPayIn4 ? payIn4Instalment : grandTotal;
 
+  // GST is 10% and already included in every AUD price. The GST portion of a
+  // GST-inclusive amount is amount ÷ 11.
+  const GST_RATE = 0.1;
+  const gstPortion = (inclAmount: number) => Math.round(inclAmount - inclAmount / (1 + GST_RATE));
+  const gstOnTotal = gstPortion(grandTotal);
+  const gstOnDisplayedTotal = gstPortion(displayedTotal);
+
   // Build WhatsApp Order Link
   const buildWhatsAppOrderUrl = () => {
     const lines = [
@@ -175,6 +182,7 @@ export function CartDrawer({
       isPayIn4
         ? `Total Payable Today (1st Instalment): $${displayedTotal.toLocaleString()} AUD (Full Order Value: $${grandTotal.toLocaleString()} AUD Inc. GST)`
         : `Total Payable: $${grandTotal.toLocaleString()} AUD (Inc. GST)`,
+      `GST included in this order (10%): $${gstOnTotal.toLocaleString()} AUD`,
       `Selected Payment Option: ${
         paymentMethod === 'crypto'
           ? 'Bitcoin (BTC) / Tether (USDT) with 10% Discount'
@@ -559,13 +567,32 @@ export function CartDrawer({
                   </div>
                 </div>
 
+                <div className="flex justify-between items-baseline">
+                  <span className="flex items-center gap-1.5">
+                    <span>GST (10%, included)</span>
+                    {isPayIn4 && (
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-300 font-semibold">
+                        this instalment
+                      </span>
+                    )}
+                  </span>
+                  <div className="text-right">
+                    <span className="text-stone-300">${gstOnDisplayedTotal.toLocaleString()} AUD</span>
+                    {isPayIn4 && (
+                      <div className="text-[10px] text-stone-400">
+                        Full order GST: ${gstOnTotal.toLocaleString()} AUD
+                      </div>
+                    )}
+                  </div>
+                </div>
+
                 <div className="flex justify-between items-baseline text-sm font-bold text-stone-100 pt-2.5 border-t border-[#2B2F36]">
                   <div>
                     <span className="text-white">
                       {isPayIn4 ? 'Total (1st Instalment Due Today)' : 'Total Amount (Inc. GST)'}
                     </span>
                     <div className="text-[10px] font-normal text-emerald-400 mt-0.5 font-mono">
-                      ✓ Includes 10% Australian GST (Tax Invoice Included)
+                      ✓ Incl. ${gstOnDisplayedTotal.toLocaleString()} AUD GST (10%) · Tax invoice provided
                     </div>
                     {isPayIn4 && (
                       <div className="text-[10px] font-normal text-amber-400/90 mt-0.5">

@@ -201,43 +201,44 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {brandCategories.map((brand) => (
-              <Link
-                key={brand.slug}
-                href={`/brands/${brand.slug}/`}
-                className="group bg-[#17191C] border border-[#2B2F36] rounded-2xl overflow-hidden flex flex-col justify-between hover:border-[#C87D55] transition-all hover:shadow-xl hover:shadow-black/60"
-              >
-                <div>
-                  <div className="relative aspect-[4/3] w-full overflow-hidden bg-black">
+          <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+            {brandCategories.map((brand) => {
+              const modelCount = PRODUCTS.filter(
+                (p: any) =>
+                  p.brand === brand.slug ||
+                  p.category === brand.slug ||
+                  (p.parentCategories && p.parentCategories.includes(brand.slug)),
+              ).length;
+              return (
+                <Link
+                  key={brand.slug}
+                  href={`/brands/${brand.slug}/`}
+                  className="group flex items-center gap-3 rounded-xl border border-[#2B2F36] bg-[#17191C] p-2.5 transition-all hover:border-[#C87D55] hover:bg-[#1D2024]"
+                >
+                  <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-lg bg-white">
                     <SmartImage
                       src={brand.image}
-                      alt={`${brand.name} electric dirt bikes`}
-                      aspectRatio="4/3"
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      alt={`${brand.name} logo`}
+                      fill
+                      fit="contain"
+                      className="p-1"
+                      sizes="44px"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#17191C] via-transparent to-transparent opacity-80" />
-                    <span className="absolute bottom-3 left-3 text-[11px] font-mono font-bold bg-[#8C4A2F] text-white px-2.5 py-0.5 rounded shadow">
-                      {brand.name}
-                    </span>
                   </div>
-
-                  <div className="p-5 space-y-2">
-                    <h3 className="text-lg font-bold text-white group-hover:text-[#C87D55] transition">
+                  <div className="min-w-0 flex-1">
+                    <h3 className="truncate text-[13px] font-bold leading-tight text-white transition-colors group-hover:text-[#C87D55]">
                       {brand.name}
                     </h3>
-                    <p className="text-xs text-stone-400 line-clamp-2 leading-relaxed">
-                      {brand.description}
-                    </p>
+                    <span className="font-mono text-[11px] text-stone-400">
+                      {modelCount} {modelCount === 1 ? 'product' : 'products'}
+                    </span>
                   </div>
-                </div>
-
-                <div className="p-5 pt-0 border-t border-[#23272E] mt-3 flex items-center justify-between text-xs font-bold text-[#C87D55]">
-                  <span>Explore Lineup</span>
-                  <span className="group-hover:translate-x-1 transition-transform">&rarr;</span>
-                </div>
-              </Link>
-            ))}
+                  <span className="shrink-0 text-stone-500 transition-transform group-hover:translate-x-0.5 group-hover:text-[#C87D55]">
+                    &rarr;
+                  </span>
+                </Link>
+              );
+            })}
           </div>
         </section>
       )}

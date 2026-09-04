@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { JsonLd } from '@/components/JsonLd';
-import { CompareTool, type CompareBike } from '@/components/CompareTool';
+import { CompareTool, type CompareGroup, type CompareItem } from '@/components/CompareTool';
 import { PRODUCTS, SHOP, SITE } from '@/config/site';
 
 export const metadata = {
@@ -16,20 +16,81 @@ export const metadata = {
   },
 };
 
+const toItem = (p: any): CompareItem => ({
+  slug: p.slug,
+  name: p.name,
+  brandName: p.brandName || p.brand,
+  category: p.category,
+  subcategoryName: p.subcategoryName,
+  price: p.price,
+  image: p.images?.[0] || '',
+  roadLegal: p.roadLegal,
+  // fold useful top-level fields into specs so the matrix can read them
+  specs: {
+    Voltage: p.voltage,
+    Capacity: p.capacity,
+    ChargeRate: p.chargeRate,
+    Output: p.output,
+    ...(p.specs || {}),
+  },
+});
+
 export default function ComparePage() {
-  const bikes: CompareBike[] = PRODUCTS.filter(
+  const bikeItems = PRODUCTS.filter(
     (p: any) => p.isBike && p.specs?.Voltage && p.specs?.TopSpeed,
-  ).map((p: any) => ({
-    slug: p.slug,
-    name: p.name,
-    brandName: p.brandName || p.brand,
-    category: p.category,
-    subcategoryName: p.subcategoryName,
-    price: p.price,
-    image: p.images?.[0] || '',
-    roadLegal: p.roadLegal,
-    specs: p.specs || {},
-  }));
+  ).map(toItem);
+
+  const batteryItems = PRODUCTS.filter((p: any) => p.category === 'high-capacity-batteries').map(toItem);
+  const chargerItems = PRODUCTS.filter((p: any) => p.category === 'fast-chargers').map(toItem);
+
+  const groups: CompareGroup[] = [
+    {
+      id: 'bikes',
+      label: 'Electric Dirt Bikes',
+      noun: 'Bike',
+      items: bikeItems,
+      specRows: [
+        { label: 'Peak Power', keys: ['PeakPower'], better: 'high' },
+        { label: 'Top Speed', keys: ['TopSpeed'], better: 'high' },
+        { label: 'Trail Range', keys: ['Range'], better: 'high' },
+        { label: 'Battery', keys: ['Battery'] },
+        { label: 'Voltage', keys: ['Voltage'], better: 'high' },
+        { label: 'Weight', keys: ['Weight'] },
+        { label: 'Road Legal', keys: ['RoadLegal'] },
+        { label: 'Target Rider', keys: ['TargetAudience'] },
+      ],
+    },
+    {
+      id: 'batteries',
+      label: 'Batteries',
+      noun: 'Battery',
+      items: batteryItems,
+      specRows: [
+        { label: 'Voltage', keys: ['Voltage'], better: 'high' },
+        { label: 'Capacity', keys: ['Capacity'], better: 'high' },
+        { label: 'Peak Discharge', keys: ['PeakDischarge', 'DischargeRating'], better: 'high' },
+        { label: 'Cells', keys: ['Cells', 'CellType', 'CellConfiguration', 'Configuration'] },
+        { label: 'BMS', keys: ['BMS'] },
+        { label: 'Weight', keys: ['Weight'] },
+        { label: 'Fits', keys: ['Fitment'] },
+      ],
+    },
+    {
+      id: 'chargers',
+      label: 'Chargers',
+      noun: 'Charger',
+      items: chargerItems,
+      specRows: [
+        { label: 'Output', keys: ['OutputPower', 'Output'], better: 'high' },
+        { label: 'Charge Time', keys: ['ChargingTime', 'ChargeSpeed', 'ChargeTime'] },
+        { label: 'Input', keys: ['InputVoltage'] },
+        { label: 'Compliance', keys: ['Compliance'] },
+        { label: 'Connector', keys: ['Connector'] },
+        { label: 'Weight', keys: ['Weight'] },
+        { label: 'Fits', keys: ['Fitment'] },
+      ],
+    },
+  ];
 
   const breadcrumbsSchema = {
     '@context': 'https://schema.org',
@@ -65,13 +126,13 @@ export default function ComparePage() {
           Compare Electric Dirt Bikes
         </h1>
         <p className="text-sm leading-relaxed text-stone-300 sm:text-base">
-          Choose any two machines from our Australian-engineered lineup to see their power, top speed,
-          trail range, battery, weight and price side by side. Change either dropdown at any time to
+          Switch between electric dirt bikes, high-capacity batteries and fast chargers, then pick any
+          two to see their key specs and price side by side. Change either dropdown at any time to
           compare a different pair.
         </p>
       </div>
 
-      <CompareTool bikes={bikes} cryptoDiscount={SHOP.cryptoDiscount} />
+      <CompareTool groups={groups} cryptoDiscount={SHOP.cryptoDiscount} />
 
       <div className="rounded-2xl border border-[#23272E] bg-[#141619] p-6 text-center sm:p-8">
         <h2 className="text-lg font-bold uppercase tracking-tight text-white">
