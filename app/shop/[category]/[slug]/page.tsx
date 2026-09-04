@@ -51,7 +51,64 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
   }
 
   const category = CATEGORIES.find((c) => c.slug === product.category);
-  const related = PRODUCTS.filter((p) => p.category === product.category && p.slug !== product.slug).slice(0, 3);
+
+  // ---- Related / cross-sell products -----------------------------------------
+  const norm = (s: any) => (s || '').toString().toLowerCase();
+  const sameBrandFirst = (list: any[]) =>
+    [...list].sort(
+      (a, b) =>
+        (norm(b.brand) === norm(product.brand) ? 1 : 0) -
+        (norm(a.brand) === norm(product.brand) ? 1 : 0),
+    );
+  const dedupe = (list: any[]) => {
+    const seen = new Set<string>([product.slug]);
+    return list.filter((p) => {
+      if (seen.has(p.slug)) return false;
+      seen.add(p.slug);
+      return true;
+    });
+  };
+
+  let related: any[] = [];
+  let relatedHeading = 'Related products';
+  let relatedBlurb = '';
+
+  if ((product as any).isBike) {
+    // Spares & add-ons a bike owner buys alongside — batteries, chargers, parts, then gear.
+    const pools = [
+      PRODUCTS.filter((p: any) => p.category === 'high-capacity-batteries'),
+      PRODUCTS.filter((p: any) => p.category === 'fast-chargers'),
+      PRODUCTS.filter((p: any) => p.isPart),
+      PRODUCTS.filter((p: any) => p.isGear),
+    ];
+    const picked: any[] = [];
+    for (const pool of pools) {
+      for (const p of sameBrandFirst(pool)) {
+        if (picked.length >= 8 && pool !== pools[0] && pool !== pools[1]) break;
+        if (!picked.find((x) => x.slug === p.slug)) picked.push(p);
+      }
+    }
+    related = dedupe(picked).slice(0, 4);
+    relatedHeading = 'Spare batteries, chargers & upgrades for this bike';
+    relatedBlurb =
+      'Every bike ships with its own battery and charger — these are spares and replacements. Add any of them with a bike and you get 5% off the accessory at checkout.';
+  } else {
+    // A part / battery / charger / accessory / gear item — show siblings, then bikes it suits.
+    const siblings = dedupe(
+      PRODUCTS.filter(
+        (p: any) =>
+          p.category === product.category ||
+          (p.parentCategories || []).some((c: string) =>
+            (product.parentCategories || []).includes(c),
+          ),
+      ),
+    );
+    const bikes = dedupe(sameBrandFirst(PRODUCTS.filter((p: any) => p.isBike)));
+    related = dedupe([...siblings, ...bikes]).slice(0, 4);
+    relatedHeading = 'Pairs well with';
+    relatedBlurb =
+      'Buy any part or accessory together with an electric dirt bike and it comes off 5% cheaper in your cart.';
+  }
 
   // Pay in 4 calculation: 4 equal fortnightly instalments, 0% interest
   const payIn4Amount = Math.round(product.price / 4);
@@ -328,16 +385,23 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
       {/* Related Products */}
       {related.length > 0 && (
         <div className="pt-12 border-t border-[#23272E] space-y-6">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl sm:text-2xl font-black uppercase text-white tracking-tight">
-              Related Electric Dirt Bikes &amp; Upgrades
-            </h2>
-            <Link href="/shop/" className="text-xs font-bold text-[#C87D55] hover:text-white">
+          <div className="flex items-start justify-between gap-4">
+            <div className="space-y-2 max-w-2xl">
+              <h2 className="text-xl sm:text-2xl font-black uppercase text-white tracking-tight">
+                {relatedHeading}
+              </h2>
+              {relatedBlurb && (
+                <p className="text-xs sm:text-sm text-stone-400 leading-relaxed font-sans">
+                  {relatedBlurb}
+                </p>
+              )}
+            </div>
+            <Link href="/shop/" className="shrink-0 text-xs font-bold text-[#C87D55] hover:text-white">
               View All &rarr;
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             {related.map((item) => (
               <Link
                 key={item.slug}
@@ -346,20 +410,25 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
               >
                 <div className="relative aspect-square rounded-lg overflow-hidden bg-white">
                   <SmartImage
-                    src={item.images[0]}
+                    src={item.images?.[0]}
                     alt={item.name}
                     fill
                     fit="contain"
                     className="p-3"
                     sizes="(max-width: 640px) 45vw, 22vw"
                   />
+                  {!item.isBike && (
+                    <span className="absolute top-2 left-2 bg-emerald-600/95 text-white text-[9px] font-mono font-bold px-1.5 py-0.5 rounded uppercase tracking-wide shadow">
+                      −5% with a bike
+                    </span>
+                  )}
                 </div>
                 <h3 className="text-sm font-bold text-white group-hover:text-[#C87D55] transition truncate">
                   {item.name}
                 </h3>
                 <div className="flex justify-between items-center text-xs font-mono">
                   <span className="text-amber-400 font-bold">${item.price.toLocaleString()} AUD</span>
-                  <span className="text-[#C87D55]">View Specs &rarr;</span>
+                  <span className="text-[#C87D55]">View &rarr;</span>
                 </div>
               </Link>
             ))}

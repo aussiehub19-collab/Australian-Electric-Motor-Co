@@ -97,6 +97,7 @@ export function ProductCard({ product, className = '', priority = false }: Produ
           category: product.category,
           image: product.images?.[0] || 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=600&q=80',
           quantity: qtyToAdd,
+          isBike: !!product.isBike,
         });
       }
 

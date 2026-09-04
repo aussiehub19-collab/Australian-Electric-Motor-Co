@@ -12,7 +12,24 @@ export interface CartItem {
   category: string;
   image: string;
   quantity: number;
+  isBike?: boolean;
 }
+
+/** 5% "bundle" discount rate applied to parts / accessories / gear when a bike is in the cart. */
+const BUNDLE_RATE = 0.05;
+
+/** Fallback bike test for cart items saved before `isBike` was stored. */
+const itemIsBike = (item: CartItem) =>
+  item.isBike ??
+  (!item.category.includes('parts') &&
+    !item.category.includes('gear') &&
+    !item.category.includes('accessories') &&
+    !item.category.includes('charger') &&
+    !item.category.includes('rotor') &&
+    !item.category.includes('helmet') &&
+    !item.category.includes('boot') &&
+    !item.category.includes('glove') &&
+    !item.category.includes('batter'));
 
 export function CartDrawer({
   isOpen,
@@ -80,23 +97,30 @@ export function CartDrawer({
   };
 
   const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const cryptoDiscountRate = SHOP.cryptoDiscount || 10;
-  const cryptoSavings = paymentMethod === 'crypto' ? Math.round(subtotal * (cryptoDiscountRate / 100)) : 0;
-  const finalTotal = subtotal - cryptoSavings;
 
-  // Has bike in cart?
-  const hasBike = items.some(
-    (item) =>
-      !item.category.includes('parts') &&
-      !item.category.includes('gear') &&
-      !item.category.includes('accessories') &&
-      !item.category.includes('chargers') &&
-      !item.category.includes('rotors') &&
-      !item.category.includes('helmets') &&
-      !item.category.includes('boots') &&
-      !item.category.includes('gloves')
-  );
+  // Has a bike in the cart? Parts / batteries / chargers / accessories / gear then
+  // qualify for a 5% "bought-with-a-bike" bundle discount.
+  const hasBike = items.some(itemIsBike);
   const hasStarterPack = items.some((item) => item.slug === 'essential-starter-pack');
+
+  /** Line items eligible for the 5% bundle discount (non-bike items when a bike is in the cart). */
+  const bundleEligible = (item: CartItem) =>
+    hasBike && !itemIsBike(item) && item.slug !== 'essential-starter-pack';
+
+  const bundleItemPrice = (item: CartItem) =>
+    bundleEligible(item) ? Math.round(item.price * (1 - BUNDLE_RATE)) : item.price;
+
+  const bundleSavings = items.reduce(
+    (sum, item) => sum + (item.price - bundleItemPrice(item)) * item.quantity,
+    0
+  );
+
+  // Net subtotal after the bundle discount — this is the base for crypto / Pay in 4 / totals.
+  const netSubtotal = subtotal - bundleSavings;
+
+  const cryptoDiscountRate = SHOP.cryptoDiscount || 10;
+  const cryptoSavings = paymentMethod === 'crypto' ? Math.round(netSubtotal * (cryptoDiscountRate / 100)) : 0;
+  const finalTotal = netSubtotal - cryptoSavings;
 
   const addStarterPackToCart = () => {
     const existingIndex = items.findIndex((i) => i.slug === 'essential-starter-pack');
@@ -115,14 +139,14 @@ export function CartDrawer({
     }
   };
 
-  const shippingCost = items.length === 0 ? 0 : hasBike ? SHOP.bikeCrateFreight : subtotal >= SHOP.freeShippingThreshold ? 0 : SHOP.shippingFee;
+  const shippingCost = items.length === 0 ? 0 : hasBike ? SHOP.bikeCrateFreight : netSubtotal >= SHOP.freeShippingThreshold ? 0 : SHOP.shippingFee;
   const grandTotal = finalTotal + shippingCost;
 
   // Pay in 4 calculations: Automatically updates subtotal and total to 1st instalment
   const isPayIn4 = paymentMethod === 'pay-in-4';
-  const payIn4SubtotalInstalment = Math.round(subtotal / 4);
+  const payIn4SubtotalInstalment = Math.round(netSubtotal / 4);
   const payIn4ShippingInstalment = shippingCost > 0 ? Math.round(shippingCost / 4) : 0;
-  const payIn4Instalment = Math.round((subtotal + shippingCost) / 4);
+  const payIn4Instalment = Math.round((netSubtotal + shippingCost) / 4);
 
   // Dynamic figures according to selected payment method
   const displayedSubtotal = isPayIn4 ? payIn4SubtotalInstalment : subtotal;
@@ -134,9 +158,13 @@ export function CartDrawer({
     const lines = [
       `G'day Australian Electric Motor Co team! I would like to place an order:`,
       ...items.map((i) => `• ${i.quantity}x ${i.name} ($${i.price.toLocaleString()} AUD Inc. GST)`),
+      `Subtotal: $${subtotal.toLocaleString()} AUD (Inc. GST)`,
+      bundleSavings > 0
+        ? `Bundle Discount — 5% off parts & accessories bought with a bike: -$${bundleSavings.toLocaleString()} AUD`
+        : '',
       isPayIn4
-        ? `Subtotal (1st Instalment Due Today): $${displayedSubtotal.toLocaleString()} AUD (Full Order Subtotal: $${subtotal.toLocaleString()} AUD Inc. GST)`
-        : `Subtotal: $${subtotal.toLocaleString()} AUD (Inc. GST)`,
+        ? `Order Subtotal After Discounts: $${netSubtotal.toLocaleString()} AUD (1st Instalment Due Today: $${displayedSubtotal.toLocaleString()} AUD)`
+        : '',
       paymentMethod === 'crypto' ? `10% Crypto Discount: -$${cryptoSavings.toLocaleString()} AUD` : '',
       isPayIn4
         ? `Payment Terms: Pay in 4 Selected (1st Instalment: $${displayedTotal.toLocaleString()} AUD today, followed by 3x $${payIn4Instalment.toLocaleString()} AUD fortnightly)`
@@ -235,13 +263,27 @@ export function CartDrawer({
                   </div>
                   <div className="flex-1 min-w-0">
                     <h3 className="text-sm font-semibold text-stone-100 truncate">{item.name}</h3>
-                    <div className="flex items-center gap-2 mt-0.5">
-                      <span className="text-xs text-amber-400 font-mono font-bold">
-                        ${item.price.toLocaleString()} AUD
-                      </span>
+                    <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-0.5">
+                      {bundleEligible(item) ? (
+                        <>
+                          <span className="text-xs text-amber-400 font-mono font-bold">
+                            ${bundleItemPrice(item).toLocaleString()} AUD
+                          </span>
+                          <span className="text-[10px] text-stone-500 font-mono line-through">
+                            ${item.price.toLocaleString()}
+                          </span>
+                          <span className="text-[9px] font-mono font-bold text-emerald-300 bg-emerald-500/15 border border-emerald-500/30 rounded px-1 py-0.5 uppercase tracking-wide">
+                            Bundle −5%
+                          </span>
+                        </>
+                      ) : (
+                        <span className="text-xs text-amber-400 font-mono font-bold">
+                          ${item.price.toLocaleString()} AUD
+                        </span>
+                      )}
                       {paymentMethod === 'crypto' && (
                         <span className="text-[10px] text-emerald-400 font-mono">
-                          (${Math.round(item.price * 0.9).toLocaleString()} in BTC/USDT)
+                          (${Math.round(bundleItemPrice(item) * 0.9).toLocaleString()} in BTC/USDT)
                         </span>
                       )}
                     </div>
@@ -303,6 +345,27 @@ export function CartDrawer({
                   <span>+ Add Starter Pack ($229 AUD)</span>
                   <span className="text-amber-200 text-[10px]">(Save $41)</span>
                 </button>
+              </div>
+            )}
+
+            {/* Bike + accessory bundle discount status */}
+            {items.length > 0 && bundleSavings > 0 && (
+              <div className="p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-xl flex items-start gap-2 mt-2">
+                <span className="text-emerald-400 text-sm leading-none mt-0.5">✓</span>
+                <p className="text-[11px] text-emerald-200 font-sans leading-tight">
+                  <strong className="font-bold">Bundle discount applied.</strong> 5% off every part,
+                  battery, charger &amp; accessory in this order because you&apos;re buying a bike —
+                  you save <strong>${bundleSavings.toLocaleString()} AUD</strong>.
+                </p>
+              </div>
+            )}
+            {items.length > 0 && !hasBike && items.some((i) => !itemIsBike(i)) && (
+              <div className="p-3 bg-[#1D2024] border border-[#2B2F36] rounded-xl flex items-start gap-2 mt-2">
+                <span className="text-amber-400 text-sm leading-none mt-0.5">💡</span>
+                <p className="text-[11px] text-stone-300 font-sans leading-tight">
+                  Add any electric dirt bike to unlock <strong className="text-amber-300">5% off</strong>{' '}
+                  these parts &amp; accessories — spares and upgrades are discounted when bought with a bike.
+                </p>
               </div>
             )}
           </div>
@@ -445,11 +508,24 @@ export function CartDrawer({
                     </span>
                     {isPayIn4 && (
                       <div className="text-[10px] text-stone-400 line-through">
-                        Full: ${subtotal.toLocaleString()} AUD
+                        Full: ${(bundleSavings > 0 ? netSubtotal : subtotal).toLocaleString()} AUD
                       </div>
                     )}
                   </div>
                 </div>
+
+                {bundleSavings > 0 && !isPayIn4 && (
+                  <div className="flex justify-between text-emerald-400 font-bold">
+                    <span>Bundle Discount (5% off parts &amp; gear with a bike)</span>
+                    <span>-${bundleSavings.toLocaleString()} AUD</span>
+                  </div>
+                )}
+                {bundleSavings > 0 && isPayIn4 && (
+                  <div className="flex justify-between text-emerald-400/90 text-[10px]">
+                    <span>Incl. 5% bundle discount on parts &amp; gear</span>
+                    <span>-${bundleSavings.toLocaleString()} AUD</span>
+                  </div>
+                )}
 
                 {paymentMethod === 'crypto' && (
                   <div className="flex justify-between text-emerald-400 font-bold">

@@ -5,6 +5,7 @@ import { ALL_BATTERIES_AND_CHARGERS } from './batteries-chargers.js';
 import { RIDING_GEAR_CATEGORIES, RIDING_GEAR_PRODUCTS } from './riding-gear.js';
 import { ACCESSORIES_CATEGORIES, ACCESSORIES_PRODUCTS, STARTER_PACK_BUNDLE } from './accessories.js';
 import { PARTS_PRODUCTS } from './parts.js';
+import { GENERIC_GEAR_PRODUCTS } from './gear-generic.js';
 
 export { STARTER_PACK_BUNDLE };
 
@@ -754,6 +755,9 @@ export const PRODUCTS = [
 
   // Spare parts, upgrades & accessories from supplied product photography
   ...PARTS_PRODUCTS,
+
+  // Generic (unbranded) riding-gear starter products
+  ...GENERIC_GEAR_PRODUCTS,
 
   // Controllers & Electronics
   {

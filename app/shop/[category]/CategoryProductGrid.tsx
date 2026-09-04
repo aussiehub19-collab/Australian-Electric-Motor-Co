@@ -24,7 +24,39 @@ interface Product {
   safetyStandard?: string;
   certifications?: string[];
   riderCategory?: string;
+  fitment?: string[];
+  subcategoryName?: string;
 }
+
+const normalize = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+
+/** Build a searchable text blob for a product. */
+const haystack = (p: Product) =>
+  normalize(
+    [
+      p.name,
+      p.brandName,
+      p.brand,
+      p.category,
+      p.subcategoryName,
+      p.shortDescription,
+      p.description,
+      ...(p.fitment || []),
+      ...(p.specs ? Object.values(p.specs) : []),
+    ]
+      .filter(Boolean)
+      .join(' '),
+  );
+
+/** Match if the query (or each of its words) is a substring of, or word-prefix within, the product text. Works from the first character. */
+const matchesSearch = (p: Product, rawQuery: string) => {
+  const q = normalize(rawQuery);
+  if (!q) return true;
+  const text = haystack(p);
+  if (text.includes(q)) return true;
+  const words = text.split(' ');
+  return q.split(' ').every((qw) => words.some((w) => w.startsWith(qw)));
+};
 
 interface SubCat {
   slug: string;
@@ -69,61 +101,134 @@ export function CategoryProductGrid({
   const inSub = (p: Product, slug: string) =>
     p.category === slug || !!p.parentCategories?.includes(slug);
 
-  const subOptions = useMemo(
-    () => subcategories.filter((s) => initialProducts.some((p) => inSub(p, s.slug))),
-    [subcategories, initialProducts],
-  );
+  const isYouth = (p: Product) => {
+    const rider = (p.riderCategory || p.specs?.RiderCategory || '').toLowerCase();
+    return (
+      rider.includes('youth') ||
+      rider.includes('kid') ||
+      /\b(youth|kids?|junior|mini|balance)\b/i.test(p.name) ||
+      (p.sizesAvailable || p.sizes || []).some((s) => /^(youth|kids)/i.test(s))
+    );
+  };
+
+  const isRoadLegal = (p: Product) =>
+    p.roadLegal === true ||
+    /road[-\s]?legal|adr|l1e/i.test(p.badge || '') ||
+    p.category.includes('road-legal') ||
+    p.category.includes('adr');
+
+  const safetyMatch = (p: Product, id: string) => {
+    const hay = [
+      p.safetyStandard || '',
+      ...(p.certifications || []),
+      p.specs?.SafetyStandard || '',
+      p.specs?.SafetyCertification || '',
+      p.specs?.ChestProtection || '',
+      p.specs?.BackProtection || '',
+    ]
+      .join(' ')
+      .toLowerCase();
+    if (id === 'ECE 22.06') return hay.includes('ece 22.06') || hay.includes('1698');
+    if (id === 'CE Level 2') return hay.includes('level 2');
+    if (id === 'CE Level 1') return hay.includes('level 1') || hay.includes('level 2');
+    return true;
+  };
+
+  const priceBandDefs = useMemo(() => {
+    const max = Math.max(0, ...initialProducts.map((p) => p.price));
+    return max <= 600
+      ? [
+          { id: '0-50', label: 'Under $50', lo: 0, hi: 50 },
+          { id: '50-150', label: '$50 – $150', lo: 50, hi: 150 },
+          { id: '150-350', label: '$150 – $350', lo: 150, hi: 350 },
+          { id: '350+', label: '$350+', lo: 350, hi: Infinity },
+        ]
+      : [
+          { id: '0-500', label: 'Under $500', lo: 0, hi: 500 },
+          { id: '500-2000', label: '$500 – $2,000', lo: 500, hi: 2000 },
+          { id: '2000-5000', label: '$2,000 – $5,000', lo: 2000, hi: 5000 },
+          { id: '5000-10000', label: '$5,000 – $10,000', lo: 5000, hi: 10000 },
+          { id: '10000+', label: '$10,000+', lo: 10000, hi: Infinity },
+        ];
+  }, [initialProducts]);
+
+  // one predicate per dimension — used both for the final list and for dependent facet counts
+  const preds = {
+    search: (p: Product) => matchesSearch(p, searchQuery),
+    sub: (p: Product) => selectedSub === 'all' || inSub(p, selectedSub),
+    brand: (p: Product) => selectedBrand === 'all' || (p.brandName || p.brand) === selectedBrand,
+    price: (p: Product) => {
+      if (selectedPrice === 'all') return true;
+      const b = priceBandDefs.find((x) => x.id === selectedPrice);
+      return !b || (p.price >= b.lo && p.price < b.hi);
+    },
+    legal: (p: Product) =>
+      selectedLegal === 'all' ||
+      (selectedLegal === 'legal' ? isRoadLegal(p) : !isRoadLegal(p)),
+    rider: (p: Product) =>
+      selectedRider === 'all' ||
+      (selectedRider === 'kids-youth' ? isYouth(p) : !isYouth(p)),
+    size: (p: Product) =>
+      selectedSize === 'all' || (p.sizesAvailable || p.sizes || []).includes(selectedSize),
+    safety: (p: Product) => selectedSafety === 'all' || safetyMatch(p, selectedSafety),
+  };
+
+  const passExcept = (p: Product, skip: keyof typeof preds) =>
+    (Object.keys(preds) as (keyof typeof preds)[]).every((k) => k === skip || preds[k](p));
+
+  // ---- dependent facets: each list/count reflects every OTHER active filter ----
+  const subOptions = useMemo(() => {
+    return subcategories
+      .map((s) => ({
+        ...s,
+        count: initialProducts.filter((p) => passExcept(p, 'sub') && inSub(p, s.slug)).length,
+      }))
+      .filter((s) => s.count > 0 || selectedSub === s.slug);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [subcategories, initialProducts, searchQuery, selectedBrand, selectedPrice, selectedLegal, selectedRider, selectedSize, selectedSafety]);
   const subCount = useMemo(() => {
     const m: Record<string, number> = {};
-    subOptions.forEach((s) => (m[s.slug] = initialProducts.filter((p) => inSub(p, s.slug)).length));
+    subOptions.forEach((s) => (m[s.slug] = s.count));
     return m;
-  }, [subOptions, initialProducts]);
+  }, [subOptions]);
 
   const brands = useMemo(() => {
-    const set = new Set<string>();
+    const m = new Map<string, number>();
     initialProducts.forEach((p) => {
+      if (!passExcept(p, 'brand')) return;
       const b = p.brandName || p.brand;
-      if (b) set.add(b);
+      if (b) m.set(b, (m.get(b) || 0) + 1);
     });
-    return [...set].sort((a, b) => a.localeCompare(b));
-  }, [initialProducts]);
+    if (selectedBrand !== 'all' && !m.has(selectedBrand)) m.set(selectedBrand, 0);
+    return [...m.keys()].sort((a, b) => a.localeCompare(b));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialProducts, searchQuery, selectedSub, selectedPrice, selectedLegal, selectedRider, selectedSize, selectedSafety, selectedBrand]);
 
   const sizes = useMemo(() => {
     const set = new Set<string>();
-    initialProducts.forEach((p) => (p.sizesAvailable || p.sizes || []).forEach((s) => set.add(s)));
+    initialProducts.forEach((p) => {
+      if (passExcept(p, 'size')) (p.sizesAvailable || p.sizes || []).forEach((s) => set.add(s));
+    });
     return [...set].sort();
-  }, [initialProducts]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialProducts, searchQuery, selectedSub, selectedBrand, selectedPrice, selectedLegal, selectedRider, selectedSafety]);
 
   const priceBands = useMemo(() => {
-    const max = Math.max(0, ...initialProducts.map((p) => p.price));
-    const raw =
-      max <= 600
-        ? [
-            { id: '0-50', label: 'Under $50', lo: 0, hi: 50 },
-            { id: '50-150', label: '$50 – $150', lo: 50, hi: 150 },
-            { id: '150-350', label: '$150 – $350', lo: 150, hi: 350 },
-            { id: '350+', label: '$350+', lo: 350, hi: Infinity },
-          ]
-        : [
-            { id: '0-500', label: 'Under $500', lo: 0, hi: 500 },
-            { id: '500-2000', label: '$500 – $2,000', lo: 500, hi: 2000 },
-            { id: '2000-5000', label: '$2,000 – $5,000', lo: 2000, hi: 5000 },
-            { id: '5000-10000', label: '$5,000 – $10,000', lo: 5000, hi: 10000 },
-            { id: '10000+', label: '$10,000+', lo: 10000, hi: Infinity },
-          ];
-    return raw
-      .map((b) => ({ ...b, count: initialProducts.filter((p) => p.price >= b.lo && p.price < b.hi).length }))
+    return priceBandDefs
+      .map((b) => ({
+        ...b,
+        count: initialProducts.filter((p) => passExcept(p, 'price') && p.price >= b.lo && p.price < b.hi).length,
+      }))
       .filter((b) => b.count > 0);
-  }, [initialProducts]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [priceBandDefs, initialProducts, searchQuery, selectedSub, selectedBrand, selectedLegal, selectedRider, selectedSize, selectedSafety]);
 
   const hasRoadLegalMix = useMemo(() => {
     let legal = false;
     let off = false;
-    initialProducts.forEach((p) => {
-      if (p.roadLegal === true || /road[-\s]?legal/i.test(p.badge || '') || p.category.includes('road-legal')) legal = true;
-      else off = true;
-    });
+    initialProducts.forEach((p) => (isRoadLegal(p) ? (legal = true) : (off = true)));
     return legal && off;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialProducts]);
 
   const safetyOptions = [
@@ -133,61 +238,9 @@ export function CategoryProductGrid({
   ];
 
   const filtered = useMemo(() => {
-    const band = priceBands.find((b) => b.id === selectedPrice);
-    const list = initialProducts.filter((p) => {
-      if (searchQuery.trim()) {
-        const q = searchQuery.toLowerCase();
-        if (
-          !p.name.toLowerCase().includes(q) &&
-          !p.shortDescription?.toLowerCase().includes(q) &&
-          !(p.brandName || p.brand || '').toLowerCase().includes(q)
-        )
-          return false;
-      }
-      if (selectedSub !== 'all' && !inSub(p, selectedSub)) return false;
-      if (selectedBrand !== 'all' && (p.brandName || p.brand) !== selectedBrand) return false;
-      if (band && !(p.price >= band.lo && p.price < band.hi)) return false;
-
-      if (selectedLegal !== 'all') {
-        const legal =
-          p.roadLegal === true ||
-          /road[-\s]?legal/i.test(p.badge || '') ||
-          p.category.includes('road-legal');
-        if (selectedLegal === 'legal' && !legal) return false;
-        if (selectedLegal === 'offroad' && legal) return false;
-      }
-
-      if (selectedRider !== 'all') {
-        const rider = (p.riderCategory || p.specs?.RiderCategory || '').toLowerCase();
-        const youth =
-          rider.includes('youth') ||
-          rider.includes('kid') ||
-          p.name.toLowerCase().includes('youth') ||
-          p.name.toLowerCase().includes('kids') ||
-          (p.sizesAvailable || p.sizes || []).some((s) => s.toLowerCase().startsWith('youth'));
-        if (selectedRider === 'kids-youth' && !youth) return false;
-        if (selectedRider === 'adult' && youth) return false;
-      }
-      if (selectedSize !== 'all' && !(p.sizesAvailable || p.sizes || []).includes(selectedSize)) return false;
-
-      if (selectedSafety !== 'all') {
-        const hay = [
-          p.safetyStandard || '',
-          ...(p.certifications || []),
-          p.specs?.SafetyStandard || '',
-          p.specs?.SafetyCertification || '',
-          p.specs?.ChestProtection || '',
-          p.specs?.BackProtection || '',
-        ]
-          .join(' ')
-          .toLowerCase();
-        if (selectedSafety === 'ECE 22.06' && !hay.includes('ece 22.06') && !hay.includes('1698')) return false;
-        if (selectedSafety === 'CE Level 2' && !hay.includes('level 2')) return false;
-        if (selectedSafety === 'CE Level 1' && !hay.includes('level 1')) return false;
-      }
-      return true;
-    });
-
+    const list = initialProducts.filter((p) =>
+      (Object.keys(preds) as (keyof typeof preds)[]).every((k) => preds[k](p)),
+    );
     return list.sort((a, b) => {
       if (sortBy === 'price-asc') return a.price - b.price;
       if (sortBy === 'price-desc') return b.price - a.price;
@@ -195,9 +248,10 @@ export function CategoryProductGrid({
       if (!!b.featured !== !!a.featured) return b.featured ? 1 : -1;
       return a.price - b.price;
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     initialProducts,
-    priceBands,
+    priceBandDefs,
     searchQuery,
     selectedSub,
     selectedBrand,

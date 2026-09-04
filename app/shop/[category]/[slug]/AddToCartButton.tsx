@@ -10,6 +10,7 @@ interface AddToCartButtonProps {
     price: number;
     category: string;
     images: string[];
+    isBike?: boolean;
   };
 }
 
@@ -18,14 +19,15 @@ export function AddToCartButton({ product }: AddToCartButtonProps) {
   const [showBundleModal, setShowBundleModal] = useState(false);
 
   const isBike =
-    !product.category.includes('parts') &&
-    !product.category.includes('gear') &&
-    !product.category.includes('accessories') &&
-    !product.category.includes('chargers') &&
-    !product.category.includes('rotors') &&
-    !product.category.includes('helmets') &&
-    !product.category.includes('boots') &&
-    !product.category.includes('gloves');
+    product.isBike ??
+    (!product.category.includes('parts') &&
+      !product.category.includes('gear') &&
+      !product.category.includes('accessories') &&
+      !product.category.includes('chargers') &&
+      !product.category.includes('rotors') &&
+      !product.category.includes('helmets') &&
+      !product.category.includes('boots') &&
+      !product.category.includes('gloves'));
 
   const addItemToCart = (itemToAdd: any) => {
     try {
@@ -43,6 +45,7 @@ export function AddToCartButton({ product }: AddToCartButtonProps) {
           category: itemToAdd.category,
           image: itemToAdd.images ? itemToAdd.images[0] : itemToAdd.image,
           quantity: 1,
+          isBike: itemToAdd.isBike === true,
         });
       }
 
@@ -54,7 +57,7 @@ export function AddToCartButton({ product }: AddToCartButtonProps) {
   };
 
   const handleAddToCart = () => {
-    addItemToCart(product);
+    addItemToCart({ ...product, isBike });
     setAdded(true);
     setTimeout(() => setAdded(false), 2500);
 
@@ -82,7 +85,7 @@ export function AddToCartButton({ product }: AddToCartButtonProps) {
   };
 
   const handlePayIn4Checkout = () => {
-    addItemToCart(product);
+    addItemToCart({ ...product, isBike });
     if (isBike) {
       setShowBundleModal(true);
     } else {
