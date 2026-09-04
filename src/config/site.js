@@ -455,7 +455,7 @@ export const CATEGORIES = [
     section: 'parts-upgrades',
     parent: 'parts-upgrades',
     description: 'High-discharge 60V and 72V lithium powerpacks, pure nickel busbars, Bluetooth Smart BMS, and Australian 240V high-amp fast chargers.',
-    image: 'https://images.unsplash.com/photo-1508873696983-2df5293cb32b?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/products/surron-ultra-bee-oem-battery-74v-55ah.webp',
     count: 2,
   },
   {
@@ -482,7 +482,7 @@ export const CATEGORIES = [
     section: 'parts-upgrades',
     parent: 'parts-upgrades',
     description: 'Bluetooth programmable FOC motor controllers, water-sealed bar displays, quick-turn throttles, and reinforced wiring looms.',
-    image: 'https://images.unsplash.com/photo-1508873696983-2df5293cb32b?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/products/ebmx-x-9000-aftermarket-controller.webp',
     count: 3,
   },
   {
@@ -518,7 +518,7 @@ export const CATEGORIES = [
     section: 'parts-upgrades',
     parent: 'parts-upgrades',
     description: 'Inverted front forks, heavy-spring piggyback rear shocks, CNC triple clamps, and reinforced progression linkages.',
-    image: 'https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/products/sur-ron-front-fork-complete-assembly.webp',
     count: 3,
   },
   {
@@ -554,7 +554,7 @@ export const CATEGORIES = [
     section: 'parts-upgrades',
     parent: 'parts-upgrades',
     description: 'Complete 4-piston hydraulic brake sets, 250mm oversized floating stainless discs, steel braided brake lines, and sintered pads.',
-    image: 'https://images.unsplash.com/photo-1508873696983-2df5293cb32b?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/products/sur-ron-front-brake-rotor-203mm.webp',
     count: 3,
   },
   {
@@ -590,7 +590,7 @@ export const CATEGORIES = [
     section: 'parts-upgrades',
     parent: 'parts-upgrades',
     description: 'Heavy-duty 21"/18" off-road wheelsets, aggressive knobby tyres, CNC sprockets, gold O-ring chains, and silent belt drive conversion kits.',
-    image: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/products/sur-ron-wheel-set-upgrade-front-plus-rear.webp',
     count: 3,
   },
   {
