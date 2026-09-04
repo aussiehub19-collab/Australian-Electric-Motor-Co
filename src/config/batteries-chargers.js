@@ -38,10 +38,7 @@ export const BATTERIES_PRODUCTS = [
     ],
     voltage: '360V Nominal',
     capacity: '6.5 kWh',
-    images: [
-      'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?auto=format&fit=crop&w=1200&q=80',
-    ],
+    images: ['/images/products/stark-varg-6-5kwh-replacement-battery-pack.webp'],
     shortDescription: 'Patented flying-V honeycomb magnesium structural casing with integrated liquid-cooling channel and internal telemetry sensors.',
     description: 'The genuine Stark VARG 6.5 kWh battery pack is an engineering masterpiece. Featuring a structural honeycomb magnesium enclosure that serves as the backbone of the motorcycle frame, integrated liquid cooling circuits running directly between cell groups, and an ultra-secure internal high-voltage contactor. Direct factory replacement for all 60hp and 80hp VARG models.',
     specs: {
@@ -146,10 +143,7 @@ export const BATTERIES_PRODUCTS = [
     ],
     voltage: '72V Nominal (84V Peak)',
     capacity: '42Ah (3,024Wh)',
-    images: [
-      'https://images.unsplash.com/photo-1508873696983-2df5293cb32b?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=1200&q=80',
-    ],
+    images: ['/images/products/ebmx-72v-42ah-high-discharge-race-battery.webp'],
     shortDescription: 'Grade-A Molicel P42A cells delivering 15kW continuous and 22kW peak punch with CNC lid spacer.',
     description: 'The weapon of choice for competitive Australian e-motocross racers. Hand-built using ultra-high drain Molicel P42A 21700 cylindrical cells, pure copper busbars, and an ANT Bluetooth telemetry BMS. Delivers up to 22 kW peak burst output. Includes CNC-machined battery lid extender spacer and heavy-duty QS8 wiring harness.',
     specs: {
@@ -346,10 +340,7 @@ export const BATTERIES_PRODUCTS = [
     ],
     voltage: '81.4V Nominal',
     capacity: '45Ah (3,663Wh)',
-    images: [
-      'https://images.unsplash.com/photo-1508873696983-2df5293cb32b?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?auto=format&fit=crop&w=1200&q=80',
-    ],
+    images: ['/images/products/ewatt-81-4v-45ah-extreme-battery-talaria.webp'],
     shortDescription: 'Pure copper busbars, ANT BMS with Bluetooth telemetry monitoring, supports up to 28kW.',
     description: 'Push your Talaria build into supersonic territory. The EWatt 81.4V 45Ah pack operates at 92.4V at full charge, delivering ferocious acceleration and virtually zero voltage sag under 28 kW burst power. Includes custom extended battery lid catch and iOS/Android Bluetooth telemetry link.',
     specs: {
@@ -577,10 +568,7 @@ export const BATTERIES_PRODUCTS = [
     ],
     voltage: '52V Nominal',
     capacity: '3.1 kWh',
-    images: [
-      'https://images.unsplash.com/photo-1508873696983-2df5293cb32b?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1547038577-da80abbc4f19?auto=format&fit=crop&w=1200&q=80',
-    ],
+    images: ['/images/products/ubco-2x2-kxh-3-1kwh-replacement-power-supply.webp'],
     shortDescription: 'IP67 submersible battery with integrated 12V automotive port and dual 5V USB charging ports.',
     description: 'The ultimate agricultural and expedition power unit. Built for the all-wheel drive UBCO 2X2, this 3.1 kWh power supply is IP67 submersible and doubles as a portable power station on the farm, featuring dual USB ports and a 12V 10A socket for charging power tools and spot-lights.',
     specs: {
