@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import { JsonLd } from '@/components/JsonLd';
+import { SmartImage } from '@/components/SmartImage';
 import { PaginatedProductGrid } from '@/components/PaginatedProductGrid';
 import { CATEGORIES, PRODUCTS, SITE } from '@/config/site';
 
@@ -101,18 +102,33 @@ export default async function BrandIndividualPage({ params }: BrandPageProps) {
 
       {/* Hero Header with Exactly One H1 */}
       <div className="relative rounded-3xl overflow-hidden bg-[#17191C] border border-[#2B2F36] p-8 sm:p-12">
-        <div className="max-w-3xl space-y-4">
-          <div className="flex items-center gap-2 text-xs font-mono text-[#C87D55] uppercase tracking-wider font-bold">
-            <span>Authorised Showroom</span>
-            <span>•</span>
-            <span>Australian Factory Support</span>
+        <div className="flex flex-col gap-6 sm:flex-row sm:items-center">
+          <div className="relative h-24 w-40 flex-shrink-0 overflow-hidden rounded-xl border border-[#2B2F36] bg-white">
+            <SmartImage
+              src={brand.image}
+              alt={`${brand.name} logo`}
+              fill
+              fit="contain"
+              priority
+              className="p-3"
+              sizes="160px"
+            />
           </div>
-          <h1 className="text-3xl sm:text-5xl font-black uppercase text-white tracking-tight">
-            {brand.name} Electric Dirt Bikes
-          </h1>
-          <p className="text-base text-stone-300 leading-relaxed">
-            {brand.description}
-          </p>
+          <div className="max-w-3xl space-y-4">
+            <div className="flex items-center gap-2 text-xs font-mono text-[#C87D55] uppercase tracking-wider font-bold">
+              <span>Authorised Showroom</span>
+              <span>•</span>
+              <span>Australian Factory Support</span>
+            </div>
+            <h1 className="text-3xl sm:text-5xl font-black uppercase text-white tracking-tight">
+              {brand.name} Electric Dirt Bikes
+            </h1>
+            <p className="text-base text-stone-300 leading-relaxed">
+              {brand.description}
+            </p>
+          </div>
+        </div>
+        <div className="mt-4">
           <div className="flex flex-wrap items-center gap-3 pt-2 text-xs font-mono">
             <span className="text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-full">
               • {brandProducts.length} Models &amp; Upgrades in Australian Stock

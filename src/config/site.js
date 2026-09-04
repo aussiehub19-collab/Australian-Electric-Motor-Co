@@ -308,7 +308,7 @@ export const CATEGORIES = [
     section: 'brands',
     parent: 'brands',
     description: 'Pioneers of lightweight electric trail motos including the Light Bee X, Ultra Bee, and Storm Bee with extensive aftermarket Aussie support.',
-    image: 'https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/brands/surron.webp',
     count: 5,
   },
   {
@@ -317,7 +317,7 @@ export const CATEGORIES = [
     section: 'brands',
     parent: 'brands',
     description: 'Gearbox-driven electric dirt bikes including the Sting R MX4, Sting Pro MX5, and XXX designed for durable bush bashing with zero belt slips.',
-    image: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/brands/talaria.webp',
     count: 5,
   },
   {
@@ -326,7 +326,7 @@ export const CATEGORIES = [
     section: 'brands',
     parent: 'brands',
     description: 'Revolutionary 80 horsepower electric motocross technology setting new lap record standards on pro tracks worldwide.',
-    image: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/brands/stark-future.webp',
     count: 5,
   },
   {
@@ -335,7 +335,7 @@ export const CATEGORIES = [
     section: 'brands',
     parent: 'brands',
     description: 'Factory 72V out-of-the-box high-voltage electric dirt bikes engineered for relentless acceleration and hill-climbing grunt.',
-    image: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/brands/e-ride-pro.webp',
     count: 5,
   },
   {
@@ -344,7 +344,7 @@ export const CATEGORIES = [
     section: 'brands',
     parent: 'brands',
     description: 'Austrian electric motocross heritage with WP suspension and championship-winning junior electric race bikes.',
-    image: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/brands/ktm.webp',
     count: 5,
   },
   {
@@ -353,7 +353,7 @@ export const CATEGORIES = [
     section: 'brands',
     parent: 'brands',
     description: 'Pioneering Swedish-styled junior and youth electric dirt bikes featuring WP XACT air suspension and refined power management.',
-    image: 'https://images.unsplash.com/photo-1547038577-da80abbc4f19?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/brands/husqvarna.webp',
     count: 5,
   },
   {
@@ -362,7 +362,7 @@ export const CATEGORIES = [
     section: 'brands',
     parent: 'brands',
     description: 'Dynamic Spanish-inspired electric dirt bikes delivering pure motocross fun and competitive edge for junior racers.',
-    image: 'https://images.unsplash.com/photo-1547038577-da80abbc4f19?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/brands/gasgas.webp',
     count: 5,
   },
   {
@@ -371,7 +371,7 @@ export const CATEGORIES = [
     section: 'brands',
     parent: 'brands',
     description: 'Handcrafted European electric dirt bikes precision-engineered for young riders, freeriders, and utility paddock transport.',
-    image: 'https://images.unsplash.com/photo-1547038577-da80abbc4f19?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/brands/kuberg.webp',
     count: 5,
   },
   {
@@ -380,7 +380,7 @@ export const CATEGORIES = [
     section: 'brands',
     parent: 'brands',
     description: 'World champion electric trials and competition balance bikes with micrometer-fine throttle modulation and safety dials.',
-    image: 'https://images.unsplash.com/photo-1547038577-da80abbc4f19?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/brands/oset.webp',
     count: 5,
   },
   {
@@ -389,7 +389,7 @@ export const CATEGORIES = [
     section: 'brands',
     parent: 'brands',
     description: 'Rugged rally-inspired electric dirt bikes with reinforced chromoly frames and dual-mode riding profiles.',
-    image: 'https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/brands/rfn-apollo.webp',
     count: 5,
   },
   {
@@ -398,7 +398,7 @@ export const CATEGORIES = [
     section: 'brands',
     parent: 'brands',
     description: 'Heavyweight mountain enduro e-motos featuring extreme 80V torque motors and climb-oriented chassis balance.',
-    image: 'https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/brands/arctic-leopard.webp',
     count: 5,
   },
   {
@@ -407,7 +407,7 @@ export const CATEGORIES = [
     section: 'brands',
     parent: 'brands',
     description: 'The global benchmark for kids electric balance bikes, empowering young groms to develop riding confidence and balance.',
-    image: 'https://images.unsplash.com/photo-1547038577-da80abbc4f19?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/brands/stacyc.webp',
     count: 5,
   },
   {
@@ -416,7 +416,7 @@ export const CATEGORIES = [
     section: 'brands',
     parent: 'brands',
     description: 'Aussie pit-bike heritage meets high-torque electric power for dirt-shredding fun and rugged backyard reliability.',
-    image: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/brands/thumpstar.webp',
     count: 5,
   },
   {
@@ -425,7 +425,7 @@ export const CATEGORIES = [
     section: 'brands',
     parent: 'brands',
     description: 'All-Wheel Drive (2X2) electric utility workhorses built for Australian cattle stations, farm logistics, and silent exploration.',
-    image: 'https://images.unsplash.com/photo-1508873696983-2df5293cb32b?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/brands/ubco.webp',
     count: 5,
   },
   {
@@ -434,7 +434,7 @@ export const CATEGORIES = [
     section: 'brands',
     parent: 'brands',
     description: 'Australian designed electric dirt and balance bikes for kids and youth, delivering exceptional value and local support.',
-    image: 'https://images.unsplash.com/photo-1547038577-da80abbc4f19?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/brands/takani.webp',
     count: 5,
   },
 

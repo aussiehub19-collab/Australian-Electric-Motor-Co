@@ -261,24 +261,25 @@ export default function BrandsPage() {
                 className="group relative bg-[#17191C]/95 hover:bg-[#1C2026] border border-[#2B2F36] hover:border-[#C87D55] rounded-xl overflow-hidden flex flex-col justify-between transition-all duration-300 hover:shadow-lg hover:shadow-[#C87D55]/5 hover:-translate-y-1"
               >
                 <div>
-                  {/* Compact Aspect Ratio Image Tile */}
-                  <div className="relative aspect-[16/10] w-full overflow-hidden bg-black/60">
+                  {/* Brand logo tile — logo centred on a clean white ground */}
+                  <div className="relative aspect-[16/10] w-full overflow-hidden border-b border-[#2B2F36] bg-white">
                     <SmartImage
                       src={brand.image}
-                      alt={`${brand.name} electric dirt bikes Australia`}
-                      aspectRatio="16/10"
-                      className="h-full w-full transition-transform duration-500 group-hover:scale-105"
+                      alt={`${brand.name} logo`}
+                      fill
+                      fit="contain"
+                      className="p-4 transition-transform duration-500 group-hover:scale-105"
+                      sizes="(max-width: 640px) 45vw, (max-width: 1024px) 25vw, 220px"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#17191C] via-[#17191C]/30 to-transparent" />
 
                     {/* Top Origin Tag */}
-                    <div className="absolute top-2 left-2 bg-black/75 backdrop-blur-sm border border-white/10 text-stone-200 text-[10px] font-mono px-2 py-0.5 rounded flex items-center gap-1 shadow">
+                    <div className="absolute top-2 left-2 flex items-center gap-1 rounded bg-[#101214]/85 px-2 py-0.5 font-mono text-[10px] text-stone-200 shadow backdrop-blur-sm">
                       <span>{details.flag}</span>
-                      <span className="font-medium text-stone-300 truncate max-w-[85px]">{details.origin}</span>
+                      <span className="max-w-[85px] truncate font-medium">{details.origin}</span>
                     </div>
 
                     {/* Model Count Tag */}
-                    <div className="absolute top-2 right-2 bg-[#8C4A2F]/90 text-white text-[10px] font-mono font-bold px-1.5 py-0.5 rounded shadow">
+                    <div className="absolute top-2 right-2 rounded bg-[#8C4A2F] px-1.5 py-0.5 font-mono text-[10px] font-bold text-white shadow">
                       {matchingCount} {matchingCount === 1 ? 'Model' : 'Models'}
                     </div>
                   </div>
