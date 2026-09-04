@@ -513,10 +513,7 @@ export const BATTERIES_PRODUCTS = [
     ],
     voltage: '48V Nominal',
     capacity: '907Wh',
-    images: [
-      'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1547038577-da80abbc4f19?auto=format&fit=crop&w=1200&q=80',
-    ],
+    images: ['/images/products/ktm-husqvarna-gasgas-powerpack-907wh.webp'],
     shortDescription: 'Die-cast aluminium enclosure with integrated cell balancer and quick-swap latch for Austrian junior race bikes.',
     description: 'Genuine OEM Austrian factory PowerPack for youth electric motocross bikes. Robust die-cast aluminium casing designed to withstand the punishment of junior track racing. Swaps out in seconds between motos via a spring-loaded bottom latch.',
     specs: {
@@ -990,10 +987,7 @@ export const CHARGERS_PRODUCTS = [
     ],
     output: '900W High Speed',
     voltage: '48V System',
-    images: [
-      'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1508873696983-2df5293cb32b?auto=format&fit=crop&w=1200&q=80',
-    ],
+    images: ['/images/products/ktm-husqvarna-gasgas-48v-off-board-fast-charger.webp'],
     shortDescription: 'Charges PowerPack from 0% to 80% in 45 minutes in rugged race paddock casing with AU plug.',
     description: 'High-speed off-board paddock charger for KTM SX-E 5, Husqvarna EE 5, and GASGAS MC-E 5 youth race bikes. Recharges the Austrian 907Wh PowerPack to 80% in just 45 minutes between junior race heats.',
     specs: {

@@ -105,10 +105,7 @@ export const ACCESSORIES_PRODUCTS = [
     badge: 'Space-Saving 250kg',
     featured: true,
     isAccessory: true,
-    images: [
-      'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1547038577-da80abbc4f19?auto=format&fit=crop&w=1200&q=80',
-    ],
+    images: ['/images/products/polisport-foldable-bike-stand.webp'],
     shortDescription: 'Patented folding design holds up to 250kg with reinforced bi-material polypropylene and non-slip rubber top pad.',
     description: 'The award-winning Polisport Foldable Bike Stand is the ideal pit accessory for electric dirt bike owners. Collapses flat in one second with an integrated carrying handle, making it easy to store in the back of your ute, SUV trunk, or garage. Constructed from high-strength reinforced bi-material polypropylene composite capable of supporting heavy bikes up to 250kg without flexing.',
     specs: {
@@ -134,10 +131,7 @@ export const ACCESSORIES_PRODUCTS = [
     badge: '6063 Aircraft Alloy',
     featured: false,
     isAccessory: true,
-    images: [
-      'https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=1200&q=80',
-    ],
+    images: ['/images/products/matrix-concepts-a2-aluminum-pit-stand.webp'],
     shortDescription: 'TIG-welded 6063 aircraft-grade aluminum, anti-slip oil and chemical resistant top pad with 225kg capacity.',
     description: 'Engineered for pro pit crews and track days. Built from lightweight 1.25" 6063 aircraft-grade rectangular aluminum tubing with precision TIG welds. Features a replaceable extra-wide embossed top pad with oil, brake cleaner, and chemical resistance, plus a heavy-duty lower tool storage tray.',
     specs: {
@@ -162,10 +156,7 @@ export const ACCESSORIES_PRODUCTS = [
     badge: 'FIM Reg Approved',
     featured: true,
     isAccessory: true,
-    images: [
-      'https://images.unsplash.com/photo-1547038577-da80abbc4f19?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1508873696983-2df5293cb32b?auto=format&fit=crop&w=1200&q=80',
-    ],
+    images: ['/images/products/factory-effex-environmental-pit-mat.webp'],
     shortDescription: 'FIM regulation compliant 200cm x 100cm absorbent fibrous top with impermeable non-slip rubber backing.',
     description: 'Compliant with Australian Motorcycling Federation (MA) and FIM environmental regulations. Protects garage floors, driveways, and pit paddocks from dirt, wash overflow, chain lube overspray, and battery coolant drips. Highly absorbent top nylon fibers soak up fluids while the oil-impermeable rubber backing prevents ground contamination.',
     specs: {
@@ -193,10 +184,7 @@ export const ACCESSORIES_PRODUCTS = [
     badge: '120kg Aussie Tow Spec',
     featured: true,
     isAccessory: true,
-    images: [
-      'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?auto=format&fit=crop&w=1200&q=80',
-    ],
+    images: ['/images/products/ballards-heavy-duty-e-moto-hitch-carrier.webp'],
     shortDescription: 'Heavy-duty steel construction with 120kg capacity, integrated loading ramp, and anti-wobble stabilizer for 2" hitch receivers.',
     description: "Built tough for Australian outback corrugations and highway hauling. Ballard's E-Moto Hitch Carrier mounts securely into standard 50mm (2-inch) square towbar receivers. Rated to carry heavy electric dirt bikes up to 120kg including Surron, Talaria, E-Ride Pro, and Stark VARG with battery installed. Includes an attachable roll-on ramp and heavy-duty anti-tilt hitch clamp.",
     specs: {
@@ -222,10 +210,7 @@ export const ACCESSORIES_PRODUCTS = [
     badge: '500kg Break Strength',
     featured: true,
     isAccessory: true,
-    images: [
-      'https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1547038577-da80abbc4f19?auto=format&fit=crop&w=1200&q=80',
-    ],
+    images: ['/images/products/ballards-ratchet-tie-down-straps.webp'],
     shortDescription: 'Pair of 38mm wide heavy-duty tie-downs with built-in soft loops to prevent handlebar scratches, 500kg break strength.',
     description: "The gold standard for securing electric dirt bikes on utes, trailers, and vans. Ballard's 38mm ratchet tie-downs feature integrated soft-loop webbing extensions that wrap safely around delicate 28.6mm/31.8mm alloy handlebars and brake lines without scratching anodizing. Spring-loaded carabiner snap hooks on bottom prevent hook detachment over bumps.",
     specs: {
@@ -302,10 +287,7 @@ export const ACCESSORIES_PRODUCTS = [
     badge: 'Aussie Custom Moto Decal',
     featured: true,
     isAccessory: true,
-    images: [
-      'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?auto=format&fit=crop&w=1200&q=80',
-    ],
+    images: ['/images/products/skda-factory-edition-graphics-kit-talaria-sting-mx4-mx5.webp'],
     shortDescription: 'Designed in Australia by SKDA with 20 mil high-gloss laminate, exact CNC die-cut template, and custom battery wrap.',
     description: 'Custom designed on the Australian coast by SKDA, leaders in world-class moto decal engineering. Custom-tailored specifically for the Talaria Sting R, MX4, and MX5 body lines. Features 20 mil ultra-durable laminate that withstands scrubbed tree branches, pressure washer blasts, and rocky roost without lifting.',
     specs: {
@@ -329,10 +311,7 @@ export const ACCESSORIES_PRODUCTS = [
     badge: 'DGP Gloss Polymer',
     featured: false,
     isAccessory: true,
-    images: [
-      'https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1508873696983-2df5293cb32b?auto=format&fit=crop&w=1200&q=80',
-    ],
+    images: ['/images/products/polisport-restyle-front-fender-number-plate-kit.webp'],
     shortDescription: 'Durable Gloss Polypropylene (DGP) restyle front fender and stadium number plate with universal bracket.',
     description: 'Upgrade the skinny OEM front fender on your Surron or Talaria to an aggressive full-size motocross look. Made from Polisport’s proprietary DGP (Durable Gloss Polypropylene) that flexes without snapping during crashes. Includes a stadium front number plate with mounting zip-ties and adapter brackets for inverted MTB/moto forks.',
     specs: {
@@ -360,10 +339,7 @@ export const ACCESSORIES_PRODUCTS = [
     badge: 'Complete Care Pack',
     featured: true,
     isAccessory: true,
-    images: [
-      'https://images.unsplash.com/photo-1508873696983-2df5293cb32b?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1547038577-da80abbc4f19?auto=format&fit=crop&w=1200&q=80',
-    ],
+    images: ['/images/products/muc-off-e-bike-clean-protect-lube-starter-bundle.webp'],
     shortDescription: 'Includes 1L Nano Tech Cleaner, 500ml MO-94 Moisture Displacer Spray, 50ml Dry E-Bike Chain Lube, Expanding Sponge & Brush.',
     description: 'The ultimate maintenance bundle formulated specifically for the high torque loads and sensitive electronics of modern electric dirt bikes. Muc-Off Nano Tech Cleaner cuts through baked-on clay without harming anodized finishes or rubber seals. MO-94 spray drives out residual moisture from electrical connectors and motor casings, while the Ceramic Dry E-Bike Lube reduces chain friction under massive instant electric torque.',
     specs: {
@@ -412,10 +388,7 @@ export const ACCESSORIES_PRODUCTS = [
     badge: 'E-Safe No Water Wash',
     featured: true,
     isAccessory: true,
-    images: [
-      'https://images.unsplash.com/photo-1547038577-da80abbc4f19?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1508873696983-2df5293cb32b?auto=format&fit=crop&w=1200&q=80',
-    ],
+    images: ['/images/products/muc-off-waterless-wash-750ml.webp'],
     shortDescription: 'Non-sticky, streak-free formula that cleans without water, perfect for sensitive electrical motors and battery bays.',
     description: 'Never worry about high-pressure water blasting past electric motor seals, display screens, or battery terminals. Muc-Off Waterless Wash is an advanced spray cleaner that encapsulates dirt and grime on contact so you can wipe it off with a plush microfibre cloth without scratching your frame or graphics. Leaves a non-sticky, streak-free protective shine.',
     specs: {
