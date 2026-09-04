@@ -5,6 +5,7 @@ import { SmartImage } from '@/components/SmartImage';
 import { JsonLd } from '@/components/JsonLd';
 import { CategoryProductGrid } from './CategoryProductGrid';
 import { CATEGORIES, PRODUCTS, SITE, getShopCategoryNav } from '@/config/site';
+import { buildSeoTitle, truncateDescription } from '@/lib/seo';
 
 interface CategoryPageProps {
   params: Promise<{
@@ -70,8 +71,8 @@ export async function generateMetadata({ params }: CategoryPageProps) {
 
   if (!category && !customSeo) return { title: 'Category Not Found' };
 
-  const title = customSeo?.title || `${category?.name} | Electric Dirt Bikes Australia | Australian Electric Motor Co`;
-  const description = customSeo?.description || `${category?.description?.slice(0, 150)}...`;
+  const title = customSeo?.title || buildSeoTitle(category?.name || '');
+  const description = customSeo?.description || truncateDescription(category?.description || '');
 
   return {
     title,

@@ -5,6 +5,7 @@ import { SmartImage } from '@/components/SmartImage';
 import { JsonLd } from '@/components/JsonLd';
 import { AddToCartButton } from './AddToCartButton';
 import { PRODUCTS, CATEGORIES, SITE, CONTACT, SHOP, FINANCE } from '@/config/site';
+import { buildSeoTitle, truncateDescription } from '@/lib/seo';
 
 interface ProductPageProps {
   params: Promise<{
@@ -26,8 +27,8 @@ export async function generateMetadata({ params }: ProductPageProps) {
   if (!product) return { title: 'Product Not Found' };
 
   return {
-    title: `${product.name} | Electric Dirt Bike Australia | Australian Electric Motor Co`,
-    description: `${product.shortDescription.slice(0, 150)}...`,
+    title: buildSeoTitle(product.name),
+    description: truncateDescription(product.shortDescription),
     alternates: {
       canonical: `https://${SITE.domain}/shop/${product.category}/${product.slug}/`,
     },
