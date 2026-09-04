@@ -4,6 +4,7 @@ import { EBIKES_DATA } from './ebikes.js';
 import { ALL_BATTERIES_AND_CHARGERS } from './batteries-chargers.js';
 import { RIDING_GEAR_CATEGORIES, RIDING_GEAR_PRODUCTS } from './riding-gear.js';
 import { ACCESSORIES_CATEGORIES, ACCESSORIES_PRODUCTS, STARTER_PACK_BUNDLE } from './accessories.js';
+import { PARTS_PRODUCTS } from './parts.js';
 
 export { STARTER_PACK_BUNDLE };
 
@@ -750,6 +751,9 @@ export const PRODUCTS = [
 
   // Accessories & Maintenance
   ...ACCESSORIES_PRODUCTS,
+
+  // Spare parts, upgrades & accessories from supplied product photography
+  ...PARTS_PRODUCTS,
 
   // Controllers & Electronics
   {
