@@ -153,7 +153,7 @@ export default function FinancePage() {
                     ${payIn4Instalment.toLocaleString()}
                     <span className="text-base text-stone-400 font-normal"> AUD</span>
                   </div>
-                  <span className="text-[11px] text-stone-500 font-mono">
+                  <span className="text-[11px] text-stone-400 font-mono">
                     Total order payable: ${selectedBikePrice.toLocaleString()} AUD
                   </span>
                 </div>
@@ -192,7 +192,7 @@ export default function FinancePage() {
                 >
                   <span>Order With Pay in 4 on WhatsApp</span>
                 </a>
-                <p className="text-[10px] text-stone-500 text-center leading-relaxed">
+                <p className="text-[10px] text-stone-400 text-center leading-relaxed">
                   *Pay in 4 available to Australian residents 18+. Subject to standard identity and card verification at checkout.
                 </p>
               </div>
@@ -274,7 +274,7 @@ export default function FinancePage() {
                     ${weeklyPayment}
                     <span className="text-base text-stone-400 font-normal"> /wk</span>
                   </div>
-                  <span className="text-[11px] text-stone-500 font-mono">
+                  <span className="text-[11px] text-stone-400 font-mono">
                     approx. ${Math.round(monthlyPayment)} / month
                   </span>
                 </div>
@@ -308,7 +308,7 @@ export default function FinancePage() {
                 >
                   <span>Inquire for Commercial Pre-Approval</span>
                 </a>
-                <p className="text-[10px] text-stone-500 text-center leading-relaxed">
+                <p className="text-[10px] text-stone-400 text-center leading-relaxed">
                   *ABN / Station fleet asset finance. Subject to lender assessment and credit criteria.
                 </p>
               </div>

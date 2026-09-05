@@ -83,7 +83,7 @@ export function ChatHub() {
             </a>
           </div>
 
-          <p className="text-[10px] text-stone-500 text-center pt-2 border-t border-[#2B2F36]">
+          <p className="text-[10px] text-stone-400 text-center pt-2 border-t border-[#2B2F36]">
             Mon–Sat: 8am – 5pm AEST • Test rides by appointment
           </p>
         </div>

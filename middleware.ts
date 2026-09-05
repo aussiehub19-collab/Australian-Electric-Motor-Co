@@ -23,12 +23,26 @@ function prefersMarkdownOverHtml(accept: string): boolean {
   return mdQ > -1 && mdQ > htmlQ;
 }
 
+// Files that are already plain text / markdown / json / xml and must be served
+// verbatim regardless of the Accept header. Without this, an agent doing
+// content negotiation (Accept: text/markdown) on /auth.md, /llms.txt, the
+// sitemap or any /.well-known/* resource got the generic HTML→markdown stub
+// instead of the real file — which is exactly what isitagentready.com caught
+// ("auth.md exists but is missing the expected Auth.md heading").
+const STATIC_PASSTHROUGH =
+  /^\/\.well-known\//.source + '|' + /^\/(robots\.txt|sitemap\.xml|auth\.md|llms\.txt)$/.source + '|' + /\.(txt|xml|json|md)$/.source;
+const staticPassthroughRe = new RegExp(STATIC_PASSTHROUGH);
+
 export default async function middleware(request: NextRequest) {
   const accept = request.headers.get('accept') || '';
   const pathname = request.nextUrl.pathname;
 
   // Check if caller explicitly prefers markdown over HTML (q-value aware)
-  if (prefersMarkdownOverHtml(accept) && !pathname.startsWith('/api/')) {
+  if (
+    prefersMarkdownOverHtml(accept) &&
+    !pathname.startsWith('/api/') &&
+    !staticPassthroughRe.test(pathname)
+  ) {
     const baseUrl = `https://${SITE.domain}`;
 
     // Generate markdown on-the-fly based on pathname

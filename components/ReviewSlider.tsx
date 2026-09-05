@@ -108,7 +108,7 @@ export function ReviewSlider() {
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#121417] border border-[#2B2F36] text-[11px] font-mono text-emerald-400">
               <span className="w-2 h-2 rounded-full bg-[#00B67A] animate-pulse" />
               <span className="font-bold">VERIFIED REVIEWS PROFILE</span>
-              <span className="text-stone-500">&bull;</span>
+              <span className="text-stone-400">&bull;</span>
               <span className="text-stone-300">AUSTRALIAN HERITAGE</span>
             </div>
 
@@ -164,7 +164,7 @@ export function ReviewSlider() {
         <div className="flex flex-wrap items-center justify-between gap-4 py-6 relative z-10">
           {/* Filter Pills */}
           <div className="flex flex-wrap items-center gap-2">
-            <span className="text-xs font-mono text-stone-500 mr-1 hidden sm:inline">Filter:</span>
+            <span className="text-xs font-mono text-stone-400 mr-1 hidden sm:inline">Filter:</span>
             {tags.map((tag) => (
               <button
                 key={tag}
@@ -245,7 +245,7 @@ export function ReviewSlider() {
                       {/* Card Top: 5 Stars + Tag */}
                       <div className="flex items-center justify-between gap-2">
                         {/* 5 Green Trustpilot Stars */}
-                        <div className="flex items-center gap-1" aria-label={`${review.rating} out of 5 stars`}>
+                        <div className="flex items-center gap-1" role="img" aria-label={`${review.rating} out of 5 stars`}>
                           {[...Array(review.rating)].map((_, starI) => (
                             <div
                               key={starI}
@@ -315,7 +315,7 @@ export function ReviewSlider() {
         {/* Slider Bottom Progress & Indicators */}
         <div className="pt-4 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-[#23272E] relative z-10">
           {/* Dot Indicators */}
-          <div className="flex items-center gap-1.5" role="tablist" aria-label="Review slider pagination">
+          <div className="flex items-center" role="tablist" aria-label="Review slider pagination">
             {[...Array(maxIndex + 1)].map((_, dotIdx) => (
               <button
                 key={dotIdx}
@@ -325,12 +325,14 @@ export function ReviewSlider() {
                 aria-selected={currentIndex === dotIdx}
                 aria-label={`Go to slide ${dotIdx + 1}`}
                 onClick={() => setCurrentIndex(dotIdx)}
-                className={`h-2 rounded-full transition-all cursor-pointer ${
-                  currentIndex === dotIdx
-                    ? 'w-8 bg-[#8C4A2F]'
-                    : 'w-2 bg-[#2B2F36] hover:bg-stone-500'
-                }`}
-              />
+                className="flex h-6 w-6 items-center justify-center cursor-pointer"
+              >
+                <span
+                  className={`block h-2 rounded-full transition-all ${
+                    currentIndex === dotIdx ? 'w-8 bg-[#8C4A2F]' : 'w-2 bg-[#2B2F36]'
+                  }`}
+                />
+              </button>
             ))}
           </div>
 

@@ -76,7 +76,7 @@ function SearchContent() {
           </h2>
 
           {matchingProducts.length === 0 ? (
-            <p className="text-xs text-stone-500 font-mono py-4">No matching electric dirt bikes found.</p>
+            <p className="text-xs text-stone-400 font-mono py-4">No matching electric dirt bikes found.</p>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {matchingProducts.map((product) => (
@@ -94,7 +94,7 @@ function SearchContent() {
           </h2>
 
           {matchingPosts.length === 0 ? (
-            <p className="text-xs text-stone-500 font-mono py-4">No matching articles found.</p>
+            <p className="text-xs text-stone-400 font-mono py-4">No matching articles found.</p>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {matchingPosts.map((post) => (

@@ -358,7 +358,7 @@ export function Nav() {
                     <span>{cat.icon}</span>
                     <span className="font-medium">{cat.name}</span>
                   </span>
-                  <span className="text-xs text-stone-500">&rarr;</span>
+                  <span className="text-xs text-stone-400">&rarr;</span>
                 </Link>
               ))}
             </div>
@@ -382,7 +382,7 @@ export function Nav() {
                     <span>{sec.icon}</span>
                     <span className="font-medium">{sec.name}</span>
                   </span>
-                  <span className="text-xs text-stone-500">&rarr;</span>
+                  <span className="text-xs text-stone-400">&rarr;</span>
                 </Link>
               ))}
             </div>

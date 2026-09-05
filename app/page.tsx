@@ -450,7 +450,7 @@ export default function HomePage() {
               </div>
               <div className="flex flex-1 flex-col justify-between space-y-3 p-6">
                 <div className="space-y-2">
-                  <div className="font-mono text-[11px] text-stone-500">
+                  <div className="font-mono text-[11px] text-stone-400">
                     {post.date} • {post.readTime}
                   </div>
                   <h3 className="line-clamp-2 text-base font-bold text-white transition-colors group-hover:text-[#C87D55]">

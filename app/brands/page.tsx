@@ -312,13 +312,13 @@ export default function BrandsPage() {
                     {/* Compact Specs Box */}
                     <div className="bg-[#121417] border border-[#22262E] rounded-lg p-2 space-y-1 text-[10px] font-mono">
                       <div className="flex items-center justify-between text-stone-400">
-                        <span className="text-stone-500">Flagship:</span>
+                        <span className="text-stone-400">Flagship:</span>
                         <span className="text-stone-200 font-semibold truncate max-w-[100px] text-right">
                           {details.flagship}
                         </span>
                       </div>
                       <div className="flex items-center justify-between text-stone-400">
-                        <span className="text-stone-500">{details.statLabel || 'Power'}:</span>
+                        <span className="text-stone-400">{details.statLabel || 'Power'}:</span>
                         <span className="text-amber-400 font-bold text-right">
                           {details.powerRange}
                         </span>

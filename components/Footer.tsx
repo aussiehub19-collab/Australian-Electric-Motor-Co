@@ -180,12 +180,12 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <a href="/llms.txt" className="hover:text-[#C87D55] transition font-mono text-xs text-stone-500">
+                <a href="/llms.txt" className="hover:text-[#C87D55] transition font-mono text-xs text-stone-400">
                   llms.txt (Agent Resource)
                 </a>
               </li>
               <li>
-                <a href="/.well-known/mcp/server-card.json" className="hover:text-[#C87D55] transition font-mono text-xs text-stone-500">
+                <a href="/.well-known/mcp/server-card.json" className="hover:text-[#C87D55] transition font-mono text-xs text-stone-400">
                   MCP Server Card
                 </a>
               </li>
@@ -194,7 +194,7 @@ export function Footer() {
         </div>
 
         {/* Legal Disclaimer & Regulatory Notice */}
-        <div className="mt-12 pt-8 border-t border-[#23272E] text-xs text-stone-500 space-y-3">
+        <div className="mt-12 pt-8 border-t border-[#23272E] text-xs text-stone-400 space-y-3">
           <p className="leading-relaxed">
             <strong className="text-stone-400">Australian Off-Road &amp; Regulatory Notice:</strong> Australian Electric Motor Co electric dirt bikes are purpose-built high-performance competition off-road motorcycles engineered for private property, pastoral stations, dedicated motocross parks, and sanctioned trails. Unless specifically road-complianced with ADR lighting kits and approved state road registration, electric dirt bikes are not intended for use on public roads. Always wear full AS/NZS-certified motorcycle safety gear. All prices include 10% Australian GST.
           </p>

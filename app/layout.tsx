@@ -69,6 +69,8 @@ export default function RootLayout({
       <head>
         {/* Agent-Ready WebMCP Client Context Loader */}
         <script src="/js/webmcp.js" defer></script>
+        {/* ARD (Agentic Resource Discovery) capability manifest */}
+        <link rel="ai-catalog" href="/.well-known/ai-catalog.json" />
       </head>
       <body className="bg-[#0f1012] text-stone-100 min-h-screen flex flex-col font-sans selection:bg-[#8C4A2F] selection:text-white antialiased" suppressHydrationWarning>
         <AnnouncementBar />

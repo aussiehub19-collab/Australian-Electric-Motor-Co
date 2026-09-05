@@ -75,7 +75,7 @@ export function HeroSlider({ images, interval = 5500 }: HeroSliderProps) {
 
       {/* Slide indicators */}
       {images.length > 1 && (
-        <div className="absolute bottom-5 left-1/2 z-20 flex -translate-x-1/2 items-center gap-2">
+        <div className="absolute bottom-3 left-1/2 z-20 flex -translate-x-1/2 items-center">
           {images.map((img, i) => (
             <button
               key={img.src}
@@ -83,10 +83,15 @@ export function HeroSlider({ images, interval = 5500 }: HeroSliderProps) {
               onClick={() => goto(i)}
               aria-label={`Show hero image ${i + 1} of ${images.length}`}
               aria-current={i === index ? 'true' : undefined}
-              className={`h-1.5 rounded-full transition-all ${
-                i === index ? 'w-7 bg-[#C87D55]' : 'w-1.5 bg-white/45 hover:bg-white/70'
-              }`}
-            />
+              // 24x24 hit area (WCAG 2.2 target size); the visible dot inside stays small
+              className="flex h-6 w-6 items-center justify-center"
+            >
+              <span
+                className={`block h-1.5 rounded-full transition-all ${
+                  i === index ? 'w-7 bg-[#C87D55]' : 'w-1.5 bg-white/45'
+                }`}
+              />
+            </button>
           ))}
         </div>
       )}

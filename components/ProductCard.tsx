@@ -233,7 +233,7 @@ export function ProductCard({ product, className = '', priority = false }: Produ
                 </span>
               ))}
               {product.sizes.length > 4 && (
-                <span className="text-[9px] font-mono text-stone-500 self-center">
+                <span className="text-[9px] font-mono text-stone-400 self-center">
                   +{product.sizes.length - 4}
                 </span>
               )}

@@ -79,7 +79,7 @@ export default function BlogIndexPage() {
               <div className="space-y-2">
                 <div className="flex items-center justify-between text-[11px] font-mono">
                   <span className="text-[#C87D55] font-bold">{post.category}</span>
-                  <span className="text-stone-500">{post.readTime}</span>
+                  <span className="text-stone-400">{post.readTime}</span>
                 </div>
                 <h2 className="text-base sm:text-lg font-bold text-white group-hover:text-[#C87D55] transition line-clamp-2">
                   {post.title}
@@ -89,7 +89,7 @@ export default function BlogIndexPage() {
                 </p>
               </div>
               <div className="pt-2 border-t border-[#23272E] flex items-center justify-between text-xs font-mono">
-                <span className="text-stone-500">{post.date}</span>
+                <span className="text-stone-400">{post.date}</span>
                 <span className="text-[#C87D55] font-bold">Read Guide &rarr;</span>
               </div>
             </div>

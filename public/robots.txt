@@ -48,3 +48,4 @@ Allow: /
 # API Catalog: https://australianelectricmotorco.com.au/.well-known/api-catalog
 # Agent Skills: https://australianelectricmotorco.com.au/.well-known/agent-skills/index.json
 # MCP Server Card: https://australianelectricmotorco.com.au/.well-known/mcp/server-card.json
+Agentmap: https://australianelectricmotorco.com.au/.well-known/ai-catalog.json

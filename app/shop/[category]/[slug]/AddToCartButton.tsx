@@ -188,7 +188,7 @@ export function AddToCartButton({ product }: AddToCartButtonProps) {
               <div className="pt-3 border-t border-[#23272E] flex justify-between items-baseline">
                 <div>
                   <span className="text-stone-400">Regular Total:</span>{' '}
-                  <span className="line-through text-stone-500">${STARTER_PACK_BUNDLE.originalPrice} AUD</span>
+                  <span className="line-through text-stone-400">${STARTER_PACK_BUNDLE.originalPrice} AUD</span>
                 </div>
                 <div className="text-right">
                   <div className="text-base font-black text-amber-400 font-mono">

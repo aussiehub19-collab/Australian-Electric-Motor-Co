@@ -307,7 +307,7 @@ export function CompareTool({ groups, cryptoDiscount = 0 }: CompareToolProps) {
         </table>
       </div>
 
-      <p className="border-t border-[#23272E] p-4 text-center font-mono text-[11px] text-stone-500">
+      <p className="border-t border-[#23272E] p-4 text-center font-mono text-[11px] text-stone-400">
         ▲ higher spec &nbsp;·&nbsp; ▼ lower price &nbsp;·&nbsp; change either dropdown to compare other
         {' '}
         {group.noun.toLowerCase()}s

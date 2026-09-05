@@ -277,7 +277,7 @@ export function CartDrawer({
                           <span className="text-xs text-amber-400 font-mono font-bold">
                             ${bundleItemPrice(item).toLocaleString()} AUD
                           </span>
-                          <span className="text-[10px] text-stone-500 font-mono line-through">
+                          <span className="text-[10px] text-stone-400 font-mono line-through">
                             ${item.price.toLocaleString()}
                           </span>
                           <span className="text-[9px] font-mono font-bold text-emerald-300 bg-emerald-500/15 border border-emerald-500/30 rounded px-1 py-0.5 uppercase tracking-wide">
@@ -318,7 +318,7 @@ export function CartDrawer({
                       <button
                         type="button"
                         onClick={() => removeItem(item.slug)}
-                        className="text-xs text-stone-500 hover:text-rose-400 ml-auto transition font-mono"
+                        className="text-xs text-stone-400 hover:text-rose-400 ml-auto transition font-mono"
                         aria-label={`Remove ${item.name} from cart`}
                       >
                         Remove

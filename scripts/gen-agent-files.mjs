@@ -57,6 +57,7 @@ const vercelConfig = {
     { "source": "/.well-known/oauth-authorization-server", "headers": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Access-Control-Allow-Origin", "value": "*" }] },
     { "source": "/.well-known/openid-configuration", "headers": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Access-Control-Allow-Origin", "value": "*" }] },
     { "source": "/.well-known/acp.json", "headers": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Access-Control-Allow-Origin", "value": "*" }] },
+    { "source": "/.well-known/ai-catalog.json", "headers": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Access-Control-Allow-Origin", "value": "*" }] },
     { "source": "/.well-known/ucp", "headers": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Access-Control-Allow-Origin", "value": "*" }] },
     { "source": "/auth.md", "headers": [{ "key": "Content-Type", "value": "text/markdown; charset=utf-8" }, { "key": "Access-Control-Allow-Origin", "value": "*" }] },
     { "source": "/llms.txt", "headers": [{ "key": "Content-Type", "value": "text/plain; charset=utf-8" }, { "key": "Access-Control-Allow-Origin", "value": "*" }] },
@@ -117,6 +118,7 @@ Allow: /
 # API Catalog: ${baseUrl}/.well-known/api-catalog
 # Agent Skills: ${baseUrl}/.well-known/agent-skills/index.json
 # MCP Server Card: ${baseUrl}/.well-known/mcp/server-card.json
+Agentmap: ${baseUrl}/.well-known/ai-catalog.json
 `;
 fs.writeFileSync(path.resolve(publicDir, 'robots.txt'), robotsTxt);
 
@@ -228,6 +230,82 @@ const apiCatalog = {
   ]
 };
 fs.writeFileSync(path.resolve(wellKnownDir, 'api-catalog'), JSON.stringify(apiCatalog, null, 2) + '\n');
+
+// 5b. Generate .well-known/ai-catalog.json — ARD (Agentic Resource Discovery)
+// capability manifest. https://agenticresourcediscovery.org / ards-project/ard-spec
+const urn = (ns, name) => `urn:air:${SITE.domain}:${ns}:${name}`;
+const aiCatalog = {
+  specVersion: '0.1',
+  host: {
+    name: SITE.name,
+    url: baseUrl,
+    description: SITE.tagline,
+  },
+  entries: [
+    {
+      id: urn('commerce', 'product-catalog'),
+      displayName: `${SITE.name} product catalog`,
+      description: 'Full catalogue of electric dirt bikes, batteries, chargers, upgrades and riding gear with live AUD pricing and specs.',
+      type: 'application/json',
+      url: `${baseUrl}/api/products/`,
+      representativeQueries: [
+        'electric dirt bike for adults australia',
+        'kids electric balance bike price',
+        '72v battery for surron',
+        'road legal electric dirt bike',
+        'motocross helmet australia',
+      ],
+    },
+    {
+      id: urn('commerce', 'mcp-server'),
+      displayName: `${SITE.name} MCP server`,
+      description: 'Model Context Protocol endpoint: product search, catalogue browse, spec comparison and order-draft creation (human completes checkout).',
+      type: 'application/json',
+      url: `${baseUrl}/.well-known/mcp/server-card.json`,
+      representativeQueries: [
+        'search electric dirt bikes by price',
+        'compare surron vs talaria specs',
+        'draft an order for a Stark VARG',
+      ],
+    },
+    {
+      id: urn('content', 'buying-guides'),
+      displayName: `${SITE.name} buying & tech guides`,
+      description: 'Guides on electric dirt bike cost in Australia, battery and charging, road-legal rules, and gear selection.',
+      type: 'text/html',
+      url: `${baseUrl}/blog/`,
+      representativeQueries: [
+        'how much does an electric dirt bike cost in australia',
+        'how long to charge an electric dirt bike',
+        'are electric dirt bikes street legal in australia',
+        'enduro vs motocross electric bike',
+      ],
+    },
+    {
+      id: urn('content', 'llms-txt'),
+      displayName: `${SITE.name} llms.txt`,
+      description: 'Plain-text site summary for language models: business facts, categories, products and key resources.',
+      type: 'text/plain',
+      url: `${baseUrl}/llms.txt`,
+      representativeQueries: [
+        'what does australian electric motor co sell',
+        'australian electric motor co contact and payment options',
+      ],
+    },
+    {
+      id: urn('support', 'faq'),
+      displayName: `${SITE.name} FAQ`,
+      description: 'Answers on pricing, road-legal rules, kids and balance bikes, charging, warranty and payment.',
+      type: 'text/html',
+      url: `${baseUrl}/faq/`,
+      representativeQueries: [
+        'do electric dirt bikes need registration',
+        'what payment options does australian electric motor co accept',
+      ],
+    },
+  ],
+};
+fs.writeFileSync(path.resolve(wellKnownDir, 'ai-catalog.json'), JSON.stringify(aiCatalog, null, 2) + '\n');
 
 // 6. Generate .well-known/agent-skills/index.json
 const agentSkills = {

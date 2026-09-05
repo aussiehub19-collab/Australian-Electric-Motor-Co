@@ -316,7 +316,7 @@ export default async function BlogPostPage({ params }: PostPageProps) {
                 <h3 className="text-sm font-bold text-white group-hover:text-[#C87D55] transition line-clamp-2">
                   {r.title}
                 </h3>
-                <div className="text-xs text-stone-500 font-mono">{r.date} • {r.readTime}</div>
+                <div className="text-xs text-stone-400 font-mono">{r.date} • {r.readTime}</div>
               </Link>
             ))}
           </div>

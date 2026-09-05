@@ -1,0 +1,71 @@
+{
+  "specVersion": "0.1",
+  "host": {
+    "name": "Australian Electric Motor Co",
+    "url": "https://australianelectricmotorco.com.au",
+    "description": "Australia's Premier Electric Dirt Bike Specialist & High-Voltage Moto Engineering"
+  },
+  "entries": [
+    {
+      "id": "urn:air:australianelectricmotorco.com.au:commerce:product-catalog",
+      "displayName": "Australian Electric Motor Co product catalog",
+      "description": "Full catalogue of electric dirt bikes, batteries, chargers, upgrades and riding gear with live AUD pricing and specs.",
+      "type": "application/json",
+      "url": "https://australianelectricmotorco.com.au/api/products/",
+      "representativeQueries": [
+        "electric dirt bike for adults australia",
+        "kids electric balance bike price",
+        "72v battery for surron",
+        "road legal electric dirt bike",
+        "motocross helmet australia"
+      ]
+    },
+    {
+      "id": "urn:air:australianelectricmotorco.com.au:commerce:mcp-server",
+      "displayName": "Australian Electric Motor Co MCP server",
+      "description": "Model Context Protocol endpoint: product search, catalogue browse, spec comparison and order-draft creation (human completes checkout).",
+      "type": "application/json",
+      "url": "https://australianelectricmotorco.com.au/.well-known/mcp/server-card.json",
+      "representativeQueries": [
+        "search electric dirt bikes by price",
+        "compare surron vs talaria specs",
+        "draft an order for a Stark VARG"
+      ]
+    },
+    {
+      "id": "urn:air:australianelectricmotorco.com.au:content:buying-guides",
+      "displayName": "Australian Electric Motor Co buying & tech guides",
+      "description": "Guides on electric dirt bike cost in Australia, battery and charging, road-legal rules, and gear selection.",
+      "type": "text/html",
+      "url": "https://australianelectricmotorco.com.au/blog/",
+      "representativeQueries": [
+        "how much does an electric dirt bike cost in australia",
+        "how long to charge an electric dirt bike",
+        "are electric dirt bikes street legal in australia",
+        "enduro vs motocross electric bike"
+      ]
+    },
+    {
+      "id": "urn:air:australianelectricmotorco.com.au:content:llms-txt",
+      "displayName": "Australian Electric Motor Co llms.txt",
+      "description": "Plain-text site summary for language models: business facts, categories, products and key resources.",
+      "type": "text/plain",
+      "url": "https://australianelectricmotorco.com.au/llms.txt",
+      "representativeQueries": [
+        "what does australian electric motor co sell",
+        "australian electric motor co contact and payment options"
+      ]
+    },
+    {
+      "id": "urn:air:australianelectricmotorco.com.au:support:faq",
+      "displayName": "Australian Electric Motor Co FAQ",
+      "description": "Answers on pricing, road-legal rules, kids and balance bikes, charging, warranty and payment.",
+      "type": "text/html",
+      "url": "https://australianelectricmotorco.com.au/faq/",
+      "representativeQueries": [
+        "do electric dirt bikes need registration",
+        "what payment options does australian electric motor co accept"
+      ]
+    }
+  ]
+}

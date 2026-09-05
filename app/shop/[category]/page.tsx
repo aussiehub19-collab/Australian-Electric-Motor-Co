@@ -410,7 +410,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
                       {modelCount} {modelCount === 1 ? 'product' : 'products'}
                     </span>
                   </div>
-                  <span className="shrink-0 text-stone-500 transition-transform group-hover:translate-x-0.5 group-hover:text-[#C87D55]">
+                  <span className="shrink-0 text-stone-400 transition-transform group-hover:translate-x-0.5 group-hover:text-[#C87D55]">
                     &rarr;
                   </span>
                 </Link>
