@@ -681,6 +681,14 @@ export const CATEGORIES = [
   },
 ];
 
+// Which leaf bike category rolls up into which top-level rider grouping —
+// driven by the bike's own `category` (always correct), not the free-text
+// `target` label (was 'Kids / Youth' / 'Utility / Farm', but the real data
+// uses 'Kids & Youth', so every kids/utility bike was silently mis-tagged
+// as an adult bike and leaking into /shop/adult-electric-dirt-bikes/).
+const KIDS_YOUTH_BIKE_CATEGORIES = ['junior-trials-youth-dirt-bikes', 'balance-mini-bikes'];
+const UTILITY_FARM_BIKE_CATEGORIES = ['utility-farm-e-bikes'];
+
 export const PRODUCTS = [
   // Every e-bike model, spread across our brands
   ...EBIKES_DATA.map((bike) => ({
@@ -688,9 +696,9 @@ export const PRODUCTS = [
     isBike: true,
     parentCategories: [
       'electric-dirt-bikes',
-      bike.target === 'Kids / Youth'
+      KIDS_YOUTH_BIKE_CATEGORIES.includes(bike.category)
         ? 'kids-youth-electric-dirt-bikes'
-        : bike.target === 'Utility / Farm'
+        : UTILITY_FARM_BIKE_CATEGORIES.includes(bike.category)
         ? 'utility-farm-e-bikes'
         : 'adult-electric-dirt-bikes',
       bike.category,
