@@ -3,7 +3,9 @@ import { SITE, CATEGORIES, PRODUCTS, POSTS } from '@/config/site';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = `https://${SITE.domain}`;
-  const now = new Date();
+  // Date-only (YYYY-MM-DD) is valid W3C datetime and avoids stamping every URL
+  // with an identical build-time millisecond, which reads as machine noise.
+  const now = new Date().toISOString().slice(0, 10);
 
   const coreRoutes: MetadataRoute.Sitemap = [
     {
@@ -91,7 +93,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   const blogRoutes: MetadataRoute.Sitemap = POSTS.map((post) => ({
     url: `${baseUrl}/blog/${post.slug}/`,
-    lastModified: now,
+    lastModified: (post as { date?: string }).date || now,
     changeFrequency: 'monthly',
     priority: 0.75,
   }));

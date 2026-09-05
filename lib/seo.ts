@@ -17,7 +17,16 @@ export function buildSeoTitle(name: string): string {
   if (full.length <= TITLE_MAX) return full;
   const short = `${name} | ${BRAND_SHORT}`;
   if (short.length <= TITLE_MAX) return short;
-  return name;
+  if (name.length <= TITLE_MAX) return name;
+  // Even the bare name is over the band — trim to the last whole word that
+  // fits, dropping any trailing connective/punctuation. No ellipsis: a title
+  // is a label, not a sentence.
+  const cut = name.slice(0, TITLE_MAX);
+  const lastSpace = cut.lastIndexOf(' ');
+  return cut
+    .slice(0, lastSpace > 40 ? lastSpace : TITLE_MAX)
+    .replace(/[\s—–:,;&-]+$/, '')
+    .replace(/\s+(and|or|the|a|for|to|of|with|vs)$/i, '');
 }
 
 /** Truncate to `max` chars on a word boundary — only appends an ellipsis when it actually cut something. */

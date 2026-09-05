@@ -8,7 +8,7 @@ export function ChatHub() {
   const [open, setOpen] = useState(false);
 
   const whatsappUrl = waLink(
-    `Hi, I have a question about your electric dirt bikes and NSW test rides.`,
+    `Hi, I have a question about your electric dirt bikes.`,
   );
   const emailUser = CONTACT.email.split('@')[0];
   const emailDomain = CONTACT.email.split('@')[1];

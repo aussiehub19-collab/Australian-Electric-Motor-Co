@@ -181,7 +181,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
 
   // Pre-fill WhatsApp message
   const whatsappUrl = waLink(
-    `I'm inquiring about the ${product.name} ($${product.price.toLocaleString()} AUD). Could you confirm current availability, Pay in 4 terms, or test rides at your NSW workshop?`,
+    `I'm inquiring about the ${product.name} ($${product.price.toLocaleString()} AUD). Could you confirm current availability and Pay in 4 terms?`,
   );
 
   // Product Schema

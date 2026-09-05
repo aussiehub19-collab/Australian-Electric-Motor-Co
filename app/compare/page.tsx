@@ -7,7 +7,7 @@ import { PRODUCTS, SHOP, SITE } from '@/config/site';
 export const metadata = {
   title: 'Compare Electric Dirt Bikes | Side-by-Side Spec Tool | AEMC',
   description:
-    'Pick any two electric dirt bikes and compare power, top speed, range, battery, weight and price side by side. Swap either model to compare the whole Australian lineup.',
+    'Compare any two electric dirt bikes side by side — power, top speed, range, battery, weight and price across the full Australian lineup.',
   alternates: {
     canonical: `https://${SITE.domain}/compare/`,
   },

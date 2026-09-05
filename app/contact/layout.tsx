@@ -1,5 +1,15 @@
 import type { Metadata } from 'next';
 import { SITE } from '@/config/site';
+import { JsonLd } from '@/components/JsonLd';
+
+const breadcrumb = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: `https://${SITE.domain}/` },
+    { '@type': 'ListItem', position: 2, name: 'Contact', item: `https://${SITE.domain}/contact/` },
+  ],
+};
 
 // contact/page.tsx is a Client Component and can't export metadata itself —
 // this server layout supplies its title/description so it no longer falls
@@ -14,5 +24,10 @@ export const metadata: Metadata = {
 };
 
 export default function ContactLayout({ children }: { children: React.ReactNode }) {
-  return children;
+  return (
+    <>
+      <JsonLd data={breadcrumb} />
+      {children}
+    </>
+  );
 }

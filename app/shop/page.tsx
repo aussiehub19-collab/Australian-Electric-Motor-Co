@@ -9,7 +9,7 @@ import { CATEGORIES, PRODUCTS, SITE, getShopCategoryNav } from '@/config/site';
 export const metadata: Metadata = {
   title: 'Shop Electric Dirt Bikes, Parts & Gear | AEMC',
   description:
-    "Browse Australia's full electric dirt bike range plus batteries, chargers, upgrades, riding gear and accessories. Filter by category, brand, price and road-legal status.",
+    "Browse Australia's electric dirt bike range plus batteries, chargers, upgrades, riding gear and accessories — filter by brand, price and road-legal status.",
   alternates: { canonical: `https://${SITE.domain}/shop/` },
   openGraph: {
     type: 'website',

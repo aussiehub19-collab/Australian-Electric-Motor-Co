@@ -61,7 +61,7 @@ const CATEGORY_SEO_MAP: Record<
   'full-size-motocross': {
     title: 'Electric Motocross Bikes Australia | AEMC',
     description:
-      'Full-size electric motocross bikes matching 110cc-450cc petrol power, with holeshot torque, long-travel suspension and 21"/18" wheels for competition tracks.',
+      'Full-size electric motocross bikes matching 110-450cc petrol power — holeshot torque, long-travel suspension and 21"/18" wheels for the track.',
   },
   'trail-mid-weight-enduro': {
     title: 'Electric Trail Bikes | Mid-Weight Enduro | AEMC',
@@ -243,7 +243,7 @@ export async function generateMetadata({ params }: CategoryPageProps) {
   if (!category && !customSeo) return { title: 'Category Not Found' };
 
   const title = customSeo?.title || buildSeoTitle(category?.name || '');
-  const description = customSeo?.description || truncateDescription(category?.description || '');
+  const description = truncateDescription(customSeo?.description || category?.description || '');
 
   return {
     title,

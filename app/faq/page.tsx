@@ -98,7 +98,7 @@ export default function FAQPage() {
         </p>
         <div className="pt-2 flex flex-wrap justify-center gap-4">
           <a
-            href={waLink('I have a question about suspension tuning, battery upgrades, or booking a private test ride.')}
+            href={waLink('I have a question about suspension tuning or battery upgrades.')}
             target="_blank"
             rel="noopener noreferrer"
             className="bg-[#25D366] hover:bg-[#20bd5a] text-black font-bold px-6 py-3 rounded-xl text-xs transition shadow-lg"

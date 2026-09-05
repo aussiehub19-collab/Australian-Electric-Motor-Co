@@ -8,7 +8,7 @@ export const WHATSAPP_NUMBER = CONTACT.whatsapp.replace(/[^0-9]/g, '');
  * line of the customer's chat thread, so both sides can see which business the
  * conversation is about. WhatsApp renders *text* as bold.
  */
-export const WA_HEADER = `*${SITE.name}*\n${SITE.domain}`;
+export const WA_HEADER = `*${SITE.name}*`;
 
 /**
  * Build a wa.me link whose pre-filled message opens with the business name and
@@ -90,7 +90,6 @@ export function waOrderLink(o: WaOrderSummary): string {
     );
   }
   lines.push(`Deliver to: (name, address, suburb, state, postcode)`);
-  lines.push(`ABN ${CONTACT.abn}`);
   lines.push('');
   lines.push('Please confirm stock allocation and dispatch timeline. Cheers!');
 
