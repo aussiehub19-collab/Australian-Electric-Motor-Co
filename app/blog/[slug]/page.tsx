@@ -3,7 +3,10 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { SmartImage } from '@/components/SmartImage';
 import { JsonLd } from '@/components/JsonLd';
+import { FaqAccordion } from '@/components/FaqAccordion';
 import { POSTS, PRODUCTS, SITE } from '@/config/site';
+import { buildSeoTitle, truncateDescription } from '@/lib/seo';
+import { buildFaqSchema } from '@/lib/faq';
 
 interface PostPageProps {
   params: Promise<{
@@ -15,14 +18,93 @@ export async function generateStaticParams() {
   return POSTS.map((p) => ({ slug: p.slug }));
 }
 
+/**
+ * Renders a paragraph's inline `[text](/url/)` markdown links as real
+ * <Link> components — the previous renderer only understood `### ` headers
+ * and dumped everything else as plain text, so a post's "internal links"
+ * were never actually clickable. Plain text either side of a link (or with
+ * no link at all) passes through unchanged.
+ */
+function renderInline(text: string) {
+  const parts = text.split(/(\[[^\]]+\]\([^)]+\))/g);
+  return parts.map((part, i) => {
+    const match = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
+    if (!match) return <React.Fragment key={i}>{part}</React.Fragment>;
+    const [, label, href] = match;
+    return (
+      <Link key={i} href={href} className="text-[#C87D55] underline decoration-[#8C4A2F]/50 underline-offset-2 hover:text-white">
+        {label}
+      </Link>
+    );
+  });
+}
+
+type ContentBlock = { type: 'h3'; text: string } | { type: 'p'; text: string } | { type: 'ul'; items: string[] };
+
+/**
+ * Splits post.content into heading/paragraph/list blocks by LINE, not by
+ * blank-line-delimited chunks — the old `content.split('\n\n')` treated a
+ * `### Heading` immediately followed by its own paragraph (no blank line
+ * between them, the format every post in this file actually uses) as ONE
+ * block, so `.replace('### ', '')` only stripped the leading marker and the
+ * whole paragraph rendered inside the <h3>, forced uppercase by its CSS.
+ * That bug was live on all 3 original posts, not just new ones — fixed here
+ * for the whole template rather than reformatting 28 posts' source text.
+ */
+function parseContent(content: string): ContentBlock[] {
+  const blocks: ContentBlock[] = [];
+  let paraBuf: string[] = [];
+  let listBuf: string[] = [];
+
+  const flushPara = () => {
+    if (paraBuf.length) {
+      blocks.push({ type: 'p', text: paraBuf.join(' ') });
+      paraBuf = [];
+    }
+  };
+  const flushList = () => {
+    if (listBuf.length) {
+      blocks.push({ type: 'ul', items: listBuf });
+      listBuf = [];
+    }
+  };
+
+  for (const rawLine of content.split('\n')) {
+    const line = rawLine.trim();
+    if (!line) {
+      flushPara();
+      flushList();
+    } else if (line.startsWith('### ')) {
+      flushPara();
+      flushList();
+      blocks.push({ type: 'h3', text: line.slice(4) });
+    } else if (line.startsWith('- ')) {
+      flushPara();
+      listBuf.push(line.slice(2));
+    } else {
+      flushList();
+      paraBuf.push(line);
+    }
+  }
+  flushPara();
+  flushList();
+  return blocks;
+}
+
 export async function generateMetadata({ params }: PostPageProps) {
   const { slug } = await params;
   const post = POSTS.find((p) => p.slug === slug);
   if (!post) return { title: 'Post Not Found' };
 
+  // Was `${post.title} | ... Trail Tech` + an unconditional `.slice(150)+'...'`
+  // — the exact sitewide title/description bug CLAUDE.md documents as fixed
+  // everywhere else. Routed through the same builders as every other page.
+  const title = buildSeoTitle(post.title);
+  const description = truncateDescription(post.excerpt);
+
   return {
-    title: `${post.title} | Australian Electric Motor Co Trail Tech`,
-    description: `${post.excerpt.slice(0, 150)}...`,
+    title,
+    description,
     alternates: {
       canonical: `https://${SITE.domain}/blog/${post.slug}/`,
     },
@@ -48,7 +130,7 @@ export default async function BlogPostPage({ params }: PostPageProps) {
   const relatedPosts = POSTS.filter((p) => p.slug !== post.slug).slice(0, 2);
   const featuredBike = PRODUCTS[0];
 
-  const blogPostingSchema = [
+  const blogPostingSchema: Record<string, any>[] = [
     {
       '@context': 'https://schema.org',
       '@type': 'BlogPosting',
@@ -99,6 +181,10 @@ export default async function BlogPostPage({ params }: PostPageProps) {
       ],
     },
   ];
+  const postFaq = (post as any).faq as { question: string; answer: string }[] | undefined;
+  if (postFaq?.length) {
+    blogPostingSchema.push(buildFaqSchema(postFaq));
+  }
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 space-y-12">
@@ -147,15 +233,24 @@ export default async function BlogPostPage({ params }: PostPageProps) {
       {/* Main Body with Internal Links */}
       <div className="prose prose-invert max-w-none text-stone-300 leading-relaxed text-sm sm:text-base space-y-6">
         {post.content ? (
-          post.content.split('\n\n').map((paragraph, index) => {
-            if (paragraph.startsWith('### ')) {
+          parseContent(post.content).map((block, index) => {
+            if (block.type === 'h3') {
               return (
                 <h3 key={index} className="text-xl font-bold uppercase text-white tracking-tight pt-4 pb-1 border-b border-[#23272E]">
-                  {paragraph.replace('### ', '')}
+                  {block.text}
                 </h3>
               );
             }
-            return <p key={index}>{paragraph}</p>;
+            if (block.type === 'ul') {
+              return (
+                <ul key={index} className="list-disc pl-5 space-y-1.5">
+                  {block.items.map((line, li) => (
+                    <li key={li}>{renderInline(line)}</li>
+                  ))}
+                </ul>
+              );
+            }
+            return <p key={index}>{renderInline(block.text)}</p>;
           })
         ) : (
           <p>{post.excerpt}</p>
@@ -193,6 +288,16 @@ export default async function BlogPostPage({ params }: PostPageProps) {
           </div>
         </div>
       )}
+
+      {/* Post FAQ — 3-5 question-intent keywords from this post's cluster, per docs/blog-plan.md */}
+      {postFaq?.length ? (
+        <div className="space-y-6">
+          <h2 className="text-xl font-bold uppercase text-white font-mono">
+            Common Questions
+          </h2>
+          <FaqAccordion items={postFaq} idPrefix="post" />
+        </div>
+      ) : null}
 
       {/* More Articles */}
       {relatedPosts.length > 0 && (
