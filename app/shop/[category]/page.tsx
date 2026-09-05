@@ -5,7 +5,7 @@ import { SmartImage } from '@/components/SmartImage';
 import { JsonLd } from '@/components/JsonLd';
 import { FaqAccordion } from '@/components/FaqAccordion';
 import { CategoryProductGrid } from './CategoryProductGrid';
-import { CATEGORIES, PRODUCTS, SITE, getShopCategoryNav, CATEGORY_FAQ } from '@/config/site';
+import { CATEGORIES, PRODUCTS, POSTS, SITE, getShopCategoryNav, CATEGORY_FAQ, CATEGORY_GUIDES } from '@/config/site';
 import { buildSeoTitle, truncateDescription } from '@/lib/seo';
 import { buildFaqSchema } from '@/lib/faq';
 
@@ -294,6 +294,10 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 
   const pageHeading = customSeo?.h1 || category.name;
   const categoryFaq = (CATEGORY_FAQ as Record<string, { question: string; answer: string }[]>)[category.slug] || [];
+  const guideSlugs = (CATEGORY_GUIDES as Record<string, string[]>)[category.slug] || [];
+  const guides = guideSlugs
+    .map((s) => (POSTS as any[]).find((p) => p.slug === s))
+    .filter(Boolean) as any[];
 
   // Child categories to expose as a drill-down "Category" filter on hub pages
   const subcategories = CATEGORIES.filter((c) => c.parent === category.slug).map((c) => ({
@@ -430,6 +434,28 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
           categoryNav={getShopCategoryNav()}
         />
       </section>
+
+      {/* Related guides — reverse-direction internal links to blog posts (Batch 7) */}
+      {guides.length > 0 && (
+        <section className="space-y-4">
+          <h2 className="text-lg sm:text-xl font-bold uppercase text-white tracking-tight">
+            Related Guides
+          </h2>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {guides.map((g) => (
+              <Link
+                key={g.slug}
+                href={`/blog/${g.slug}/`}
+                className="rounded-xl border border-[#2B2F36] bg-[#17191C] p-4 transition-colors hover:border-[#8C4A2F]"
+              >
+                <span className="text-[10px] font-mono uppercase tracking-wide text-[#C87D55]">{g.category}</span>
+                <h3 className="mt-1 text-sm font-bold text-stone-100">{g.title}</h3>
+                <p className="mt-1 text-xs leading-relaxed text-stone-400 line-clamp-2">{g.excerpt}</p>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Category FAQ — only categories with real question-intent keyword data get a block (docs/faq-bank.md) */}
       {categoryFaq.length > 0 && (

@@ -9,7 +9,7 @@ const rootDir = path.resolve(__dirname, '..');
 
 // Dynamically import site configuration
 const siteConfigPath = path.resolve(rootDir, 'src/config/site.js');
-const { SITE, CONTACT, SHOP, BRAND, CATEGORIES, PRODUCTS } = await import(`file://${siteConfigPath}`);
+const { SITE, CONTACT, SHOP, BRAND, CATEGORIES, PRODUCTS, POSTS } = await import(`file://${siteConfigPath}`);
 
 const domain = SITE.domain || 'DOMAIN.com';
 const baseUrl = `https://${domain}`;
@@ -123,6 +123,14 @@ fs.writeFileSync(path.resolve(publicDir, 'robots.txt'), robotsTxt);
 // 3. Generate public/llms.txt
 const categoryList = CATEGORIES.map(c => `- [${c.name}](${baseUrl}/shop/${c.slug}/): ${c.description}`).join('\n');
 const productList = PRODUCTS.map(p => `- [${p.name}](${baseUrl}/shop/${p.category}/${p.slug}/): $${p.price} ${SITE.currency} — ${p.shortDescription}`).join('\n');
+// Priority map: the guides/answers most likely to be surfaced by an AI
+// answer engine, newest first (they lead with a direct definition-hook
+// answer to their primary keyword). Driven by POSTS so it can never drift.
+const guideList = (POSTS || [])
+  .slice()
+  .sort((a, b) => String(b.date).localeCompare(String(a.date)))
+  .map(p => `- [${p.title}](${baseUrl}/blog/${p.slug}/): ${p.excerpt}`)
+  .join('\n');
 
 const llmsTxt = `# ${SITE.name}
 
@@ -147,6 +155,9 @@ ${categoryList}
 
 ## Featured Electric Dirt Bikes & Parts
 ${productList}
+
+## Guides & Answers
+${guideList}
 
 ## Key Resources
 - [Full Product Catalog](${baseUrl}/shop/): Complete inventory with technical specifications, power outputs, and battery sizes

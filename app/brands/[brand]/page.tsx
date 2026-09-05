@@ -6,7 +6,7 @@ import { JsonLd } from '@/components/JsonLd';
 import { SmartImage } from '@/components/SmartImage';
 import { FaqAccordion } from '@/components/FaqAccordion';
 import { PaginatedProductGrid } from '@/components/PaginatedProductGrid';
-import { CATEGORIES, PRODUCTS, SITE, BRAND_FAQ } from '@/config/site';
+import { CATEGORIES, PRODUCTS, POSTS, SITE, BRAND_FAQ, BRAND_GUIDES } from '@/config/site';
 import { buildFaqSchema } from '@/lib/faq';
 
 interface BrandPageProps {
@@ -162,6 +162,9 @@ export default async function BrandIndividualPage({ params }: BrandPageProps) {
 
   const brandFaq = (BRAND_FAQ as Record<string, { question: string; answer: string }[]>)[brand.slug] || [];
   const isGear = GEAR_BRANDS.has(brand.slug);
+  const brandGuides = ((BRAND_GUIDES as Record<string, string[]>)[brand.slug] || [])
+    .map((s) => (POSTS as any[]).find((p) => p.slug === s))
+    .filter(Boolean) as any[];
 
   const breadcrumbsSchema = {
     '@context': 'https://schema.org',
@@ -268,6 +271,28 @@ export default async function BrandIndividualPage({ params }: BrandPageProps) {
             >
               View All Brands
             </Link>
+          </div>
+        </div>
+      )}
+
+      {/* Related guides — reverse-direction internal links to blog posts (Batch 7) */}
+      {brandGuides.length > 0 && (
+        <div className="space-y-4">
+          <h2 className="text-lg sm:text-xl font-bold uppercase text-white tracking-tight">
+            Related Guides
+          </h2>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {brandGuides.map((g) => (
+              <Link
+                key={g.slug}
+                href={`/blog/${g.slug}/`}
+                className="rounded-xl border border-[#2B2F36] bg-[#17191C] p-4 transition-colors hover:border-[#8C4A2F]"
+              >
+                <span className="text-[10px] font-mono uppercase tracking-wide text-[#C87D55]">{g.category}</span>
+                <h3 className="mt-1 text-sm font-bold text-stone-100">{g.title}</h3>
+                <p className="mt-1 text-xs leading-relaxed text-stone-400 line-clamp-2">{g.excerpt}</p>
+              </Link>
+            ))}
           </div>
         </div>
       )}

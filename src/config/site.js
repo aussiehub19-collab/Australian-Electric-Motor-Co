@@ -2150,6 +2150,41 @@ export const CATEGORY_FAQ = {
   'body-armour': [FAQ_FULL_BANK[4].items[0]], // balaclava
 };
 
+// Batch 7 internal-linking pass: category/brand slug -> blog post slugs.
+// Gives the reverse-direction links (shop page -> guide) the blog posts
+// already point the other way. Slugs are validated at build by
+// scripts/crosscheck.mjs (check 12).
+export const CATEGORY_GUIDES = {
+  'electric-dirt-bikes': ['electric-dirt-bike-cost-australia', 'electric-dirt-bikes-australia-buyers-guide', 'off-road-electric-bikes-explained'],
+  'adult-electric-dirt-bikes': ['first-electric-off-road-bike-guide', 'electric-dirt-bike-cost-australia'],
+  'full-size-motocross': ['electric-motocross-vs-petrol-comparison', 'enduro-vs-motocross-which-to-buy'],
+  'trail-mid-weight-enduro': ['what-is-an-enduro-motorbike', 'enduro-vs-motocross-which-to-buy', 'enduro-bikes-hill-climbing'],
+  'kids-youth-electric-dirt-bikes': ['electric-kids-motorbikes-age-size-guide'],
+  'junior-trials-youth-dirt-bikes': ['electric-kids-motorbikes-age-size-guide'],
+  'balance-mini-bikes': ['electric-kids-motorbikes-age-size-guide', 'first-electric-off-road-bike-guide'],
+  'adr-road-legal-dirt-bikes': ['electric-dirt-bikes-australia-buyers-guide', 'australian-electric-dirt-bike-laws-guide', 'what-is-a-supermoto-electric'],
+  'utility-farm-e-bikes': ['first-electric-off-road-bike-guide'],
+  'batteries-chargers': ['motorcycle-ebike-battery-guide', 'electric-dirt-bike-voltage-explained'],
+  'high-capacity-batteries': ['motorcycle-ebike-battery-guide', 'lithium-battery-care-dirt-bike', 'signs-dirt-bike-battery-needs-replacing'],
+  'fast-chargers': ['ebike-dirt-bike-chargers-explained', 'charging-electric-dirt-bike-at-home', 'trickle-chargers-electric-dirt-bikes'],
+  'riding-gear': ['riding-gear-checklist-new-owners', 'motocross-body-armour-guide'],
+  helmets: ['riding-gear-checklist-new-owners', 'motocross-body-armour-guide'],
+  'body-armour': ['motocross-body-armour-guide', 'riding-gear-checklist-new-owners'],
+  'body-armour-protection': ['motocross-body-armour-guide'],
+  boots: ['motocross-boot-buying-guide', 'leather-vs-synthetic-motocross-boots'],
+  'gloves-goggles': ['riding-gear-checklist-new-owners'],
+  'storage-transport': ['dirt-bike-racks-tow-bar-carriers'],
+  'bike-stands-tools': ['dirt-bike-lift-table-workshop-setup'],
+};
+
+export const BRAND_GUIDES = {
+  'stark-future': ['what-is-a-supermoto-electric', 'electric-motocross-vs-petrol-comparison'],
+  alpinestars: ['alpinestars-gear-guide', 'motocross-boot-buying-guide'],
+  'fox-racing': ['riding-gear-checklist-new-owners'],
+  surron: ['off-road-electric-bikes-explained'],
+  talaria: ['enduro-vs-motocross-which-to-buy'],
+};
+
 export const BRAND_FAQ = {
   ktm: [FAQ_FULL_BANK[3].items[0], FAQ_FULL_BANK[3].items[1]], // Austrian + best-brand
   surron: [FAQ_FULL_BANK[3].items[2]], // is Sur-Ron electric

@@ -19,7 +19,7 @@ if (!fs.existsSync(siteConfigPath)) {
   failures.push('B1: Missing src/config/site.js');
 }
 
-const { SITE, COMPLIANCE, PRODUCTS, CATEGORIES, FORMS } = await import(`file://${siteConfigPath}`);
+const { SITE, COMPLIANCE, PRODUCTS, CATEGORIES, FORMS, POSTS, CATEGORY_GUIDES, BRAND_GUIDES, CATEGORY_FAQ, BRAND_FAQ } = await import(`file://${siteConfigPath}`);
 
 // 2. Check Agent-Ready Files A-N (Mandatory on all sites)
 const requiredAgentFiles = [
@@ -178,6 +178,24 @@ if (FORMS?.web3formsKey === 'pending') {
 }
 if (SITE.domain && SITE.domain.includes('DOMAIN.')) {
   failures.push('B1: SITE.domain is still a placeholder in a production build.');
+}
+
+// 12. Internal-linking maps point only at real pages (Batch 7).
+const postSlugs = new Set((POSTS || []).map(p => p.slug));
+const catSlugs = new Set((CATEGORIES || []).map(c => c.slug));
+for (const [catSlug, guideSlugs] of Object.entries(CATEGORY_GUIDES || {})) {
+  if (!catSlugs.has(catSlug)) failures.push(`12: CATEGORY_GUIDES key "${catSlug}" is not a real category slug.`);
+  for (const g of guideSlugs) {
+    if (!postSlugs.has(g)) failures.push(`12: CATEGORY_GUIDES["${catSlug}"] -> "${g}" is not a real blog post slug.`);
+  }
+}
+for (const [brandSlug, guideSlugs] of Object.entries(BRAND_GUIDES || {})) {
+  for (const g of guideSlugs) {
+    if (!postSlugs.has(g)) failures.push(`12: BRAND_GUIDES["${brandSlug}"] -> "${g}" is not a real blog post slug.`);
+  }
+}
+for (const catSlug of Object.keys(CATEGORY_FAQ || {})) {
+  if (!catSlugs.has(catSlug)) failures.push(`12: CATEGORY_FAQ key "${catSlug}" is not a real category slug.`);
 }
 
 // Result summary
