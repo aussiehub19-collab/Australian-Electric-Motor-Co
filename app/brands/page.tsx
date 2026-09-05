@@ -37,7 +37,9 @@ export const metadata: Metadata = {
   },
 };
 
-// Rich brand engineering details to pair with CATEGORIES
+// Rich brand engineering details to pair with CATEGORIES. `statLabel`
+// overrides the "Power:" row label — used by gear brands, where a
+// protection rating is the meaningful spec, not a kW figure.
 const BRAND_DETAILS: Record<
   string,
   {
@@ -46,6 +48,7 @@ const BRAND_DETAILS: Record<
     specialty: string;
     flagship: string;
     powerRange: string;
+    statLabel?: string;
   }
 > = {
   surron: {
@@ -146,6 +149,22 @@ const BRAND_DETAILS: Record<
     flagship: '2X2 Work & Adventure',
     powerRange: 'Dual 1kW Hubs (3.1kWh)',
   },
+  alpinestars: {
+    origin: 'Italy',
+    flag: '🇮🇹',
+    specialty: 'MX Boots, Helmets & Body Armour',
+    flagship: 'Tech 7 / Supertech SM5',
+    powerRange: 'ECE 22.06 / CE Rated',
+    statLabel: 'Rating',
+  },
+  'fox-racing': {
+    origin: 'California, USA',
+    flag: '🇺🇸',
+    specialty: 'MX Helmets, Gloves & Youth Protection',
+    flagship: 'V1 Helmet / Titan Roost',
+    powerRange: 'ECE 22.06 / CE Rated',
+    statLabel: 'Rating',
+  },
 };
 
 export default function BrandsPage() {
@@ -198,7 +217,7 @@ export default function BrandsPage() {
           </h1>
           <p className="text-xs sm:text-sm text-stone-300 leading-relaxed">
             Australian Electric Motor Co stocks and supports Australia’s premier collection of electric
-            dirt bikes across {brandCount} manufacturers. Every bike is backed by local spare parts held in NSW,
+            dirt bikes and rider gear across {brandCount} brands. Every bike is backed by local spare parts held in NSW,
             comprehensive factory warranties, and national crated delivery.
           </p>
           <div className="flex flex-wrap items-center gap-2 pt-1 text-[11px] font-mono">
@@ -299,7 +318,7 @@ export default function BrandsPage() {
                         </span>
                       </div>
                       <div className="flex items-center justify-between text-stone-400">
-                        <span className="text-stone-500">Power:</span>
+                        <span className="text-stone-500">{details.statLabel || 'Power'}:</span>
                         <span className="text-amber-400 font-bold text-right">
                           {details.powerRange}
                         </span>

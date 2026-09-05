@@ -394,6 +394,29 @@ export const CATEGORIES = [
     image: '/images/brands/ubco.webp',
     count: 5,
   },
+  // Gear-brand hubs (Batch 6, docs/product-gaps.md) — same brand-hub template
+  // as the bike brands above, grouping the genuine gear we already stock so
+  // a search for e.g. "alpinestars boots australia" lands on a page that
+  // shows the brand's full range here. No bike products; the brand page and
+  // /brands/ index adapt their copy for gear brands.
+  {
+    slug: 'alpinestars',
+    name: 'Alpinestars',
+    section: 'brands',
+    parent: 'brands',
+    description: 'Italian motocross protection specialists — we stock genuine Alpinestars boots, helmet and body armour, from the full-leather Tech 7 Enduro boot to the Supertech SM5 helmet and Bionic Action V2 armour jacket.',
+    image: '/images/products/alpinestars-supertech-sm5-compass-helmet.webp',
+    count: 4,
+  },
+  {
+    slug: 'fox-racing',
+    name: 'Fox Racing',
+    section: 'brands',
+    parent: 'brands',
+    description: 'One of the most established names in motocross gear — our Fox Racing range covers adult and youth V1 helmets, the Youth Titan Sport roost deflector, Airline gloves and Comp youth boots.',
+    image: '/images/products/fox-racing-v1-matte-black-helmet.webp',
+    count: 5,
+  },
 
   // 3. Parts & Upgrades Root & Sub-branches
   {
@@ -2132,6 +2155,22 @@ export const BRAND_FAQ = {
   surron: [FAQ_FULL_BANK[3].items[2]], // is Sur-Ron electric
   talaria: [FAQ_FULL_BANK[3].items[3]], // Talaria pricing
   'stark-future': [FAQ_FULL_BANK[3].items[4], FAQ_FULL_BANK[3].items[5]], // battery + clutch
+  alpinestars: [
+    {
+      question: 'Does Australian Electric Motor Co stock genuine Alpinestars gear?',
+      answer: 'Yes — we stock a focused selection of genuine Alpinestars boots, helmet and body armour, all listed on this page with full sizing and specification detail.',
+    },
+    {
+      question: 'Are Alpinestars Tech 7 boots suitable for beginners?',
+      answer: 'They are a high-protection, full-leather enduro boot, so beginners get a longer break-in period than with a synthetic boot — but the protection and durability are well regarded. See our motocross boot buying guide for fit advice.',
+    },
+  ],
+  'fox-racing': [
+    {
+      question: 'Does Australian Electric Motor Co stock genuine Fox Racing gear?',
+      answer: 'Yes — our Fox Racing range covers adult and youth V1 helmets, the Youth Titan Sport roost deflector, Airline gloves and Comp youth boots, all listed here with full sizing detail.',
+    },
+  ],
 };
 
 export const TRUSTPILOT_DATA = {

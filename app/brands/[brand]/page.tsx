@@ -96,7 +96,21 @@ const BRAND_SEO: Record<string, { title: string; description: string }> = {
     description:
       'Shop genuine UBCO electric utility bikes in Australia — All-Wheel Drive (2X2) workhorses built for cattle stations, farm logistics and silent exploration.',
   },
+  alpinestars: {
+    title: 'Alpinestars Riding Gear Australia | AEMC',
+    description:
+      'Shop genuine Alpinestars motocross gear in Australia — Tech 7 Enduro and Tech 3S Youth boots, the Supertech SM5 helmet and Bionic Action V2 body armour.',
+  },
+  'fox-racing': {
+    title: 'Fox Racing Motocross Gear Australia | AEMC',
+    description:
+      'Shop genuine Fox Racing motocross gear in Australia — adult and youth V1 helmets, the Youth Titan Sport roost deflector, Airline gloves and Comp youth boots.',
+  },
 };
+
+// Gear brands (no bike products) — the brand-hub page and /brands/ index
+// swap their bike-specific copy for gear-appropriate wording for these.
+const GEAR_BRANDS = new Set(['alpinestars', 'fox-racing']);
 
 export async function generateMetadata({ params }: BrandPageProps): Promise<Metadata> {
   const { brand: brandSlug } = await params;
@@ -147,6 +161,7 @@ export default async function BrandIndividualPage({ params }: BrandPageProps) {
   );
 
   const brandFaq = (BRAND_FAQ as Record<string, { question: string; answer: string }[]>)[brand.slug] || [];
+  const isGear = GEAR_BRANDS.has(brand.slug);
 
   const breadcrumbsSchema = {
     '@context': 'https://schema.org',
@@ -205,10 +220,10 @@ export default async function BrandIndividualPage({ params }: BrandPageProps) {
             <div className="flex items-center gap-2 text-xs font-mono text-[#C87D55] uppercase tracking-wider font-bold">
               <span>Authorised Showroom</span>
               <span>•</span>
-              <span>Australian Factory Support</span>
+              <span>{isGear ? 'Genuine Australian Stock' : 'Australian Factory Support'}</span>
             </div>
             <h1 className="text-3xl sm:text-5xl font-black uppercase text-white tracking-tight">
-              {brand.name} Electric Dirt Bikes
+              {brand.name} {isGear ? 'Riding Gear' : 'Electric Dirt Bikes'}
             </h1>
             <p className="text-base text-stone-300 leading-relaxed">
               {brand.description}
@@ -218,10 +233,10 @@ export default async function BrandIndividualPage({ params }: BrandPageProps) {
         <div className="mt-4">
           <div className="flex flex-wrap items-center gap-3 pt-2 text-xs font-mono">
             <span className="text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-full">
-              • {brandProducts.length} Models &amp; Upgrades in Australian Stock
+              • {brandProducts.length} {isGear ? 'Items' : 'Models & Upgrades'} in Australian Stock
             </span>
             <span className="text-stone-300 bg-stone-800 border border-stone-700 px-3 py-1 rounded-full">
-              • 10% Crypto Discount Applied at Checkout
+              • {isGear ? '5% Off With Any Bike in Your Cart' : '10% Crypto Discount Applied at Checkout'}
             </span>
           </div>
         </div>
@@ -233,10 +248,12 @@ export default async function BrandIndividualPage({ params }: BrandPageProps) {
       ) : (
         <div className="bg-[#17191C] border border-[#2B2F36] rounded-2xl p-10 text-center space-y-4">
           <h2 className="text-xl font-bold text-white uppercase">
-            New {brand.name} Crated Shipments En Route
+            {isGear ? `More ${brand.name} Stock Arriving` : `New ${brand.name} Crated Shipments En Route`}
           </h2>
           <p className="text-sm text-stone-400 max-w-xl mx-auto">
-            Our next factory allocation of {brand.name} electric dirt bikes is currently undergoing pre-delivery inspection. Contact our workshop team to pre-reserve your build slot.
+            {isGear
+              ? `Our next ${brand.name} order is on the way. Contact our team to check availability or be notified when specific items land.`
+              : `Our next factory allocation of ${brand.name} electric dirt bikes is currently undergoing pre-delivery inspection. Contact our workshop team to pre-reserve your build slot.`}
           </p>
           <div className="pt-4 flex justify-center gap-4">
             <Link
