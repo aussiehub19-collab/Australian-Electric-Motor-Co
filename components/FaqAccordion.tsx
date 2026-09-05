@@ -11,10 +11,18 @@ interface FaqAccordionProps {
   items: FaqItem[];
   /** Index of an item to open on first render. Default: all closed. */
   defaultOpen?: number;
+  /**
+   * Distinguishes the `faq-answer-N` ids below when a page renders more than
+   * one FaqAccordion (e.g. /faq/'s themed sections) — without it, every
+   * instance would emit the same ids and buildFaqSchema()'s speakable
+   * selector (or any instance) could point at the wrong section's answer.
+   * Leave unset for a page's single/primary FAQ block.
+   */
+  idPrefix?: string;
 }
 
 /** Collapsible FAQ list — answers reveal only when the question is clicked. */
-export function FaqAccordion({ items, defaultOpen }: FaqAccordionProps) {
+export function FaqAccordion({ items, defaultOpen, idPrefix }: FaqAccordionProps) {
   const [open, setOpen] = useState<number | null>(defaultOpen ?? null);
   const baseId = useId();
 
@@ -64,7 +72,11 @@ export function FaqAccordion({ items, defaultOpen }: FaqAccordionProps) {
               hidden={!isOpen}
               className="px-5 pb-5 sm:px-6"
             >
-              <p className="pl-7 text-sm leading-relaxed text-stone-300">{item.answer}</p>
+              {/* Stable index-based id (not the random useId panelId above) so
+                  lib/faq.ts's buildFaqSchema() speakable cssSelector can point
+                  at the exact answer it names — the visible DOM and the
+                  structured-data claim must reference the same node. */}
+              <p id={`${idPrefix ? `${idPrefix}-` : ''}faq-answer-${i}`} className="pl-7 text-sm leading-relaxed text-stone-300">{item.answer}</p>
             </div>
           </div>
         );

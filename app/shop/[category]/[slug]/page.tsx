@@ -3,9 +3,11 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { SmartImage } from '@/components/SmartImage';
 import { JsonLd } from '@/components/JsonLd';
+import { FaqAccordion } from '@/components/FaqAccordion';
 import { AddToCartButton } from './AddToCartButton';
 import { PRODUCTS, CATEGORIES, SITE, CONTACT, SHOP, FINANCE } from '@/config/site';
 import { buildSeoTitle, truncateDescription } from '@/lib/seo';
+import { buildFaqSchema } from '@/lib/faq';
 
 interface ProductPageProps {
   params: Promise<{
@@ -238,9 +240,41 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     },
   ];
 
+  // Generic per-product FAQ (Batch 3, docs/faq-bank.md): SKU-level question
+  // data essentially doesn't exist in the keyword export (nobody searches
+  // the exact name of a specific spare-part SKU), so every product gets the
+  // same small, honest template answered from its own real fields —
+  // warranty scope differs for bikes vs. parts/gear (never a fabricated
+  // term for the latter), and only bikes get the road-legal question.
+  const productAny = product as any; // PRODUCTS is a union across bike/part/gear
+  // shapes — isBike/roadLegal only exist on the bike branch, same reason the
+  // rest of this file already casts PRODUCTS items to `any` when filtering.
+  const productFaq: { question: string; answer: string }[] = [];
+  if (!productAny.isBike) {
+    productFaq.push({
+      question: `Is the ${product.name} covered by the 5% bundle discount?`,
+      answer: `Yes — any part, battery, charger, gear or accessory item, including the ${product.name}, gets an automatic 5% discount when it's in the same cart as an electric dirt bike, applied at checkout. The discount doesn't apply to bikes themselves.`,
+    });
+  }
+  productFaq.push({
+    question: `What warranty comes with the ${product.name}?`,
+    answer: productAny.isBike
+      ? `The ${product.name} is backed by a 2-Year Australian Factory Warranty covering the frame, motor, controller and battery, serviced with Australian parts stock.`
+      : `Full-size electric dirt bikes carry a 2-Year Australian Factory Warranty on frame, motor, controller and battery. Warranty terms on parts, gear and accessories like the ${product.name} vary by item — contact our workshop team for the specifics before you order.`,
+  });
+  if (productAny.isBike) {
+    productFaq.push({
+      question: `Is the ${product.name} road-legal in Australia?`,
+      answer: productAny.roadLegal
+        ? `Yes — the ${product.name} is built and equipped for road registration (ADR-compliant), though final registration requirements vary by state. See our ADR Road-Legal range for the full lineup.`
+        : `No — the ${product.name} is an off-road-only model. It doesn't need registration when ridden on private property or a designated trail network, the same as a petrol dirt bike. Browse our ADR Road-Legal range if you need a street-registerable model.`,
+    });
+  }
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 space-y-12">
       <JsonLd data={productSchema} />
+      <JsonLd data={buildFaqSchema(productFaq)} />
 
       {/* Breadcrumb nav */}
       <nav aria-label="Breadcrumb" className="text-xs text-stone-400 font-mono flex flex-wrap items-center gap-2">
@@ -550,6 +584,16 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
           </div>
         </div>
       )}
+
+      {/* Common Questions — generic per-product FAQ, see productFaq above */}
+      <div className="space-y-6">
+        <h2 className="text-xl sm:text-2xl font-bold uppercase text-white tracking-tight">
+          Common Questions
+        </h2>
+        <div className="max-w-3xl">
+          <FaqAccordion items={productFaq} />
+        </div>
+      </div>
     </div>
   );
 }

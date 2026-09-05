@@ -2,7 +2,8 @@ import React from 'react';
 import Link from 'next/link';
 import { JsonLd } from '@/components/JsonLd';
 import { FaqAccordion } from '@/components/FaqAccordion';
-import { FAQ, CONTACT, SITE } from '@/config/site';
+import { FAQ, FAQ_FULL_BANK, CONTACT, SITE } from '@/config/site';
+import { buildFaqSchema } from '@/lib/faq';
 
 export const metadata = {
   title: 'Electric Dirt Bike FAQ | Range, Charging & Aussie Delivery | AEMC',
@@ -16,19 +17,14 @@ export const metadata = {
 };
 
 export default function FAQPage() {
+  // The full bank (all themes flattened) feeds the FAQPage schema, so every
+  // question visible on the page is represented in structured data — the
+  // homepage's 8-question FAQ is a subset of good-to-know basics; this page
+  // is the complete, themed reference.
+  const allBankItems = FAQ_FULL_BANK.flatMap((section) => section.items);
+
   const faqSchema = [
-    {
-      '@context': 'https://schema.org',
-      '@type': 'FAQPage',
-      mainEntity: FAQ.map((item) => ({
-        '@type': 'Question',
-        name: item.question,
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: item.answer,
-        },
-      })),
-    },
+    buildFaqSchema([...FAQ, ...allBankItems]),
     {
       '@context': 'https://schema.org',
       '@type': 'BreadcrumbList',
@@ -73,8 +69,23 @@ export default function FAQPage() {
         </p>
       </div>
 
-      {/* Collapsible FAQ — answers reveal on click */}
-      <FaqAccordion items={FAQ} />
+      {/* Quick Answers — the same 8 highest-impact questions as the homepage */}
+      <div className="space-y-4">
+        <h2 className="text-lg sm:text-xl font-bold uppercase text-white tracking-tight">
+          Quick Answers
+        </h2>
+        <FaqAccordion items={FAQ} idPrefix="quick" />
+      </div>
+
+      {/* Full themed bank — every real question extracted from the keyword exports, see docs/faq-bank.md */}
+      {FAQ_FULL_BANK.map((section) => (
+        <div key={section.theme} className="space-y-4">
+          <h2 className="text-lg sm:text-xl font-bold uppercase text-white tracking-tight">
+            {section.theme}
+          </h2>
+          <FaqAccordion items={section.items} idPrefix={section.theme.toLowerCase().replace(/[^a-z0-9]+/g, '-')} />
+        </div>
+      ))}
 
       {/* Still have questions CTA */}
       <div className="bg-[#141619] border border-[#2B2F36] rounded-3xl p-8 sm:p-10 text-center space-y-4">

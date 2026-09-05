@@ -4,8 +4,10 @@ import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import { JsonLd } from '@/components/JsonLd';
 import { SmartImage } from '@/components/SmartImage';
+import { FaqAccordion } from '@/components/FaqAccordion';
 import { PaginatedProductGrid } from '@/components/PaginatedProductGrid';
-import { CATEGORIES, PRODUCTS, SITE } from '@/config/site';
+import { CATEGORIES, PRODUCTS, SITE, BRAND_FAQ } from '@/config/site';
+import { buildFaqSchema } from '@/lib/faq';
 
 interface BrandPageProps {
   params: Promise<{
@@ -144,6 +146,8 @@ export default async function BrandIndividualPage({ params }: BrandPageProps) {
       (p.parentCategories && p.parentCategories.includes(brand.slug))
   );
 
+  const brandFaq = (BRAND_FAQ as Record<string, { question: string; answer: string }[]>)[brand.slug] || [];
+
   const breadcrumbsSchema = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
@@ -172,6 +176,7 @@ export default async function BrandIndividualPage({ params }: BrandPageProps) {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 space-y-10">
       <JsonLd data={breadcrumbsSchema} />
+      {brandFaq.length > 0 && <JsonLd data={buildFaqSchema(brandFaq)} />}
 
       {/* Breadcrumb Navigation */}
       <nav aria-label="Breadcrumb" className="text-xs text-stone-400 font-mono flex items-center gap-2">
@@ -246,6 +251,18 @@ export default async function BrandIndividualPage({ params }: BrandPageProps) {
             >
               View All Brands
             </Link>
+          </div>
+        </div>
+      )}
+
+      {/* Brand FAQ — only brands with real question-intent keyword data get a block (docs/faq-bank.md) */}
+      {brandFaq.length > 0 && (
+        <div className="space-y-6">
+          <h2 className="text-xl sm:text-2xl font-bold uppercase text-white tracking-tight">
+            {brand.name} — Common Questions
+          </h2>
+          <div className="max-w-3xl">
+            <FaqAccordion items={brandFaq} idPrefix="brand" />
           </div>
         </div>
       )}

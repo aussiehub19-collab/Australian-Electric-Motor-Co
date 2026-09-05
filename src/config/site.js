@@ -933,44 +933,193 @@ export const PAGES = {
   search: true,
 };
 
+// Homepage FAQ — sourced from docs/faq-bank.md (keyword-engine pass, Sept
+// 2026), ranked by combined real search volume from the homepage-matched
+// question keywords. Q1 and Q4 are flagged speakable (see FAQ_SPEAKABLE_IDX
+// below) — the two most likely to be read aloud by a voice assistant or AI
+// answer engine (definitional + compliance questions).
 export const FAQ = [
   {
-    question: 'How fast do Australian Electric Motor Co electric dirt bikes go?',
-    answer: 'Our flagship 72V electric dirt bikes achieve electronically switchable top speeds of up to 120 km/h, while lightweight youth and trail e-motos reach 50 to 85 km/h. All bikes feature selectable power modes to tailor throttle response and speed for beginner, trail, and race settings.',
+    question: 'What is an electric dirt bike?',
+    answer: 'An electric dirt bike is an off-road motorcycle powered by a battery and electric motor instead of a petrol engine — same riding position and suspension as a traditional dirt bike, but silent, instant-torque power delivery with no exhaust, clutch (on most models), or fuel to carry.',
   },
   {
-    question: 'What is the real-world riding range on a single charge?',
-    answer: 'Riding range depends on terrain, rider weight, and throttle aggression. In typical Australian bush and trail conditions, expect 90 to 120 km on high-capacity 72V models. At full competition motocross race pace, you get approximately 45 to 60 minutes of high-intensity riding.',
+    question: 'How much does an electric dirt bike cost in Australia?',
+    answer: 'Our range spans from junior and balance bikes through to full-size adult motocross machines, with pricing reflecting battery size, power output and brand. Browse the shop to filter by category and price, or pay with crypto (BTC/USDT) for an instant 10% discount.',
   },
   {
-    question: 'Are all prices inclusive of Australian GST?',
-    answer: 'Yes. Australian Electric Motor Co is registered for GST (ABN: 97 628 671 689, NSW). Every price displayed across our website is 100% inclusive of 10% Australian GST with official tax invoices issued for all orders.',
+    question: 'What is the fastest electric dirt bike you sell?',
+    answer: 'Top speed varies by model and power mode — our highest-output full-size motocross bikes are built for serious trail and track performance. Check each product’s spec sheet in the Full-Size Motocross range for exact top speed, as it differs between brands and battery configurations.',
   },
   {
-    question: 'How does the 10% cryptocurrency payment discount work?',
-    answer: 'Select Bitcoin (BTC) or Tether (USDT) at checkout to automatically apply an instant 10% discount to your entire order total. Payment verification is rapid, on-chain or Lightning, and exempt from card merchant surcharges, saving you hundreds on complete bikes.',
+    question: 'Are electric dirt bikes street legal in Australia?',
+    answer: 'Only models built and equipped for road registration — with headlights, indicators, mirrors and a compliant VIN — can be road-registered, and requirements vary by state. Browse our ADR Road-Legal range for models built for street use.',
   },
   {
-    question: 'Do you offer electric dirt bike finance and Pay in 4 in Australia?',
-    answer: 'Yes! We offer flexible Pay in 4 (split your order into four equal fortnightly payments with 0% interest and zero deposit), as well as dedicated Australian powersports asset finance for terms from 12 to 60 months. Use our on-site Finance Calculator to model payments.',
+    question: 'Do electric dirt bikes need to be registered?',
+    answer: 'Off-road-only electric dirt bikes (the majority of our range) don’t need registration when ridden on private property or designated trail networks, the same as a petrol dirt bike. Only models intended for public roads need ADR registration.',
   },
   {
-    question: 'How long does it take to recharge an electric dirt bike?',
-    answer: 'Using our included 240V Australian smart fast charger, a depleted 72V pack recharges to 80% in approximately 90 minutes, and to 100% full capacity in 2.5 to 3 hours from any standard Australian household 10A power outlet or 2000W 4WD pure sine-wave inverter.',
+    question: 'What’s the cheapest electric dirt bike in your range?',
+    answer: 'Our balance and junior/youth models are the most accessible entry point into electric off-road riding — browse Balance & Mini Bikes and Junior Trials & Youth Dirt Bikes for the current lineup and pricing.',
   },
   {
-    question: 'Can I ride electric dirt bikes through water and deep mud?',
-    answer: 'Yes. Our motors, battery enclosures, wiring harnesses, and controllers are IP67 sealed to withstand severe Australian conditions, including water splashes, creek crossings, high-pressure washing, and heavy outback dust storms.',
+    question: 'What payment options do you offer?',
+    answer: 'Direct Bank Transfer, PayID, Pay in 4 (four fortnightly instalments, 0% interest), and a 10% instant discount for paying in crypto (BTC/USDT).',
   },
   {
-    question: 'What warranty is included with Australian Electric Motor Co bikes?',
-    answer: 'All full-size electric dirt bikes are backed by a comprehensive 2-Year Australian Factory Warranty covering the frame, brushless motor, electronic controller, and lithium battery pack, serviced directly with Australian parts stock.',
-  },
-  {
-    question: 'How are bikes shipped across Australia?',
-    answer: 'Bikes are delivered in reinforced, fully enclosed steel-framed crates via specialised freight carriers directly to your residential address or nearest regional depot across NSW, QLD, VIC, SA, WA, TAS, and NT with full tracking and transit insurance.',
+    question: 'Do parts and accessories come with any discount when I buy a bike?',
+    answer: 'Yes — any part, battery, charger, gear or accessory item gets an automatic 5% discount when a bike is in the same cart, applied at checkout.',
   },
 ];
+
+// Indexes into FAQ (0-based) flagged for schema.org `speakable` — see
+// lib/faq.ts's buildFaqSchema(). Keep this to 1-2 entries; speakable is for
+// the single best answer on a page, not every answer.
+export const FAQ_SPEAKABLE_IDX = [0, 3];
+
+// Full themed FAQ bank for /faq/ — sourced from docs/faq-bank.md, grouped by
+// theme (Batch 3). Every question here is a real question extracted from the
+// keyword exports; every answer is limited to facts verifiable in this file
+// / CLAUDE.md, per the standing "never fabricate brand facts" rule — e.g. the
+// Talaria/Stark VARG pricing and battery questions deliberately point to the
+// live product pages rather than quoting a number that would go stale.
+export const FAQ_FULL_BANK = [
+  {
+    theme: 'Buying & Pricing',
+    items: [
+      {
+        question: "What's the best electric dirt bike for a beginner?",
+        answer: "It depends on the rider's age and experience — our Balance & Mini Bikes and Junior Trials & Youth models are built for young or first-time riders, while Adult Electric Dirt Bikes range from mellow trail machines to full-power motocross. Use our Compare tool to line up specs side by side and find the right starting point.",
+      },
+      {
+        question: 'What is the best budget electric dirt bike?',
+        answer: 'Pricing varies by battery size, power output and category rather than by a single "budget" tier — sort any shop category by price (low to high) to see the most accessible models first, starting with Balance & Mini Bikes and Junior Trials & Youth Dirt Bikes.',
+      },
+      {
+        question: 'How much are electric motocross bikes?',
+        answer: 'Full-size electric motocross pricing reflects battery capacity and peak power output — browse Full-Size Motocross to compare current models and pricing across brands.',
+      },
+      {
+        question: 'What electric dirt bike has the longest range?',
+        answer: "Range depends on battery capacity (kWh), rider weight and terrain — check each model's spec sheet for its rated range, or browse High-Capacity Batteries if you're looking to extend an existing bike's range with an upgrade pack.",
+      },
+      {
+        question: 'What is the best electric dirt bike for adults?',
+        answer: 'Our Adult Electric Dirt Bikes range spans full-size motocross through mid-weight enduro, all built for adult riders — the "best" one depends on your riding style and terrain, so compare models by power output and category before deciding.',
+      },
+    ],
+  },
+  {
+    theme: 'Registration & Legal',
+    items: [
+      {
+        question: 'Can you register an electric dirt bike in Australia?',
+        answer: 'Yes, if it’s one of our ADR-compliant Road-Legal models, fitted with headlights, indicators, mirrors and a compliant VIN. Registration requirements and process still vary by state — see our Australian electric dirt bike laws guide for the state-by-state detail.',
+      },
+      {
+        question: 'Are dirt bike helmets road-legal in Australia?',
+        answer: "It's the helmet's own certification that matters, not the bike — a helmet needs to meet ECE 22.06 or Australian AS/NZS 1698 to be considered compliant for off-road use, and every helmet we stock states its certification on its product page.",
+      },
+    ],
+  },
+  {
+    theme: 'Kids, Youth & Balance Bikes',
+    items: [
+      {
+        question: 'What age is a balance bike suitable for?',
+        answer: 'Most kids can start on a balance bike from around 2 years old, depending on height and confidence — browse Balance & Mini Bikes and use the size guide on each product page to match a model to your child.',
+      },
+      {
+        question: 'Are electric balance bikes good for 2-3 year olds?',
+        answer: "Yes, with the right size — our smallest balance and mini bike models are built for exactly this age group, with governed speed and a low seat height. Check each product's recommended age/height range before buying.",
+      },
+      {
+        question: 'Do electric balance bikes have pedals?',
+        answer: "No — that's the point. A balance bike lets a child build balance and coordination on two wheels before they ever need to worry about pedalling, which is why coaches often recommend them over training wheels.",
+      },
+      {
+        question: 'Is an electric balance bike worth it, or is it better to start with training wheels?',
+        answer: 'Balance bikes teach genuine balance and steering skill directly, rather than propping a child up on training wheels and delaying that skill — most riding schools and coaches now recommend balance bikes as the better starting point for young riders.',
+      },
+      {
+        question: "What should I look for in a kids' electric balance bike?",
+        answer: 'Seat height adjustability (so it grows with your child), overall weight (lighter is easier for a small rider to control), and whether it has a brake — check the spec sheet on each Balance & Mini Bikes listing for these details.',
+      },
+    ],
+  },
+  {
+    theme: 'Brand-Specific',
+    items: [
+      {
+        question: 'Is KTM an Austrian brand?',
+        answer: 'Yes — KTM is headquartered in Mattighofen, Austria, with a long motocross racing heritage that carries through to their electric junior race bikes.',
+      },
+      {
+        question: 'Is KTM the best dirt bike brand?',
+        answer: '"Best" depends on your priorities — riding style, budget and rider age all matter more than brand alone. Use our Compare tool to line up KTM against our other brands on the specs that matter to you.',
+      },
+      {
+        question: 'Is a Sur-Ron an electric dirt bike?',
+        answer: 'Yes — every Surron model we stock, including the Light Bee X, Ultra Bee and Storm Bee, is fully electric.',
+      },
+      {
+        question: 'How much is a Talaria electric dirt bike?',
+        answer: 'Pricing varies by model and changes with our current lineup — see the Talaria brand page for up-to-date pricing on the Sting R MX4, Sting Pro MX5 and X3 (XXX).',
+      },
+      {
+        question: 'How long does a Stark VARG battery last?',
+        answer: 'Battery capacity (and therefore range) differs across the Stark VARG lineup — MX, Alpha MX, MX 1.2, EX Enduro and SM Supermoto each carry a different pack. Check the individual product’s spec sheet for its exact battery capacity and rated range.',
+      },
+      {
+        question: 'Does the Stark VARG have a clutch?',
+        answer: 'No — like all our electric dirt bikes, the Stark VARG is direct-drive with no traditional clutch to operate or maintain.',
+      },
+    ],
+  },
+  {
+    theme: 'Riding Gear & Safety',
+    items: [
+      {
+        question: 'What is a balaclava used for on a dirt bike?',
+        answer: "A riding balaclava goes on under your helmet to manage sweat, dust and sun exposure, and to keep the helmet's inner lining cleaner between washes. We stock a Neck Gaiter / Balaclava in Body Armour & Chest Protectors.",
+      },
+      {
+        question: 'Are dirt bike helmets the same as street motorcycle helmets?',
+        answer: 'No — off-road helmets are certified to ECE 22.06 or Australian AS/NZS 1698, built with an extended chin bar and peak for motocross-style riding, while street helmets are ADR-certified for road use. Every helmet we stock states its certification on the product page.',
+      },
+    ],
+  },
+];
+
+// Per-category and per-brand FAQ blocks (Batch 3) — each entry is a small
+// subset of FAQ_FULL_BANK's real, keyword-extracted questions relevant to
+// that specific page, not a duplicate of the whole bank. Only categories/
+// brands with genuine question-intent keyword data get an entry; others
+// fall through to no FAQ block on that page (a template with no real
+// questions to answer isn't better than no FAQ section at all).
+export const CATEGORY_FAQ = {
+  'balance-mini-bikes': [
+    FAQ_FULL_BANK[2].items[0], // age suitability
+    FAQ_FULL_BANK[2].items[1], // 2-3 year olds
+    FAQ_FULL_BANK[2].items[2], // pedals
+    FAQ_FULL_BANK[2].items[3], // worth it vs training wheels
+    FAQ_FULL_BANK[2].items[4], // what to look for
+  ],
+  'adult-electric-dirt-bikes': [FAQ_FULL_BANK[0].items[4]], // best for adults
+  'full-size-motocross': [FAQ_FULL_BANK[0].items[2]], // how much are motocross bikes
+  'adr-road-legal-dirt-bikes': [FAQ_FULL_BANK[1].items[0]], // can you register
+  'high-capacity-batteries': [FAQ_FULL_BANK[0].items[3]], // longest range
+  helmets: [FAQ_FULL_BANK[1].items[1], FAQ_FULL_BANK[4].items[1]], // helmet road-legal + helmet vs street
+  'body-armour': [FAQ_FULL_BANK[4].items[0]], // balaclava
+};
+
+export const BRAND_FAQ = {
+  ktm: [FAQ_FULL_BANK[3].items[0], FAQ_FULL_BANK[3].items[1]], // Austrian + best-brand
+  surron: [FAQ_FULL_BANK[3].items[2]], // is Sur-Ron electric
+  talaria: [FAQ_FULL_BANK[3].items[3]], // Talaria pricing
+  'stark-future': [FAQ_FULL_BANK[3].items[4], FAQ_FULL_BANK[3].items[5]], // battery + clutch
+};
 
 export const TRUSTPILOT_DATA = {
   score: '4.9',

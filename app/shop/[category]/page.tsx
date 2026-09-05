@@ -3,9 +3,11 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { SmartImage } from '@/components/SmartImage';
 import { JsonLd } from '@/components/JsonLd';
+import { FaqAccordion } from '@/components/FaqAccordion';
 import { CategoryProductGrid } from './CategoryProductGrid';
-import { CATEGORIES, PRODUCTS, SITE, getShopCategoryNav } from '@/config/site';
+import { CATEGORIES, PRODUCTS, SITE, getShopCategoryNav, CATEGORY_FAQ } from '@/config/site';
 import { buildSeoTitle, truncateDescription } from '@/lib/seo';
+import { buildFaqSchema } from '@/lib/faq';
 
 interface CategoryPageProps {
   params: Promise<{
@@ -291,6 +293,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
   );
 
   const pageHeading = customSeo?.h1 || category.name;
+  const categoryFaq = (CATEGORY_FAQ as Record<string, { question: string; answer: string }[]>)[category.slug] || [];
 
   // Child categories to expose as a drill-down "Category" filter on hub pages
   const subcategories = CATEGORIES.filter((c) => c.parent === category.slug).map((c) => ({
@@ -326,6 +329,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 space-y-10">
       <JsonLd data={breadcrumbsSchema} />
+      {categoryFaq.length > 0 && <JsonLd data={buildFaqSchema(categoryFaq)} />}
 
       {/* Breadcrumb nav */}
       <nav aria-label="Breadcrumb" className="text-xs text-stone-400 font-mono flex items-center gap-2">
@@ -426,6 +430,18 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
           categoryNav={getShopCategoryNav()}
         />
       </section>
+
+      {/* Category FAQ — only categories with real question-intent keyword data get a block (docs/faq-bank.md) */}
+      {categoryFaq.length > 0 && (
+        <section className="space-y-6">
+          <h2 className="text-xl sm:text-2xl font-bold uppercase text-white tracking-tight">
+            {category.name} — Common Questions
+          </h2>
+          <div className="max-w-3xl">
+            <FaqAccordion items={categoryFaq} idPrefix="cat" />
+          </div>
+        </section>
+      )}
     </div>
   );
 }

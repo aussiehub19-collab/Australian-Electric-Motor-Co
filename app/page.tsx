@@ -13,8 +13,10 @@ import {
   PRODUCTS,
   POSTS,
   FAQ,
+  FAQ_SPEAKABLE_IDX,
   TRUSTPILOT_DATA,
 } from '@/config/site';
+import { buildFaqSchema } from '@/lib/faq';
 
 export const metadata = {
   title: 'Electric Dirt Bikes Australia | Australian Electric Motor Co',
@@ -190,18 +192,7 @@ export default function HomePage() {
         'query-input': 'required name=search_term_string',
       },
     },
-    {
-      '@context': 'https://schema.org',
-      '@type': 'FAQPage',
-      mainEntity: FAQ.slice(0, 5).map((f) => ({
-        '@type': 'Question',
-        name: f.question,
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: f.answer,
-        },
-      })),
-    },
+    buildFaqSchema(FAQ, FAQ_SPEAKABLE_IDX),
   ];
 
   return (
@@ -492,7 +483,7 @@ export default function HomePage() {
         />
 
         <div className="mx-auto max-w-3xl">
-          <FaqAccordion items={FAQ.slice(0, 5)} />
+          <FaqAccordion items={FAQ} />
         </div>
 
         <CtaLink href="/faq/">Read All Rider &amp; Logistics FAQs</CtaLink>
