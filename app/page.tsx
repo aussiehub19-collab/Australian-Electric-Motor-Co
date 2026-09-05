@@ -206,9 +206,9 @@ export default function HomePage() {
         <HeroSlider
           images={[
             { src: '/images/home/hero-1.webp', alt: 'Australian Electric Motor Co electric dirt bike on Australian outback singletrack' },
-            { src: '/images/home/hero-2.webp', alt: '' },
-            { src: '/images/home/hero-3.webp', alt: '' },
-            { src: '/images/home/hero-4.webp', alt: '' },
+            { src: '/images/home/hero-2.webp', alt: 'Motocross rider in full protective gear jumping a dirt bike over an outback track' },
+            { src: '/images/home/hero-3.webp', alt: 'Close-up of a rider on a dirt bike at the crest of a dirt berm, wearing MX boots and gear' },
+            { src: '/images/home/hero-4.webp', alt: 'Two riders on dirt bikes on an Australian bush trail, one gesturing ahead' },
           ]}
         />
 

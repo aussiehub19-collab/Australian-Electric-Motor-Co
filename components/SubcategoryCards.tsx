@@ -32,7 +32,7 @@ export function SubcategoryCards({
           >
             <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-lg bg-[#121417]">
               {c.image ? (
-                <SmartImage src={c.image} alt="" fill fit="cover" className="" sizes="44px" />
+                <SmartImage src={c.image} alt={`${c.name} — shop category`} fill fit="cover" className="" sizes="44px" />
               ) : (
                 <div className="flex h-full w-full items-center justify-center text-lg">⚙️</div>
               )}
