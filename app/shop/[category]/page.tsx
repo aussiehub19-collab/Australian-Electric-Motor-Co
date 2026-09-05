@@ -17,13 +17,19 @@ export async function generateStaticParams() {
   return CATEGORIES.map((c) => ({ category: c.slug }));
 }
 
-// Subcategory SEO Configuration Map
+// Subcategory SEO Configuration Map — title/description/h1 sourced from
+// docs/keyword-map.md (keyword-engine pass, Sept 2026). Every category with a
+// real or qualitative primary keyword gets an entry here so its <title> and
+// meta description lead with that keyword instead of the raw category label.
+// Categories not listed (currently only `linkage-triangles`, which returned
+// zero data even at broad keyword-export scope — see product-gaps.md) fall
+// through to the generic buildSeoTitle()/truncateDescription() below.
 const CATEGORY_SEO_MAP: Record<
   string,
   {
     title: string;
     description: string;
-    h1: string;
+    h1?: string;
   }
 > = {
   'adult-electric-dirt-bikes': {
@@ -44,17 +50,186 @@ const CATEGORY_SEO_MAP: Record<
       'Ride legally from street to trail. Shop ADR-certified electric dirt bike models equipped with VIN, mirrors, and lights for Australian road registration.',
     h1: 'Road-Legal Electric Dirt Bike Models',
   },
-  'batteries-chargers': {
-    title: 'Electric Dirt Bike Battery & Fast Charger Upgrades',
-    description:
-      'Upgrade your electric dirt bike with 72V high-capacity lithium packs and 240V AU-standard fast chargers for Surron, Talaria, and Stark VARG.',
-    h1: 'Electric Dirt Bike Batteries & Fast Chargers',
-  },
   'electric-dirt-bikes': {
-    title: 'Electric Dirt Bike Collection | Buy Online in Australia',
+    title: 'Electric Dirt Bike Range | AEMC',
     description:
-      'Explore our complete electric dirt bike inventory. Compare 60V, 72V, and 360V electric dirt bike models from Surron, Talaria, and Stark VARG with AUD pricing.',
-    h1: 'All Electric Dirt Bike Models',
+      "Australia's full electric dirt bike range — motocross, trail, kids, road-legal and farm models, all backed by a 2-year factory warranty and fast crate delivery.",
+    h1: 'Electric Dirt Bike Range',
+  },
+  'full-size-motocross': {
+    title: 'Electric Motocross Bikes Australia | AEMC',
+    description:
+      'Full-size electric motocross bikes matching 110cc-450cc petrol power, with holeshot torque, long-travel suspension and 21"/18" wheels for competition tracks.',
+  },
+  'trail-mid-weight-enduro': {
+    title: 'Electric Trail Bikes | Mid-Weight Enduro | AEMC',
+    description:
+      'Electric trail bikes built for rocky ridges, singletrack and outback bush navigation — nimble, high-endurance enduro machines with up to 140km range per charge.',
+  },
+  'junior-trials-youth-dirt-bikes': {
+    title: 'Kids Electric Dirt Bike | Junior & Trials | AEMC',
+    description:
+      'Kids electric dirt bike and junior trials models for youth riders mastering throttle control, balance and technical riding — precision power, governed for safety.',
+  },
+  'utility-farm-e-bikes': {
+    title: 'Electric Farm Bikes Australia | AEMC',
+    description:
+      'Silent electric farm bikes and utility workhorses for cattle stations, paddock mustering and fence inspections — heavy-duty, without scaring livestock.',
+  },
+  'balance-mini-bikes': {
+    title: 'Electric Balance Bikes for Kids | AEMC',
+    description:
+      'Electric balance bikes and mini bikes for kids aged 3-9 learning throttle control and balance fundamentals on grass and dirt — governed, lightweight starters.',
+  },
+  'parts-upgrades': {
+    title: 'Electric Dirt Bike Parts & Upgrades | AEMC',
+    description:
+      'Electric dirt bike parts and upgrades — race-grade batteries, programmable controllers, FastAce suspension, oversized brakes and drivetrain components.',
+  },
+  'batteries-chargers': {
+    title: 'Electric Dirt Bike Batteries & Chargers | AEMC',
+    description:
+      'Motorbike batteries and 72V high-discharge lithium packs, plus Australian 240V fast chargers for Surron, Talaria and Stark VARG electric dirt bikes.',
+  },
+  'high-capacity-batteries': {
+    title: 'High-Capacity Motorbike Batteries | AEMC',
+    description:
+      'High-capacity motorbike batteries — hand-assembled 72V Molicel packs rated for 350A continuous discharge in high-temperature outback riding conditions.',
+  },
+  'fast-chargers': {
+    title: 'Electric Bike Chargers | Fast 72V & 48V | AEMC',
+    description:
+      'Electric bike chargers rated 15A-20A with Australian 240V 10A plugs and smart voltage-curve monitoring, sized for 36V, 48V and 72V dirt bike packs.',
+  },
+  'controllers-electronics': {
+    title: 'Electric Dirt Bike Controllers & Electronics | AEMC',
+    description:
+      'Electric dirt bike controllers, Bluetooth-programmable FOC units, water-sealed displays, quick-turn throttles and reinforced wiring for reliable power delivery.',
+  },
+  'aftermarket-controllers': {
+    title: 'Aftermarket Ebike Controllers | 60A+ | AEMC',
+    description:
+      'Plug-and-play aftermarket ebike controllers (Torp, ASI, BAC) unlocking up to 25kW output and variable regenerative braking for your electric dirt bike.',
+  },
+  'displays-throttles': {
+    title: 'Dirt Bike Thumb Throttles & Displays | AEMC',
+    description:
+      'Dirt bike thumb throttles and sunlight-readable colour TFT displays — waterproof CNC electronic throttles and bar switches for reliable trail control.',
+  },
+  'wiring-harnesses': {
+    title: 'Dirt Bike Wiring Harnesses | AEMC',
+    description:
+      'IP67 waterproof dirt bike wiring harnesses built to resist outback bull-dust, engine-bay heat and trail snags on Surron, Talaria and Stark VARG builds.',
+  },
+  'suspension-steering': {
+    title: 'Dirt Bike Suspension & Steering Parts | AEMC',
+    description:
+      'Dirt bike suspension upgrades — inverted front forks, piggyback rear shocks, CNC triple clamps and reinforced linkages for Surron, Talaria and Stark VARG.',
+  },
+  'front-forks': {
+    title: 'Dirt Bike Front Forks | Inverted MX | AEMC',
+    description:
+      '48mm inverted hydraulic dirt bike front forks with 270mm of plush travel, tuned for Australian whoops and deep braking ruts on electric motocross builds.',
+  },
+  'rear-shocks': {
+    title: 'Dirt Bike Rear Shocks | Piggyback Coil | AEMC',
+    description:
+      'Dirt bike rear shocks with high/low-speed compression adjustment and heavy spring options — piggyback coil shocks tuned for aggressive electric-bike riders.',
+  },
+  'brakes-rotors': {
+    title: 'Dirt Bike Brakes & Rotors | AEMC',
+    description:
+      'Complete dirt bike brake sets — 4-piston hydraulic calipers, 250mm oversized floating discs, braided steel lines and sintered pads for hard-stopping power.',
+  },
+  'complete-brake-sets': {
+    title: 'Dirt Bike Brake Upgrade Kits | AEMC',
+    description:
+      'Complete dirt bike brake upgrade kits — quad-piston hydraulic calipers and radial levers for one-finger stopping power on heavy 72V electric builds.',
+  },
+  'oversized-rotors': {
+    title: 'Oversized Dirt Bike Brake Rotors | AEMC',
+    description:
+      'Oversized 250mm-260mm dirt bike brake rotors, laser-cut and heat-treated with CNC adapter brackets to eliminate brake fade on long, fast descents.',
+  },
+  'pads-lines': {
+    title: 'Dirt Bike Brake Pads & Lines | AEMC',
+    description:
+      'Sintered dirt bike brake pads engineered for wet red clay and bull-dust conditions, paired with braided stainless hydraulic lines for consistent bite.',
+  },
+  'wheels-drivetrain': {
+    title: 'Dirt Bike Wheels & Drivetrain Parts | AEMC',
+    description:
+      'Dirt bike wheel sets and drivetrain parts — heavy-duty 21"/18" wheelsets, knobby tyres, CNC sprockets, gold O-ring chains and silent belt-drive kits.',
+  },
+  'wheel-sets-tyres': {
+    title: 'Dirt Bike Wheel Sets & Tyres | AEMC',
+    description:
+      'Dirt bike wheel sets and tyres — SM Pro Platinum billet spoke wheels pre-fitted with heavy-duty rim locks and Dunlop Geomax MX knobby tyres.',
+  },
+  'sprockets-chains': {
+    title: 'Dirt Bike Sprockets & Chains | AEMC',
+    description:
+      'Dirt bike sprocket and chain kits — CNC 7075-T6 rear sprockets paired with Japanese DID gold racing chains for high-torque electric drivetrain longevity.',
+  },
+  'belt-drive-kits': {
+    title: 'Dirt Bike Belt Drive Kits | AEMC',
+    description:
+      'Dirt bike belt drive conversion kits — carbon-corded Gates GT4 belts engineered for silent stealth trail riding and paddock cruising, no chain clatter.',
+  },
+  'riding-gear': {
+    title: 'Dirt Bike Riding Gear & Protection | AEMC',
+    description:
+      'Dirt bike riding gear certified to AS/NZS 1698 and ECE 22.06 — full-face MX helmets, CE-rated body armour, off-road goggles and enduro boots.',
+  },
+  helmets: {
+    title: 'Dirt Bike Helmets | Full-Face MX | AEMC',
+    description:
+      'Dirt bike helmets approved to ECE 22.06 and Australian AS/NZS 1698 — full-face motocross helmets with MIPS rotational protection and carbon composite shells.',
+  },
+  'body-armour': {
+    title: 'Motocross Body Armour & Wrist Braces | AEMC',
+    description:
+      'Motocross body armour — CE Level 1 & 2 chest protectors, neck braces and wrist braces for full upper-body protection on every electric dirt bike ride.',
+  },
+  'body-armour-protection': {
+    title: 'MX Body Armour & Protection Gear | AEMC',
+    description:
+      'MX body armour and protection gear — CE-certified chest roost deflectors, protection jackets and joint protection systems for motocross and enduro riding.',
+  },
+  'gloves-goggles': {
+    title: 'Dirt Bike Goggles & Gloves | AEMC',
+    description:
+      'Dirt bike goggles and gloves — ultra-wide-vision motocross goggles with anti-fog lenses, paired with four-way-stretch off-road riding gloves.',
+  },
+  boots: {
+    title: 'Motocross Boots | Enduro & Dirt Bike | AEMC',
+    description:
+      'Motocross boots and dirt bike boots with biomechanical ankle pivots, replaceable sole systems and deep-lugged traction soles for enduro and MX riding.',
+  },
+  accessories: {
+    title: 'Electric Dirt Bike Accessories | AEMC',
+    description:
+      'Electric dirt bike accessories — ute hitch carriers, foldable pit stands, custom graphics kits and electrical-safe cleaning bundles for the whole build.',
+  },
+  'bike-stands-tools': {
+    title: 'Dirt Bike Stands & Pit Tools | AEMC',
+    description:
+      'Dirt bike motorcycle stands and pit tools — foldable composite and aircraft-grade aluminium lift stands, plus FIM-approved environmental pit mats.',
+  },
+  'storage-transport': {
+    title: 'Motorbike Carriers & Transport | AEMC',
+    description:
+      'Motorbike carriers and transport gear — heavy-duty 2-inch hitch bike carriers, soft-loop tie-down straps and weatherproof covers for e-moto transport.',
+  },
+  'graphics-plastics-kits': {
+    title: 'Dirt Bike Graphics & Plastics Kits | AEMC',
+    description:
+      'Dirt bike graphics kits and restyle plastics — heavy-duty 21mil vinyl decals and gloss polypropylene panels for Surron, Talaria, E-Ride Pro and Stark VARG.',
+  },
+  'maintenance-chemicals': {
+    title: 'E-Moto Cleaning & Chain Lube | AEMC',
+    description:
+      'E-moto cleaning products and chain lube — waterless bike wash, O-ring/X-ring PTFE chain lubricant and electrical-safe contact cleaner for high-voltage builds.',
   },
 };
 

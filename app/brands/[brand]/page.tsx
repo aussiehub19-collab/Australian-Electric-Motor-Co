@@ -20,6 +20,82 @@ export async function generateStaticParams() {
   return brandCategories.map((c) => ({ brand: c.slug }));
 }
 
+// Per-brand title/description sourced from docs/keyword-map.md (keyword-engine
+// pass, Sept 2026) — each description now mentions the brand's own real
+// products instead of the one generic sentence every brand previously shared.
+const BRAND_SEO: Record<string, { title: string; description: string }> = {
+  surron: {
+    title: 'Surron Electric Dirt Bikes | AEMC',
+    description:
+      'Shop genuine Surron electric dirt bikes in Australia — Light Bee X, Ultra Bee and Storm Bee, backed by factory warranty, Surron parts and battery stock.',
+  },
+  talaria: {
+    title: 'Talaria Electric Dirt Bikes | AEMC',
+    description:
+      'Shop genuine Talaria electric dirt bikes in Australia — Sting R MX4, Sting Pro MX5 and the X3 (XXX), gearbox-driven and built for durable bush bashing.',
+  },
+  'stark-future': {
+    title: 'Stark VARG Electric Dirt Bikes | AEMC',
+    description:
+      'Shop the Stark VARG in Australia — 80hp electric motocross technology setting lap records worldwide, with local warranty and spare parts support.',
+  },
+  'e-ride-pro': {
+    title: 'E-Ride Pro Electric Dirt Bikes | AEMC',
+    description:
+      'Shop genuine E-Ride Pro electric dirt bikes — factory 72V, out-of-the-box high-voltage models engineered for relentless acceleration and hill-climbing grunt.',
+  },
+  ktm: {
+    title: 'KTM Electric Dirt Bikes | AEMC',
+    description:
+      'Shop genuine KTM electric dirt bikes in Australia — Austrian motocross heritage with WP suspension and championship-winning junior race bikes.',
+  },
+  husqvarna: {
+    title: 'Husqvarna Electric Dirt Bikes | AEMC',
+    description:
+      'Shop genuine Husqvarna electric dirt bikes in Australia — Swedish-styled junior and youth models with WP XACT air suspension and refined power delivery.',
+  },
+  gasgas: {
+    title: 'GASGAS Electric Dirt Bikes | AEMC',
+    description:
+      'Shop genuine GASGAS electric dirt bikes in Australia — Spanish-inspired motocross machines built for pure riding fun and a competitive edge for junior racers.',
+  },
+  kuberg: {
+    title: 'Kuberg Electric Dirt Bikes | AEMC',
+    description:
+      'Shop genuine Kuberg electric dirt bikes in Australia — handcrafted European models precision-engineered for young riders, freeriders and paddock transport.',
+  },
+  oset: {
+    title: 'OSET Electric Dirt Bikes | AEMC',
+    description:
+      'Shop genuine OSET electric bikes in Australia — world-champion electric trials and balance bikes with micrometer-fine throttle modulation and safety dials.',
+  },
+  'rfn-apollo': {
+    title: 'RFN Apollo Electric Dirt Bikes | AEMC',
+    description:
+      'Shop genuine RFN Apollo electric dirt bikes in Australia — rugged, rally-inspired models with reinforced chromoly frames and dual-mode riding profiles.',
+  },
+  'arctic-leopard': {
+    title: 'Arctic Leopard Electric Dirt Bikes | AEMC',
+    description:
+      'Shop genuine Arctic Leopard electric dirt bikes in Australia — heavyweight mountain enduro machines with extreme 80V torque and climb-oriented chassis balance.',
+  },
+  stacyc: {
+    title: 'STACYC Electric Balance Bikes | AEMC',
+    description:
+      'Shop genuine STACYC electric balance bikes in Australia — the global benchmark for building young riders’ confidence and balance before their first dirt bike.',
+  },
+  thumpstar: {
+    title: 'Thumpstar Electric Dirt Bikes | AEMC',
+    description:
+      'Shop genuine Thumpstar electric dirt bikes in Australia — Aussie pit-bike heritage meets high-torque electric power for rugged backyard reliability.',
+  },
+  ubco: {
+    title: 'UBCO Electric Utility Bikes | AEMC',
+    description:
+      'Shop genuine UBCO electric utility bikes in Australia — All-Wheel Drive (2X2) workhorses built for cattle stations, farm logistics and silent exploration.',
+  },
+};
+
 export async function generateMetadata({ params }: BrandPageProps): Promise<Metadata> {
   const { brand: brandSlug } = await params;
   const brand = CATEGORIES.find(
@@ -27,15 +103,21 @@ export async function generateMetadata({ params }: BrandPageProps): Promise<Meta
   );
   if (!brand) return { title: 'Brand Not Found' };
 
+  const seo = BRAND_SEO[brand.slug];
+  const title = seo?.title || `${brand.name} Electric Dirt Bikes | AEMC`;
+  const description =
+    seo?.description ||
+    `Shop genuine ${brand.name} electric dirt bikes in Australia. Backed by the Australian Electric Motor Co factory warranty, NSW spare parts inventory, and national crated delivery.`;
+
   return {
-    title: `${brand.name} Electric Dirt Bikes | AEMC`,
-    description: `Shop genuine ${brand.name} electric dirt bikes in Australia. Backed by the Australian Electric Motor Co factory warranty, NSW spare parts inventory, and national crated delivery.`,
+    title,
+    description,
     alternates: {
       canonical: `https://${SITE.domain}/brands/${brand.slug}/`,
     },
     openGraph: {
-      title: `${brand.name} Electric Dirt Bikes Australia | Australian Electric Motor Co`,
-      description: brand.description,
+      title,
+      description,
       images: [{ url: brand.image }],
     },
     other: {

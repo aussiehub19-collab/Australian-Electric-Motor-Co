@@ -17,26 +17,26 @@ import {
 } from '@/config/site';
 
 export const metadata = {
-  title: 'Electric Dirt Bike Superstore Australia | Australian Electric Motor Co',
+  title: 'Electric Dirt Bikes Australia | Australian Electric Motor Co',
   description:
-    'Shop the ultimate electric dirt bike range. From high-torque 72V adult electric dirt bike models to youth mini-motos. Fast AU dispatch and local warranty. All prices include 10% GST.',
+    'Electric dirt bikes for adults, kids and farms: motocross, enduro and road-legal models, 2-year warranty, fast AU crate delivery, 10% off with crypto.',
   alternates: {
     canonical: `https://${SITE.domain}/`,
   },
   openGraph: {
     type: 'website',
     siteName: 'Australian Electric Motor Co',
-    title: 'Electric Dirt Bike Superstore Australia | Australian Electric Motor Co',
+    title: 'Electric Dirt Bikes Australia | Australian Electric Motor Co',
     description:
-      'Shop the ultimate electric dirt bike range. From high-torque 72V adult electric dirt bike models to youth mini-motos. Fast AU dispatch and local warranty.',
+      'Electric dirt bikes for adults, kids and farms: motocross, enduro and road-legal models, 2-year warranty, fast AU crate delivery, 10% off with crypto.',
     url: `https://${SITE.domain}/`,
     images: [{ url: '/images/home/hero-1.webp' }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Electric Dirt Bike Superstore Australia | Australian Electric Motor Co',
+    title: 'Electric Dirt Bikes Australia | Australian Electric Motor Co',
     description:
-      'Shop the ultimate electric dirt bike range. From high-torque 72V adult electric dirt bike models to youth mini-motos. Fast AU dispatch and local warranty.',
+      'Electric dirt bikes for adults, kids and farms: motocross, enduro and road-legal models, 2-year warranty, fast AU crate delivery, 10% off with crypto.',
     images: ['/images/home/hero-1.webp'],
   },
   other: {
