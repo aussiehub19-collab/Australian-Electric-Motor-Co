@@ -61,7 +61,7 @@ export function HeroSlider({ images, interval = 5500 }: HeroSliderProps) {
         >
           <Image
             src={img.src}
-            alt={i === 0 ? img.alt : ''}
+            alt={img.alt}
             fill
             priority={i === 0}
             sizes="100vw"
