@@ -21,19 +21,46 @@ export async function generateStaticParams() {
   }));
 }
 
+// Batch 2 (docs/keyword-map.md): only the handful of products whose own CSV
+// row showed genuine measured search volume for a phrase that's meaningfully
+// different from the bare model name get an override here — appending a real,
+// accurate qualifier (never a fabricated one). The other ~245 products keep
+// buildSeoTitle(product.name): per keyword-map.md's own methodology, they got
+// zero SKU-specific search volume (normal — nobody searches an exact spare-
+// part SKU), so the bare model name IS the correct, honest title; there's no
+// better keyword to substitute in without inventing one.
+//
+// Two real per-SKU keyword hits were deliberately left OUT of this map:
+// - "Stark VARG MX (60hp)" matched "stark varg ex 60hp" (v30) in the export —
+//   but that's the EX Enduro model's spec, not the MX's; using it would put a
+//   wrong model name in the page's own title. Left on the honest fallback.
+// - "Surron Hyper Bee" matched "surron hyper bee charger" (v20) — a charger
+//   accessory search, not the bike itself. Same reasoning.
+const PRODUCT_SEO_NAME_OVERRIDE: Record<string, string> = {
+  'surron-ultra-bee': 'Surron Ultra Bee Electric Dirt Bike',
+  'rfn-ares-rally-pro': 'RFN Ares Rally Pro Electric Dirt Bike',
+  'stacyc-12edrive': 'STACYC 12eDRIVE Electric Balance Bike',
+  'arctic-leopard-xe-pro-s': 'Arctic Leopard XE Pro S Electric Dirt Bike',
+  'ubco-2x2-work-bike': 'UBCO 2X2 Work Electric Utility Bike',
+  'ubco-2x2-adventure-bike': 'UBCO 2X2 Adventure Electric Utility Bike',
+};
+
 export async function generateMetadata({ params }: ProductPageProps) {
   const { slug } = await params;
   const product = PRODUCTS.find((p) => p.slug === slug);
   if (!product) return { title: 'Product Not Found' };
 
+  const seoName = PRODUCT_SEO_NAME_OVERRIDE[product.slug] || product.name;
+  const title = buildSeoTitle(seoName);
+
   return {
-    title: buildSeoTitle(product.name),
+    title,
     description: truncateDescription(product.shortDescription),
     alternates: {
       canonical: `https://${SITE.domain}/shop/${product.category}/${product.slug}/`,
     },
     openGraph: {
-      title: `${product.name} | Australian Electric Motor Co Electric Dirt Bike`,
+      title: `${seoName} | Australian Electric Motor Co`,
       description: product.shortDescription,
       images: [{ url: product.images[0] }],
     },
