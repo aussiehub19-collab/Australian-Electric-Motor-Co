@@ -82,9 +82,14 @@ export const FINANCE = {
 
 export const FORMS = {
   provider: 'web3forms',
-  web3formsKey: 'pending',
+  // Set NEXT_PUBLIC_WEB3FORMS_KEY in Vercel → Settings → Environment Variables
+  // (all environments). The destination inbox is chosen in the Web3Forms
+  // dashboard when you create the key, not here. Falls back to 'pending', which
+  // the contact/wholesale forms detect and route to the thank-you page instead
+  // of a failed POST.
+  web3formsKey: process.env.NEXT_PUBLIC_WEB3FORMS_KEY || 'pending',
   resendFrom: 'orders@australianelectricmotorco.com.au',
-  turnstileSiteKey: '',
+  turnstileSiteKey: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || '',
 };
 
 export const CHAT = {

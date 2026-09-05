@@ -204,8 +204,12 @@ for (const file of [path.resolve(rootDir, 'app/layout.tsx'), ...walkTsx(appDir)]
 if (SITE.gscVerification === 'pending') {
   warnings.push('SITE.gscVerification is still "pending" — Search Console cannot verify this site yet.');
 }
-if (FORMS?.web3formsKey === 'pending') {
-  warnings.push('FORMS.web3formsKey is still "pending" — contact/order/wholesale forms deliver nowhere; WhatsApp is the only live order channel.');
+// web3formsKey now comes from NEXT_PUBLIC_WEB3FORMS_KEY — on Vercel that env
+// var is present during the build, so this warning only fires locally (no
+// .env.local) or if the var genuinely isn't set in the Vercel project.
+const web3Key = process.env.NEXT_PUBLIC_WEB3FORMS_KEY || FORMS?.web3formsKey;
+if (!web3Key || web3Key === 'pending') {
+  warnings.push('NEXT_PUBLIC_WEB3FORMS_KEY is not set — contact/wholesale forms deliver nowhere; WhatsApp is the only live order channel. (Set it in Vercel env vars; locally this warning is expected.)');
 }
 if (SITE.domain && SITE.domain.includes('DOMAIN.')) {
   failures.push('B1: SITE.domain is still a placeholder in a production build.');
