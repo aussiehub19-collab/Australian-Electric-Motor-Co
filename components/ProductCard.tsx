@@ -95,7 +95,7 @@ export function ProductCard({ product, className = '', priority = false }: Produ
           name: product.name,
           price: product.price,
           category: product.category,
-          image: product.images?.[0] || 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=600&q=80',
+          image: product.images?.[0] || '/images/home/hero-1.webp',
           quantity: qtyToAdd,
           isBike: !!product.isBike,
         });
@@ -121,7 +121,7 @@ export function ProductCard({ product, className = '', priority = false }: Produ
         {/* Image Container — every product image contained in the same white frame so cards align */}
         <Link href={productUrl} className="relative block aspect-square overflow-hidden bg-white">
           <SmartImage
-            src={product.images?.[0] || 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=600&q=80'}
+            src={product.images?.[0] || '/images/home/hero-1.webp'}
             alt={product.name}
             fill
             fit="contain"

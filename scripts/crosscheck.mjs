@@ -7,6 +7,17 @@ import { fileURLToPath } from 'node:url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const rootDir = path.resolve(__dirname, '..');
+const appDir = path.resolve(rootDir, 'app');
+
+function walkTsx(dir) {
+  const out = [];
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) out.push(...walkTsx(full));
+    else if (entry.name.endsWith('.tsx')) out.push(full);
+  }
+  return out;
+}
 
 console.log('🔍 Starting WebForge v9.1 Pre-ship Crosscheck...');
 
@@ -147,6 +158,33 @@ if (!PRODUCTS || PRODUCTS.length === 0) {
   });
 }
 
+// 9c. Same rule for CATEGORY and POST images — after the Sept 2026 sweep every
+// one points at a local file. Catch a reintroduced remote/Unsplash URL or a
+// dead local path before it ships as a visible placeholder.
+const imgSpot = (label, list) => {
+  for (const item of list || []) {
+    const img = item.image;
+    if (!img) continue;
+    if (/^https?:\/\//.test(img)) {
+      failures.push(`${label} on a remote/placeholder image: ${item.slug || item.name} -> ${img}`);
+    } else if (!fs.existsSync(path.resolve(rootDir, 'public', img.replace(/^\//, '')))) {
+      failures.push(`${label} image file missing on disk: ${item.slug || item.name} -> ${img}`);
+    }
+  }
+};
+imgSpot('Category', CATEGORIES);
+imgSpot('Post', POSTS);
+
+// 9d. No hardcoded remote image URLs left in the app/component source (OG
+// fallbacks, <SmartImage> defaults etc.) — these are latent placeholders.
+const compDir = path.resolve(rootDir, 'components');
+for (const file of [...walkTsx(appDir), ...(fs.existsSync(compDir) ? walkTsx(compDir) : [])]) {
+  const s = fs.readFileSync(file, 'utf8');
+  if (/(images\.unsplash\.com|picsum\.photos)/.test(s)) {
+    failures.push(`9d: hardcoded remote image URL in ${path.relative(rootDir, file)}`);
+  }
+}
+
 // 10. <title> length — mirrors lib/seo.ts buildSeoTitle(); keep in sync if that changes.
 function buildSeoTitleCheck(name) {
   const full = `${name} | Australian Electric Motor Co`;
@@ -174,16 +212,6 @@ for (const c of CATEGORIES) {
 // per-route layout.tsx...) don't go through buildSeoTitle, so scan their
 // source for over-length `title:` literals. Fails the build (these are
 // hand-authored and easy to keep in bounds).
-const appDir = path.resolve(rootDir, 'app');
-function walkTsx(dir) {
-  const out = [];
-  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-    const full = path.join(dir, entry.name);
-    if (entry.isDirectory()) out.push(...walkTsx(full));
-    else if (entry.name.endsWith('.tsx')) out.push(full);
-  }
-  return out;
-}
 const HARDCODED_TITLE_MAX = 60;
 for (const file of [path.resolve(rootDir, 'app/layout.tsx'), ...walkTsx(appDir)]) {
   let src;

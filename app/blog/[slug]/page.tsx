@@ -148,7 +148,7 @@ export default async function BlogPostPage({ params }: PostPageProps) {
         name: SITE.name,
         logo: {
           '@type': 'ImageObject',
-          url: `https://${SITE.domain}/images/logo.png`,
+          url: `https://${SITE.domain}/icon.svg`,
         },
       },
       mainEntityOfPage: {

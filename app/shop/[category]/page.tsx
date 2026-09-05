@@ -254,13 +254,13 @@ export async function generateMetadata({ params }: CategoryPageProps) {
     openGraph: {
       title,
       description,
-      images: [{ url: category?.image || 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=1200&q=80' }],
+      images: [{ url: category?.image || '/images/home/hero-1.webp' }],
     },
     twitter: {
       card: 'summary_large_image',
       title,
       description,
-      images: [category?.image || 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=1200&q=80'],
+      images: [category?.image || '/images/home/hero-1.webp'],
     },
     other: {
       'og:updated_time': new Date().toISOString(),

@@ -187,7 +187,7 @@ export const CATEGORIES = [
     section: 'electric-dirt-bikes',
     parent: null,
     description: 'Explore Australia’s premier collection of competition-spec electric dirt bikes, agile trail weapons, street-legal commuters, and heavy-duty farm workhorses.',
-    image: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/home/hero-1.webp',
     count: 75,
   },
   {
@@ -214,7 +214,7 @@ export const CATEGORIES = [
     section: 'electric-dirt-bikes',
     parent: 'electric-dirt-bikes',
     description: 'Nimble, high-endurance trail e-dirt bikes built for rocky ridges, mountain singletrack, and outback bush navigation with up to 140km range per charge.',
-    image: 'https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/home/cat-trail-enduro.webp',
     count: 13,
   },
   {
@@ -232,7 +232,7 @@ export const CATEGORIES = [
     section: 'electric-dirt-bikes',
     parent: 'kids-youth-electric-dirt-bikes',
     description: 'Precision electric trials and junior dirt bikes for youth riders mastering throttle control, balance, and technical riding.',
-    image: 'https://images.unsplash.com/photo-1547038577-da80abbc4f19?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/home/cat-kids-youth-electric-dirt-bikes.webp',
     count: 20,
   },
   {
@@ -241,7 +241,7 @@ export const CATEGORIES = [
     section: 'electric-dirt-bikes',
     parent: 'kids-youth-electric-dirt-bikes',
     description: 'Lightweight starter e-balance and mini bikes for youngsters aged 3 to 9 learning throttle control, balance, and braking fundamentals on grass and dirt.',
-    image: 'https://images.unsplash.com/photo-1547038577-da80abbc4f19?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/home/cat-kids-youth-electric-dirt-bikes.webp',
     count: 20,
   },
   {
@@ -270,7 +270,7 @@ export const CATEGORIES = [
     section: 'brands',
     parent: null,
     description: 'Browse premier electric dirt bike manufacturers and racing brands backed by Australian warranty, local spare parts stock, and Sunshine Coast technical support.',
-    image: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/home/hero-3.webp',
     count: 15,
   },
   {
@@ -430,7 +430,7 @@ export const CATEGORIES = [
     section: 'parts-upgrades',
     parent: null,
     description: 'Upgrade your electric dirt bike with race-grade 72V Molicel batteries, programmable controllers, FastAce suspension, oversized braking systems, and heavy-duty drivetrain components.',
-    image: 'https://images.unsplash.com/photo-1508873696983-2df5293cb32b?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/products/stark-varg-6-5kwh-replacement-battery-pack.webp',
     count: 15,
   },
   {
@@ -448,7 +448,7 @@ export const CATEGORIES = [
     section: 'parts-upgrades',
     parent: 'batteries-chargers',
     description: 'Hand-assembled Australian high-drain Molicel 21700 battery packs capable of 350A continuous discharge in high-temperature outback riding.',
-    image: 'https://images.unsplash.com/photo-1508873696983-2df5293cb32b?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/products/stark-varg-6-5kwh-replacement-battery-pack.webp',
     count: 1,
   },
   {
@@ -457,7 +457,7 @@ export const CATEGORIES = [
     section: 'parts-upgrades',
     parent: 'batteries-chargers',
     description: '15A and 20A rapid chargers equipped with Australian 240V 10A wall plugs and smart voltage curve monitoring.',
-    image: 'https://images.unsplash.com/photo-1508873696983-2df5293cb32b?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/products/stark-varg-stand-integrated-fast-charger-3-3kw.webp',
     count: 1,
   },
   {
@@ -475,7 +475,7 @@ export const CATEGORIES = [
     section: 'parts-upgrades',
     parent: 'controllers-electronics',
     description: 'Plug-and-play high-phase controllers (Torp, ASI, BAC) unlocking up to 25kW output and variable regenerative engine braking.',
-    image: 'https://images.unsplash.com/photo-1508873696983-2df5293cb32b?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/products/ebmx-x-9000-aftermarket-controller.webp',
     count: 1,
   },
   {
@@ -484,7 +484,7 @@ export const CATEGORIES = [
     section: 'parts-upgrades',
     parent: 'controllers-electronics',
     description: 'Sunlight-readable color TFT screens, bar thumb switches, and waterproof CNC electronic throttles.',
-    image: 'https://images.unsplash.com/photo-1508873696983-2df5293cb32b?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/products/sur-ron-display-speedometer.webp',
     count: 1,
   },
   {
@@ -493,7 +493,7 @@ export const CATEGORIES = [
     section: 'parts-upgrades',
     parent: 'controllers-electronics',
     description: 'IP67 waterproof heat-shrink wiring harnesses designed to resist outback bull-dust, high engine wash, and trail snags.',
-    image: 'https://images.unsplash.com/photo-1508873696983-2df5293cb32b?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/products/ebmx-x-9000-aftermarket-controller.webp',
     count: 1,
   },
   {
@@ -511,7 +511,7 @@ export const CATEGORIES = [
     section: 'parts-upgrades',
     parent: 'suspension-steering',
     description: '48mm inverted hydraulic race forks with 270mm of plush travel tuned for Australian whoops and deep braking ruts.',
-    image: 'https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/products/sur-ron-front-fork-complete-assembly.webp',
     count: 1,
   },
   {
@@ -520,7 +520,7 @@ export const CATEGORIES = [
     section: 'parts-upgrades',
     parent: 'suspension-steering',
     description: 'High and low speed compression adjustable piggyback rear coil shocks with heavy spring options for aggressive riders.',
-    image: 'https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/products/sur-ron-rear-shock-upgrade.webp',
     count: 1,
   },
   {
@@ -529,7 +529,7 @@ export const CATEGORIES = [
     section: 'parts-upgrades',
     parent: 'suspension-steering',
     description: 'Forged 7075-T6 aluminium progression triangles and riser linkages preventing frame cracking under big jump flat-landings.',
-    image: 'https://images.unsplash.com/photo-1508873696983-2df5293cb32b?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/products/sur-ron-rear-shock-upgrade.webp',
     count: 1,
   },
   {
@@ -547,7 +547,7 @@ export const CATEGORIES = [
     section: 'parts-upgrades',
     parent: 'brakes-rotors',
     description: 'Quad-piston hydraulic brake calipers and radial levers providing one-finger stopping power for heavy 72V builds.',
-    image: 'https://images.unsplash.com/photo-1508873696983-2df5293cb32b?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/products/magura-mt7-pro-quad-piston-brake-set.webp',
     count: 1,
   },
   {
@@ -556,7 +556,7 @@ export const CATEGORIES = [
     section: 'parts-upgrades',
     parent: 'brakes-rotors',
     description: '250mm and 260mm laser-cut heat-treated floating brake rotors with CNC adapter brackets to eliminate brake fade on long descents.',
-    image: 'https://images.unsplash.com/photo-1508873696983-2df5293cb32b?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/products/sur-ron-front-brake-rotor-203mm.webp',
     count: 1,
   },
   {
@@ -565,7 +565,7 @@ export const CATEGORIES = [
     section: 'parts-upgrades',
     parent: 'brakes-rotors',
     description: 'Sintered metallic pads engineered for wet red clay and abrasive bull-dust conditions, paired with braided stainless hydraulic lines.',
-    image: 'https://images.unsplash.com/photo-1508873696983-2df5293cb32b?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/products/sur-ron-front-brake-pads.webp',
     count: 1,
   },
   {
@@ -583,7 +583,7 @@ export const CATEGORIES = [
     section: 'parts-upgrades',
     parent: 'wheels-drivetrain',
     description: 'SM Pro Platinum 21" front and 18" rear billet spoke wheels pre-fitted with heavy-duty rim locks and Dunlop Geomax MX tyres.',
-    image: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/products/sur-ron-front-rim.webp',
     count: 1,
   },
   {
@@ -592,7 +592,7 @@ export const CATEGORIES = [
     section: 'parts-upgrades',
     parent: 'wheels-drivetrain',
     description: 'CNC 7075-T6 54T and 58T rear sprockets paired with Japanese DID 420 gold racing chains for high-torque longevity.',
-    image: 'https://images.unsplash.com/photo-1508873696983-2df5293cb32b?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/products/sur-ron-chain-plus-sprocket-kit.webp',
     count: 1,
   },
   {
@@ -601,7 +601,7 @@ export const CATEGORIES = [
     section: 'parts-upgrades',
     parent: 'wheels-drivetrain',
     description: 'Carbon-corded Gates GT4 belt conversion kits engineered for silent stealth trail riding and paddock cruising without chain clatter.',
-    image: 'https://images.unsplash.com/photo-1508873696983-2df5293cb32b?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/products/sur-ron-chain-plus-sprocket-kit.webp',
     count: 1,
   },
 
@@ -612,7 +612,7 @@ export const CATEGORIES = [
     section: 'riding-gear',
     parent: null,
     description: 'Rider safety gear certified to Australian Standards (AS/NZS 1698) & ECE 22.06 including full-face MX helmets, CE Level 1 & 2 body armour, anti-dust off-road goggles, and rugged enduro boots.',
-    image: 'https://images.unsplash.com/photo-1547038577-da80abbc4f19?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/products/fox-racing-v1-matte-black-helmet.webp',
     count: 19,
   },
   {
@@ -621,7 +621,7 @@ export const CATEGORIES = [
     section: 'riding-gear',
     parent: 'riding-gear',
     description: 'ECE 22.06 and Australian AS/NZS 1698 approved full-face motocross and electric dirt bike helmets engineered with MIPS rotational protection, carbon composite shells, and optimal ventilation.',
-    image: 'https://images.unsplash.com/photo-1547038577-da80abbc4f19?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/products/fox-racing-v1-matte-black-helmet.webp',
     count: 5,
   },
   {
@@ -630,7 +630,7 @@ export const CATEGORIES = [
     section: 'riding-gear',
     parent: 'riding-gear',
     description: 'CE Level 1 & Level 2 certified hard-shell chest roost deflectors, full upper body protection jackets, carbon composite neck braces, and articulated knee/wrist brace systems.',
-    image: 'https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/products/leatt-chest-protector-4-5-pro.webp',
     count: 5,
   },
   {
@@ -639,7 +639,7 @@ export const CATEGORIES = [
     section: 'riding-gear',
     parent: 'riding-gear',
     description: 'CE Level 1 & Level 2 certified hard-shell chest roost deflectors, full upper body protection jackets, and joint protection systems.',
-    image: 'https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/products/mx-jersey-and-pants-combo-adult.webp',
     count: 5,
   },
   {
@@ -648,7 +648,7 @@ export const CATEGORIES = [
     section: 'riding-gear',
     parent: 'riding-gear',
     description: 'Ultra-wide vision motocross goggles with HiPER and Prizm MX lenses, anti-fog Lexan coatings, and high-tensile four-way stretch off-road riding gloves.',
-    image: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/products/100-percent-armega-goggles-hiper-mirror-lens.webp',
     count: 5,
   },
   {
@@ -657,7 +657,7 @@ export const CATEGORIES = [
     section: 'riding-gear',
     parent: 'riding-gear',
     description: 'Heavy-duty hinged motocross and enduro boots with biomechanical ankle pivots, replaceable sole systems (SRS), and deep-lugged traction soles.',
-    image: 'https://images.unsplash.com/photo-1508873696983-2df5293cb32b?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/products/alpinestars-tech-7-enduro-boots.webp',
     count: 4,
   },
 
@@ -677,7 +677,7 @@ export const CATEGORIES = [
     section: 'accessories',
     parent: 'accessories',
     description: 'Foldable composite and aircraft-grade aluminum pit stands, heavy-duty lift stands, and FIM-approved environmental absorbent pit mats for electric dirt bikes.',
-    image: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/products/polisport-foldable-bike-stand.webp',
     count: 3,
   },
   {
@@ -686,7 +686,7 @@ export const CATEGORIES = [
     section: 'accessories',
     parent: 'accessories',
     description: 'Heavy-duty 2-inch hitch bike carriers, anti-scratch soft-loop tie-down straps, and 420D weatherproof heavy-duty outdoor covers designed for e-moto transport.',
-    image: 'https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/products/ballards-heavy-duty-e-moto-hitch-carrier.webp',
     count: 3,
   },
   {
@@ -695,7 +695,7 @@ export const CATEGORIES = [
     section: 'accessories',
     parent: 'accessories',
     description: 'Heavy-duty 21 mil ultra-thick vinyl custom graphic decals and durable gloss polypropylene restyle plastics for Surron, Talaria, E-Ride Pro and Stark VARG.',
-    image: 'https://images.unsplash.com/photo-1547038577-da80abbc4f19?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/products/backyard-design-surron-light-bee-custom-graphics-kit.webp',
     count: 3,
   },
   {
@@ -704,7 +704,7 @@ export const CATEGORIES = [
     section: 'accessories',
     parent: 'accessories',
     description: 'Waterless bike wash sprays, specialized O-ring/X-ring synthetic PTFE off-road chain lubricants, and waterless electrical contact cleaners safe for high-voltage e-dirt bikes.',
-    image: 'https://images.unsplash.com/photo-1508873696983-2df5293cb32b?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/products/muc-off-e-bike-clean-protect-lube-starter-bundle.webp',
     count: 3,
   },
 ];
@@ -900,7 +900,7 @@ export const POSTS = [
     category: 'E-Moto Performance',
     date: '2026-06-20',
     readTime: '6 min read',
-    image: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/home/cat-full-size-motocross.webp',
     content: `When you first twist the throttle of a high-voltage electric dirt bike from Australian Electric Motor Co, the immediate sensation is unlike any petrol motocross machine you've ever ridden. There is no clutch slip, no engine bogging, and no powerband hesitation—just instant, linear torque that hooks up the rear tyre with astonishing precision.
 
 ### 1. Instant Torque from Zero RPM
@@ -919,7 +919,7 @@ Over a 100-hour riding season, a modern high-strung petrol 250cc motocrosser req
     category: 'Off-Grid Touring',
     date: '2026-07-15',
     readTime: '5 min read',
-    image: 'https://images.unsplash.com/photo-1508873696983-2df5293cb32b?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/home/hero-4.webp',
     content: `Taking an electric dirt bike on an extended overland expedition or camping trip across New South Wales, Queensland, Victoria, or Western Australia is now easier than ever thanks to modern lithium auxiliary vehicle batteries and high-wattage monocrystalline solar setups.
 
 ### Fast Charging from a 2000W Inverter
@@ -935,7 +935,7 @@ Setting out a 300W or 400W folding solar blanket in direct Australian sunlight y
     category: 'Rider Compliance',
     date: '2026-08-04',
     readTime: '7 min read',
-    image: 'https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/home/cat-adr-road-legal-dirt-bikes.webp',
     content: `With the surge in popularity of electric dirt bikes across Australia, understanding legal jurisdictions and riding guidelines ensures you stay safe and fine-free.
 
 ### Private Land & Agricultural Properties
