@@ -6,8 +6,8 @@ import { FAQ, FAQ_FULL_BANK, CONTACT, SITE } from '@/config/site';
 import { buildFaqSchema } from '@/lib/faq';
 
 export const metadata = {
-  title: 'Electric Dirt Bike FAQ | Range, Charging & Aussie Delivery | AEMC',
-  description: 'Frequently asked questions about Australian Electric Motor Co electric dirt bikes — real-world outback range, top speeds, lithium charging times and warranty.',
+  title: 'Electric Dirt Bike FAQ | Australia | AEMC',
+  description: 'Answers on electric dirt bike cost, road-legal rules, kids and balance bikes, charging, warranty and payment options — from Australian Electric Motor Co.',
   alternates: {
     canonical: `https://${SITE.domain}/faq/`,
   },

@@ -6,31 +6,31 @@ import { JsonLd } from '@/components/JsonLd';
 import { CATEGORIES, PRODUCTS, SITE } from '@/config/site';
 
 export const metadata: Metadata = {
-  title: 'Electric Dirt Bike Brands Australia | Surron, Talaria, Stark, KTM & more',
+  title: 'Electric Dirt Bike Brands Australia | AEMC',
   description:
-    'Explore the leading electric dirt bike brands stocked in Australia. Official factory warranties, an NSW spare-parts inventory, and national crated delivery on Surron, Talaria, Stark Future, KTM and more.',
+    'Shop Surron, Talaria, Stark Future, KTM and 12 more electric dirt bike and gear brands in Australia — factory warranties, NSW spare-parts stock and national crated delivery.',
   alternates: {
     canonical: `https://${SITE.domain}/brands/`,
   },
   openGraph: {
     type: 'website',
     siteName: SITE.name,
-    title: 'Electric Dirt Bike Brands Australia | Surron, Talaria, Stark, KTM & more',
+    title: 'Electric Dirt Bike Brands Australia | AEMC',
     description:
       "Compare and shop the world's leading electric dirt bike brands with Australian factory support, local spare-parts stock and fast crated dispatch.",
     url: `https://${SITE.domain}/brands/`,
     images: [
       {
-        url: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=1200&q=80',
+        url: '/images/home/hero-3.webp',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Electric Dirt Bike Brands Australia | Australian Electric Motor Co',
+    title: 'Electric Dirt Bike Brands Australia | AEMC',
     description:
       'Compare the leading electric dirt bike brands with Australian factory warranties and local spare parts.',
-    images: ['https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=1200&q=80'],
+    images: ['/images/home/hero-3.webp'],
   },
   other: {
     'og:updated_time': new Date().toISOString(),

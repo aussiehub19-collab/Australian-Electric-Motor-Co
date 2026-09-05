@@ -5,8 +5,8 @@ import { Logo } from '@/components/Logo';
 import { BRAND, CONTACT, SITE, LEGAL } from '@/config/site';
 
 export const metadata = {
-  title: 'About Australian Electric Motor Co | Electric Dirt Bike Engineering',
-  description: 'Learn how Australian Electric Motor Co engineers high-performance electric dirt bikes in NSW, Australia. Explore our founding story, milestones, and durability standards.',
+  title: 'About Australian Electric Motor Co',
+  description: 'How Australian Electric Motor Co supplies electric dirt bikes from Sydney, NSW — our founding story, the brands we carry, and our warranty and support standards.',
   alternates: {
     canonical: `https://${SITE.domain}/about/`,
   },

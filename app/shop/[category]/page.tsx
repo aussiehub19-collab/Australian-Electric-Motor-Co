@@ -41,7 +41,7 @@ const CATEGORY_SEO_MAP: Record<
     h1: 'Adult Electric Dirt Bike Range',
   },
   'kids-youth-electric-dirt-bikes': {
-    title: 'Kids Electric Dirt Bike | Safe Youth Mini-Motos & Balance Bikes',
+    title: 'Kids Electric Dirt Bike | Youth & Mini-Moto | AEMC',
     description:
       'Safe, durable, and adjustable kids electric dirt bike models from KTM, STACYC, and OSET. Built-in speed limiters and lightweight frames for young riders.',
     h1: 'Kids Electric Dirt Bike & Youth Off-Road',

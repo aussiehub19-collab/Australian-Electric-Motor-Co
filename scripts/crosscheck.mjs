@@ -169,6 +169,37 @@ for (const c of CATEGORIES) {
   }
 }
 
+// 10b. Hardcoded <title>/OG-title string literals in app/**/*.tsx and
+// app/layout.tsx — the static route pages (/faq/, /blog/, /shop/, /about/,
+// per-route layout.tsx...) don't go through buildSeoTitle, so scan their
+// source for over-length `title:` literals. Fails the build (these are
+// hand-authored and easy to keep in bounds).
+const appDir = path.resolve(rootDir, 'app');
+function walkTsx(dir) {
+  const out = [];
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) out.push(...walkTsx(full));
+    else if (entry.name.endsWith('.tsx')) out.push(full);
+  }
+  return out;
+}
+const HARDCODED_TITLE_MAX = 60;
+for (const file of [path.resolve(rootDir, 'app/layout.tsx'), ...walkTsx(appDir)]) {
+  let src;
+  try { src = fs.readFileSync(file, 'utf8'); } catch { continue; }
+  // match `title: '...'` / `title: "..."` on one line (skips template literals /
+  // computed titles, which are handled by lib/seo.ts and checked above)
+  const re = /\btitle:\s*(['"])(.*?)\1/g;
+  let m;
+  while ((m = re.exec(src)) !== null) {
+    const title = m[2];
+    if (title && !title.includes('${') && title.length > HARDCODED_TITLE_MAX) {
+      failures.push(`10b: hardcoded <title> is ${title.length} chars (>${HARDCODED_TITLE_MAX}) in ${path.relative(rootDir, file)}: "${title}"`);
+    }
+  }
+}
+
 // 11. Live placeholders that block GSC / keyword-mapping work — warn every run until set.
 if (SITE.gscVerification === 'pending') {
   warnings.push('SITE.gscVerification is still "pending" — Search Console cannot verify this site yet.');

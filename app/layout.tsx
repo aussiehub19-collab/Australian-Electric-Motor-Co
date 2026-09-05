@@ -14,8 +14,11 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: 'Electric Dirt Bike Superstore Australia | Australian Electric Motor Co',
-  description: 'Shop the ultimate electric dirt bike range. From high-torque 72V adult electric dirt bike models to youth mini-motos. Fast AU dispatch and local warranty. GST inclusive.',
+  // Fallback only — every route should set its own metadata. Kept <=60 chars
+  // and free of the "Superstore" phrasing so an un-overridden page still
+  // reads correctly (crosscheck check 10 scans for regressions here).
+  title: 'Electric Dirt Bikes Australia | Australian Electric Motor Co',
+  description: 'Electric dirt bikes for adults, kids and farms: motocross, enduro and road-legal models, 2-year warranty, fast AU crate delivery, 10% off with crypto.',
   keywords: SEO_KEYWORDS.secondary.join(', '),
   authors: [{ name: SITE.name }],
   creator: SITE.name,
@@ -27,13 +30,13 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     siteName: SITE.name,
-    title: 'Electric Dirt Bike Superstore Australia | Australian Electric Motor Co',
-    description: 'Shop the ultimate electric dirt bike range. From high-torque 72V adult electric dirt bike models to youth mini-motos. Fast AU dispatch and local warranty.',
+    title: 'Electric Dirt Bikes Australia | Australian Electric Motor Co',
+    description: 'Electric dirt bikes for adults, kids and farms: motocross, enduro and road-legal models, 2-year warranty, fast AU crate delivery, 10% off with crypto.',
     url: `https://${SITE.domain}/`,
     locale: 'en_AU',
     images: [
       {
-        url: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=1200&q=80',
+        url: '/images/home/hero-1.webp',
         width: 1200,
         height: 800,
         alt: 'Australian Electric Motor Co Electric Dirt Bike Range Australia',
@@ -42,9 +45,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Electric Dirt Bike Superstore Australia | Australian Electric Motor Co',
-    description: 'High-performance 72V electric dirt bikes in Australia. Zero emissions, instant torque, race-grade suspension and nationwide delivery.',
-    images: ['https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=1200&q=80'],
+    title: 'Electric Dirt Bikes Australia | Australian Electric Motor Co',
+    description: 'Electric dirt bikes for adults, kids and farms — motocross, enduro and road-legal models, 2-year warranty and fast AU crate delivery.',
+    images: ['/images/home/hero-1.webp'],
   },
   robots: {
     index: true,

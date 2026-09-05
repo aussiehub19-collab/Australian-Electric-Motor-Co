@@ -81,6 +81,20 @@ const nextConfig: NextConfig = {
         destination: '/shop/utility-farm-e-bikes/',
         permanent: true,
       },
+      // Legacy /parts-upgrades/* page tree (retired Sept 2026 — it duplicated
+      // /shop/parts-upgrades/ and /shop/batteries-chargers/ with its own
+      // self-referencing canonicals, cannibalising the keyword-mapped /shop/
+      // pages).
+      {
+        source: '/parts-upgrades',
+        destination: '/shop/parts-upgrades/',
+        permanent: true,
+      },
+      {
+        source: '/parts-upgrades/batteries-chargers',
+        destination: '/shop/batteries-chargers/',
+        permanent: true,
+      },
     ];
   },
   webpack: (config, {dev}) => {

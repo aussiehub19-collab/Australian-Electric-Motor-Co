@@ -5,8 +5,8 @@ import { JsonLd } from '@/components/JsonLd';
 import { POSTS, SITE } from '@/config/site';
 
 export const metadata = {
-  title: 'Trail Tech & Outback Guides | Australian Electric Motor Co Electric Dirt Bikes',
-  description: 'Technical articles, battery charging guides, and comparison reviews of electric dirt bikes in Australian outback and motocross conditions.',
+  title: 'Electric Dirt Bike Guides & Trail Tech | AEMC',
+  description: 'Buying guides, battery and charging explainers, gear advice and petrol-vs-electric comparisons for electric dirt bike riders in Australia.',
   alternates: {
     canonical: `https://${SITE.domain}/blog/`,
   },

@@ -7,18 +7,18 @@ import { CategoryProductGrid } from '@/app/shop/[category]/CategoryProductGrid';
 import { CATEGORIES, PRODUCTS, SITE, getShopCategoryNav } from '@/config/site';
 
 export const metadata: Metadata = {
-  title: 'Shop Electric Dirt Bikes, Parts & Gear | Australian Electric Motor Co',
+  title: 'Shop Electric Dirt Bikes, Parts & Gear | AEMC',
   description:
     "Browse Australia's full electric dirt bike range plus batteries, chargers, upgrades, riding gear and accessories. Filter by category, brand, price and road-legal status.",
   alternates: { canonical: `https://${SITE.domain}/shop/` },
   openGraph: {
     type: 'website',
     siteName: SITE.name,
-    title: 'Shop Electric Dirt Bikes, Parts & Gear | Australian Electric Motor Co',
+    title: 'Shop Electric Dirt Bikes, Parts & Gear | AEMC',
     description:
       'The complete Australian Electric Motor Co catalogue — bikes, batteries, chargers, upgrades, riding gear and accessories.',
     url: `https://${SITE.domain}/shop/`,
-    images: [{ url: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=1200&q=80' }],
+    images: [{ url: '/images/home/hero-2.webp' }],
   },
   other: { 'og:updated_time': new Date().toISOString() },
 };
