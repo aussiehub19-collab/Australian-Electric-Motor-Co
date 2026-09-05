@@ -7,7 +7,7 @@
   },
   "entries": [
     {
-      "id": "urn:air:australianelectricmotorco.com.au:commerce:product-catalog",
+      "identifier": "urn:air:australianelectricmotorco.com.au:commerce:product-catalog",
       "displayName": "Australian Electric Motor Co product catalog",
       "description": "Full catalogue of electric dirt bikes, batteries, chargers, upgrades and riding gear with live AUD pricing and specs.",
       "type": "application/json",
@@ -21,7 +21,7 @@
       ]
     },
     {
-      "id": "urn:air:australianelectricmotorco.com.au:commerce:mcp-server",
+      "identifier": "urn:air:australianelectricmotorco.com.au:commerce:mcp-server",
       "displayName": "Australian Electric Motor Co MCP server",
       "description": "Model Context Protocol endpoint: product search, catalogue browse, spec comparison and order-draft creation (human completes checkout).",
       "type": "application/json",
@@ -33,7 +33,7 @@
       ]
     },
     {
-      "id": "urn:air:australianelectricmotorco.com.au:content:buying-guides",
+      "identifier": "urn:air:australianelectricmotorco.com.au:content:buying-guides",
       "displayName": "Australian Electric Motor Co buying & tech guides",
       "description": "Guides on electric dirt bike cost in Australia, battery and charging, road-legal rules, and gear selection.",
       "type": "text/html",
@@ -46,7 +46,7 @@
       ]
     },
     {
-      "id": "urn:air:australianelectricmotorco.com.au:content:llms-txt",
+      "identifier": "urn:air:australianelectricmotorco.com.au:content:llms-txt",
       "displayName": "Australian Electric Motor Co llms.txt",
       "description": "Plain-text site summary for language models: business facts, categories, products and key resources.",
       "type": "text/plain",
@@ -57,7 +57,7 @@
       ]
     },
     {
-      "id": "urn:air:australianelectricmotorco.com.au:support:faq",
+      "identifier": "urn:air:australianelectricmotorco.com.au:support:faq",
       "displayName": "Australian Electric Motor Co FAQ",
       "description": "Answers on pricing, road-legal rules, kids and balance bikes, charging, warranty and payment.",
       "type": "text/html",

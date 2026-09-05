@@ -15,6 +15,28 @@
       "permanent": true
     }
   ],
+  "rewrites": [
+    {
+      "source": "/.well-known/api-catalog",
+      "destination": "/.well-known/api-catalog.json"
+    },
+    {
+      "source": "/.well-known/oauth-protected-resource",
+      "destination": "/.well-known/oauth-protected-resource.json"
+    },
+    {
+      "source": "/.well-known/oauth-authorization-server",
+      "destination": "/.well-known/oauth-authorization-server.json"
+    },
+    {
+      "source": "/.well-known/openid-configuration",
+      "destination": "/.well-known/openid-configuration.json"
+    },
+    {
+      "source": "/.well-known/ucp",
+      "destination": "/.well-known/ucp.json"
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",

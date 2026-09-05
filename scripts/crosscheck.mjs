@@ -37,14 +37,18 @@ const requiredAgentFiles = [
   'public/robots.txt',
   'public/llms.txt',
   'public/auth.md',
-  'public/.well-known/api-catalog',
+  // Extensionless spec URLs are served from these .json files via a vercel.json
+  // rewrite (Vercel serves extensionless static files as octet-stream, which
+  // isitagentready rejects for the OAuth metadata).
+  'public/.well-known/api-catalog.json',
   'public/.well-known/agent-skills/index.json',
   'public/.well-known/mcp/server-card.json',
-  'public/.well-known/oauth-protected-resource',
-  'public/.well-known/oauth-authorization-server',
-  'public/.well-known/openid-configuration',
+  'public/.well-known/oauth-protected-resource.json',
+  'public/.well-known/oauth-authorization-server.json',
+  'public/.well-known/openid-configuration.json',
   'public/.well-known/acp.json',
-  'public/.well-known/ucp',
+  'public/.well-known/ai-catalog.json',
+  'public/.well-known/ucp.json',
   'public/js/webmcp.js',
   'vercel.json'
 ];
@@ -66,7 +70,7 @@ if (fs.existsSync(authMdPath)) {
 }
 
 // 4. Check .well-known/ucp has mandatory "ucp": "1.0"
-const ucpPath = path.resolve(rootDir, 'public/.well-known/ucp');
+const ucpPath = path.resolve(rootDir, 'public/.well-known/ucp.json');
 if (fs.existsSync(ucpPath)) {
   try {
     const ucp = JSON.parse(fs.readFileSync(ucpPath, 'utf8'));

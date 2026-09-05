@@ -38,6 +38,18 @@ const vercelConfig = {
       "permanent": true
     }
   ],
+  // The spec URLs for these are extensionless, but Vercel serves extensionless
+  // static files as application/octet-stream regardless of the headers config
+  // (isitagentready rejects the OAuth metadata for exactly this). Store them
+  // with a .json extension (correct content-type) and rewrite the canonical
+  // extensionless path to the real file.
+  "rewrites": [
+    { "source": "/.well-known/api-catalog", "destination": "/.well-known/api-catalog.json" },
+    { "source": "/.well-known/oauth-protected-resource", "destination": "/.well-known/oauth-protected-resource.json" },
+    { "source": "/.well-known/oauth-authorization-server", "destination": "/.well-known/oauth-authorization-server.json" },
+    { "source": "/.well-known/openid-configuration", "destination": "/.well-known/openid-configuration.json" },
+    { "source": "/.well-known/ucp", "destination": "/.well-known/ucp.json" }
+  ],
   "headers": [
     {
       "source": "/(.*)",
@@ -229,7 +241,7 @@ const apiCatalog = {
     { "anchor": `${baseUrl}/api/mcp/`, "type": "application/json", "https://www.iana.org/assignments/link-relations/service-desc": [{ "href": `${baseUrl}/.well-known/mcp/server-card.json` }], "title": `${SITE.name} MCP Server` }
   ]
 };
-fs.writeFileSync(path.resolve(wellKnownDir, 'api-catalog'), JSON.stringify(apiCatalog, null, 2) + '\n');
+fs.writeFileSync(path.resolve(wellKnownDir, 'api-catalog.json'), JSON.stringify(apiCatalog, null, 2) + '\n');
 
 // 5b. Generate .well-known/ai-catalog.json — ARD (Agentic Resource Discovery)
 // capability manifest. https://agenticresourcediscovery.org / ards-project/ard-spec
@@ -243,7 +255,7 @@ const aiCatalog = {
   },
   entries: [
     {
-      id: urn('commerce', 'product-catalog'),
+      identifier: urn('commerce', 'product-catalog'),
       displayName: `${SITE.name} product catalog`,
       description: 'Full catalogue of electric dirt bikes, batteries, chargers, upgrades and riding gear with live AUD pricing and specs.',
       type: 'application/json',
@@ -257,7 +269,7 @@ const aiCatalog = {
       ],
     },
     {
-      id: urn('commerce', 'mcp-server'),
+      identifier: urn('commerce', 'mcp-server'),
       displayName: `${SITE.name} MCP server`,
       description: 'Model Context Protocol endpoint: product search, catalogue browse, spec comparison and order-draft creation (human completes checkout).',
       type: 'application/json',
@@ -269,7 +281,7 @@ const aiCatalog = {
       ],
     },
     {
-      id: urn('content', 'buying-guides'),
+      identifier: urn('content', 'buying-guides'),
       displayName: `${SITE.name} buying & tech guides`,
       description: 'Guides on electric dirt bike cost in Australia, battery and charging, road-legal rules, and gear selection.',
       type: 'text/html',
@@ -282,7 +294,7 @@ const aiCatalog = {
       ],
     },
     {
-      id: urn('content', 'llms-txt'),
+      identifier: urn('content', 'llms-txt'),
       displayName: `${SITE.name} llms.txt`,
       description: 'Plain-text site summary for language models: business facts, categories, products and key resources.',
       type: 'text/plain',
@@ -293,7 +305,7 @@ const aiCatalog = {
       ],
     },
     {
-      id: urn('support', 'faq'),
+      identifier: urn('support', 'faq'),
       displayName: `${SITE.name} FAQ`,
       description: 'Answers on pricing, road-legal rules, kids and balance bikes, charging, warranty and payment.',
       type: 'text/html',
@@ -429,7 +441,7 @@ const oauthProtectedResource = {
   "tls_client_certificate_bound_access_tokens": false,
   "note": `All resources on ${domain} are publicly accessible. No OAuth tokens required.`
 };
-fs.writeFileSync(path.resolve(wellKnownDir, 'oauth-protected-resource'), JSON.stringify(oauthProtectedResource, null, 2) + '\n');
+fs.writeFileSync(path.resolve(wellKnownDir, 'oauth-protected-resource.json'), JSON.stringify(oauthProtectedResource, null, 2) + '\n');
 
 // 9. Generate .well-known/oauth-authorization-server
 const oauthAuthServer = {
@@ -460,7 +472,7 @@ const oauthAuthServer = {
     "notes": "No registration required. All content publicly accessible to agents."
   }
 };
-fs.writeFileSync(path.resolve(wellKnownDir, 'oauth-authorization-server'), JSON.stringify(oauthAuthServer, null, 2) + '\n');
+fs.writeFileSync(path.resolve(wellKnownDir, 'oauth-authorization-server.json'), JSON.stringify(oauthAuthServer, null, 2) + '\n');
 
 // 10. Generate .well-known/openid-configuration
 const openidConfig = {
@@ -477,7 +489,7 @@ const openidConfig = {
   "subject_types_supported": [],
   "id_token_signing_alg_values_supported": []
 };
-fs.writeFileSync(path.resolve(wellKnownDir, 'openid-configuration'), JSON.stringify(openidConfig, null, 2) + '\n');
+fs.writeFileSync(path.resolve(wellKnownDir, 'openid-configuration.json'), JSON.stringify(openidConfig, null, 2) + '\n');
 
 // 11. Generate .well-known/acp.json
 const acpJson = {
@@ -545,7 +557,7 @@ const ucpJson = {
     "compliance": "Australian Design Rules (ADR)"
   }
 };
-fs.writeFileSync(path.resolve(wellKnownDir, 'ucp'), JSON.stringify(ucpJson, null, 2) + '\n');
+fs.writeFileSync(path.resolve(wellKnownDir, 'ucp.json'), JSON.stringify(ucpJson, null, 2) + '\n');
 
 // 13. Generate public/js/webmcp.js
 const webmcpJs = `(function () {
