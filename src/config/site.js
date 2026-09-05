@@ -410,7 +410,7 @@ export const CATEGORIES = [
     section: 'brands',
     parent: 'brands',
     description: 'Italian motocross protection specialists — we stock genuine Alpinestars boots, helmet and body armour, from the full-leather Tech 7 Enduro boot to the Supertech SM5 helmet and Bionic Action V2 armour jacket.',
-    image: '/images/products/alpinestars-supertech-sm5-compass-helmet.webp',
+    image: '/images/brands/alpinestars.webp',
     count: 4,
   },
   {
@@ -419,7 +419,7 @@ export const CATEGORIES = [
     section: 'brands',
     parent: 'brands',
     description: 'One of the most established names in motocross gear — our Fox Racing range covers adult and youth V1 helmets, the Youth Titan Sport roost deflector, Airline gloves and Comp youth boots.',
-    image: '/images/products/fox-racing-v1-matte-black-helmet.webp',
+    image: '/images/brands/fox-racing.webp',
     count: 5,
   },
 
