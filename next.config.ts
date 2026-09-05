@@ -11,6 +11,10 @@ const nextConfig: NextConfig = {
   },
   images: {
     formats: ['image/avif', 'image/webp'],
+    // Let the optimizer's output sit in the browser/edge cache for ~31 days
+    // instead of the 60s default — the source images rarely change and this
+    // is what "serve static assets with an efficient cache policy" wants.
+    minimumCacheTTL: 2678400,
     remotePatterns: [
       {
         protocol: 'https',
