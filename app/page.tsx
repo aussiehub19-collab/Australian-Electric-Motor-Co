@@ -119,7 +119,7 @@ export default function HomePage() {
   const homepageCategorySlugs = [
     'adult-electric-dirt-bikes',
     'kids-youth-electric-dirt-bikes',
-    'trail-enduro',
+    'trail-mid-weight-enduro',
     'full-size-motocross',
     'adr-road-legal-dirt-bikes',
     'utility-farm-e-bikes',

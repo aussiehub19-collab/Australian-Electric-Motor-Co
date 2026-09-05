@@ -13,30 +13,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1.0,
     },
     {
-      url: `${baseUrl}/electric-dirt-bikes/`,
-      lastModified: now,
-      changeFrequency: 'daily',
-      priority: 0.95,
-    },
-    {
-      url: `${baseUrl}/electric-dirt-bikes/adult-electric-dirt-bikes/`,
-      lastModified: now,
-      changeFrequency: 'daily',
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/electric-dirt-bikes/kids-youth-electric-dirt-bikes/`,
-      lastModified: now,
-      changeFrequency: 'daily',
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/electric-dirt-bikes/road-legal-electric-dirt-bikes/`,
-      lastModified: now,
-      changeFrequency: 'daily',
-      priority: 0.9,
-    },
-    {
       url: `${baseUrl}/parts-upgrades/`,
       lastModified: now,
       changeFrequency: 'weekly',

@@ -38,12 +38,6 @@ const CATEGORY_SEO_MAP: Record<
       'Safe, durable, and adjustable kids electric dirt bike models from KTM, STACYC, and OSET. Built-in speed limiters and lightweight frames for young riders.',
     h1: 'Kids Electric Dirt Bike & Youth Off-Road',
   },
-  'road-legal-electric-dirt-bikes': {
-    title: 'Road-Legal Electric Dirt Bike | ADR Street Approved E-Motos',
-    description:
-      'Ride legally from street to trail. Shop ADR-certified electric dirt bike models equipped with VIN, mirrors, and lights for Australian road registration.',
-    h1: 'Road-Legal Electric Dirt Bike Models',
-  },
   'adr-road-legal-dirt-bikes': {
     title: 'Road-Legal Electric Dirt Bike | ADR Street Approved E-Motos',
     description:
@@ -118,8 +112,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
       p.brand === category.slug ||
       (p.parentCategories && p.parentCategories.includes(category.slug)) ||
       (category.slug === 'adult-electric-dirt-bikes' && (p.category === 'full-size-motocross' || p.category === 'trail-mid-weight-enduro')) ||
-      (category.slug === 'kids-youth-electric-dirt-bikes' && (p.category === 'junior-trials-youth-dirt-bikes' || p.category === 'balance-mini-bikes')) ||
-      (category.slug === 'road-legal-electric-dirt-bikes' && p.category === 'adr-road-legal-dirt-bikes')
+      (category.slug === 'kids-youth-electric-dirt-bikes' && (p.category === 'junior-trials-youth-dirt-bikes' || p.category === 'balance-mini-bikes'))
   );
 
   const pageHeading = customSeo?.h1 || category.name;
