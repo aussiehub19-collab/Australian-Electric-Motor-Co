@@ -190,40 +190,62 @@ ${guideList}
 `;
 fs.writeFileSync(path.resolve(publicDir, 'llms.txt'), llmsTxt);
 
-// 4. Generate public/auth.md (CRITICAL: MUST start with exactly # Auth.md)
+// 4. Generate public/auth.md — follows the workos/auth.md discovery→use recipe
+// (isitagentready parses the "Step 1 — Discover" links to the OAuth metadata).
+// CRITICAL: MUST start with exactly # Auth.md
 const authMd = `# Auth.md
 
-## Site: ${SITE.name} — Australian Electric Dirt Bikes & E-Motos
+Agent authentication recipe for **${SITE.name}** (${baseUrl}).
 
-## Agent Registration
-No authentication required. All resources are publicly accessible.
+This service is **anonymous**: every resource is public, so there is no
+registration, claim ceremony or token exchange. Discovery is still published so
+agents can confirm that programmatically.
 
-## Public Resources
+## Step 1 — Discover
+
+### 1a. Protected Resource Metadata
+Fetch: [\`${baseUrl}/.well-known/oauth-protected-resource\`](${baseUrl}/.well-known/oauth-protected-resource)
+
+\`Content-Type: application/json\`. Fields: \`resource\`, \`resource_name\`,
+\`authorization_servers\` (empty — no auth server), \`scopes_supported\` (empty),
+\`bearer_methods_supported\` (empty), \`resource_documentation\` (this file).
+
+### 1b. Authorization Server Metadata
+Fetch: [\`${baseUrl}/.well-known/oauth-authorization-server\`](${baseUrl}/.well-known/oauth-authorization-server)
+
+\`issuer\` is set; \`authorization_endpoint\`, \`token_endpoint\` and \`jwks_uri\`
+are \`null\`. The profile-specific \`agent_auth\` block declares
+\`register_uri: null\`, \`identity_types_supported: ["none"]\` and
+\`credential_types_supported: ["none"]\`.
+
+## Step 2 — Pick a method
+The decision tree resolves to **anonymous**. Skip steps 3–5. No
+\`identity_assertion\`, \`service_auth\` or registration is offered or required.
+
+## Step 3 — Use resources
+Call any public endpoint directly, no \`Authorization\` header:
+
 | Resource | URL |
 |---|---|
-| Product Catalog | ${baseUrl}/shop/ |
+| Product catalogue (JSON) | ${baseUrl}/api/products/ |
+| Category list (JSON) | ${baseUrl}/api/categories/ |
+| Search (JSON) | ${baseUrl}/api/search/ |
+| MCP server | ${baseUrl}/api/mcp/ |
+| Full shop (HTML) | ${baseUrl}/shop/ |
 | Wholesale | ${baseUrl}/wholesale/ |
-| Blog | ${baseUrl}/blog/ |
+| Guides | ${baseUrl}/blog/ |
 | FAQ | ${baseUrl}/faq/ |
-| Compare | ${baseUrl}/compare/ |
-| Finance | ${baseUrl}/finance/ |
-
-## Authentication
-
-\`\`\`json
-{
-  "agent_auth": {
-    "register_uri": null,
-    "identity_types_supported": ["none"],
-    "credential_types_supported": ["none"],
-    "notes": "No authentication required. All resources are public."
-  }
-}
-\`\`\`
 
 ## Ordering
-Human-in-the-loop required. Agents may browse and prepare order drafts.
-Orders are completed by a human via WhatsApp or the order form.
+Human-in-the-loop required. Agents may browse and prepare order drafts via the
+MCP server; a human completes checkout via WhatsApp or the order form.
+
+## Errors
+Standard HTTP status codes. \`429\` — back off and retry. No OAuth error codes
+apply (no token layer).
+
+## Revocation
+Not applicable — no credentials are ever issued.
 `;
 fs.writeFileSync(path.resolve(publicDir, 'auth.md'), authMd);
 
