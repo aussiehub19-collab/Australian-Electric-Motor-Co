@@ -19,6 +19,10 @@ export const SITE = {
   target: 'vercel',
   primaryColor: '#8C4A2F',        // Outback Ochre / Terracotta Rust with warm copper & dark titanium
   gscVerification: 'pending',
+  // GA4 Measurement ID (G-XXXXXXXXXX). Set NEXT_PUBLIC_GA_ID in Vercel →
+  // Settings → Environment Variables (all environments) once the GA4 property
+  // exists, then redeploy. Empty = no analytics tag rendered.
+  analyticsId: process.env.NEXT_PUBLIC_GA_ID || '',
   indexNowKey: 'aemc-electric-dirt-bikes-2026',
   cartKey: 'mm-cart',
   abn: '97 628 671 689',

@@ -4,6 +4,7 @@ import { Nav } from '@/components/Nav';
 import { Footer } from '@/components/Footer';
 import { AnnouncementBar } from '@/components/AnnouncementBar';
 import { ChatHub } from '@/components/ChatHub';
+import { Analytics } from '@/components/Analytics';
 import { SITE, SEO_KEYWORDS } from '@/config/site';
 
 export const viewport: Viewport = {
@@ -80,6 +81,7 @@ export default function RootLayout({
         </main>
         <Footer />
         <ChatHub />
+        <Analytics />
       </body>
     </html>
   );
