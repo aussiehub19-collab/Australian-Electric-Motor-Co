@@ -8,6 +8,7 @@ import { AddToCartButton } from './AddToCartButton';
 import { PRODUCTS, CATEGORIES, SITE, CONTACT, SHOP, FINANCE } from '@/config/site';
 import { buildSeoTitle, truncateDescription } from '@/lib/seo';
 import { buildFaqSchema } from '@/lib/faq';
+import { waLink } from '@/lib/whatsapp';
 
 interface ProductPageProps {
   params: Promise<{
@@ -179,9 +180,9 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
   const cryptoSavings = product.price - cryptoDiscountPrice;
 
   // Pre-fill WhatsApp message
-  const whatsappUrl = `https://wa.me/${CONTACT.whatsapp.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(
-    `G'day Australian Electric Motor Co team! I'm inquiring about the ${product.name} ($${product.price.toLocaleString()} AUD). Could you confirm current availability, Pay in 4 terms, or test rides at your NSW workshop?`
-  )}`;
+  const whatsappUrl = waLink(
+    `I'm inquiring about the ${product.name} ($${product.price.toLocaleString()} AUD). Could you confirm current availability, Pay in 4 terms, or test rides at your NSW workshop?`,
+  );
 
   // Product Schema
   const productSchema = [
@@ -496,7 +497,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
               rel="noopener noreferrer"
               className="w-full flex items-center justify-center gap-2 bg-[#25D366]/15 hover:bg-[#25D366]/25 border border-[#25D366]/40 text-[#25D366] font-bold py-3.5 px-6 rounded-xl text-sm transition"
             >
-              <span>Chat With Technician on WhatsApp (+61 480 031 899)</span>
+              <span>Chat With Technician on WhatsApp ({CONTACT.whatsapp})</span>
             </a>
 
             <div className="text-center">

@@ -18,7 +18,7 @@ export const SITE = {
   currency: 'AUD',
   target: 'vercel',
   primaryColor: '#8C4A2F',        // Outback Ochre / Terracotta Rust with warm copper & dark titanium
-  gscVerification: 'pending',
+  gscVerification: '7T6hiozaMuODPNL1l_tOhkodnSAr58CI7Ck_58URHBM',
   // GA4 Measurement ID (G-XXXXXXXXXX). Set NEXT_PUBLIC_GA_ID in Vercel →
   // Settings → Environment Variables (all environments) once the GA4 property
   // exists, then redeploy. Empty = no analytics tag rendered.
@@ -34,8 +34,8 @@ export const SITE = {
 
 export const CONTACT = {
   email: 'riders@australianelectricmotorco.com.au',
-  phone: '+61 2 9188 7822',
-  whatsapp: '+61480031899',
+  phone: '+61 480 811 308',
+  whatsapp: '+61 480 811 308',
   address: 'Unit 3, 42 Enterprise Circuit, Prestons, NSW 2170',
   hq: 'Sydney, New South Wales, Australia',
   state: 'NSW',
@@ -98,9 +98,9 @@ export const FORMS = {
 
 export const CHAT = {
   channels: [
-    { type: 'whatsapp', value: '+61480031899' },
+    { type: 'whatsapp', value: '+61 480 811 308' },
     { type: 'email', value: 'riders@australianelectricmotorco.com.au' },
-    { type: 'phone', value: '+61 2 9188 7822' },
+    { type: 'phone', value: '+61 480 811 308' },
   ],
 };
 

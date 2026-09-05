@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { CONTACT, FORMS, SITE } from '@/config/site';
+import { waLink } from '@/lib/whatsapp';
 
 export default function WholesalePage() {
   const [loading, setLoading] = useState(false);
@@ -241,7 +242,7 @@ export default function WholesalePage() {
             </div>
             <p className="text-xs text-stone-300">
               Need immediate pricing for tender documents or government grants? Reach out directly to our commercial manager on WhatsApp at{' '}
-              <a href={`https://wa.me/${CONTACT.whatsapp.replace(/[^0-9]/g, '')}`} className="text-emerald-400 font-mono underline">
+              <a href={waLink("I'm enquiring about wholesale / fleet pricing for tender documents or government grants.")} target="_blank" rel="noopener noreferrer" className="text-emerald-400 font-mono underline">
                 {CONTACT.whatsapp}
               </a>.
             </p>

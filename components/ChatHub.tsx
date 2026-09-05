@@ -1,15 +1,15 @@
 'use client';
 
 import React, { useState } from 'react';
-import { CONTACT, SITE } from '@/config/site';
+import { CONTACT } from '@/config/site';
+import { waLink } from '@/lib/whatsapp';
 
 export function ChatHub() {
   const [open, setOpen] = useState(false);
 
-  const whatsappNumber = CONTACT.whatsapp.replace(/[^0-9]/g, '');
-  const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
-    `G'day ${SITE.name}! I have a question about your electric dirt bikes and NSW test rides.`
-  )}`;
+  const whatsappUrl = waLink(
+    `Hi, I have a question about your electric dirt bikes and NSW test rides.`,
+  );
   const emailUser = CONTACT.email.split('@')[0];
   const emailDomain = CONTACT.email.split('@')[1];
 

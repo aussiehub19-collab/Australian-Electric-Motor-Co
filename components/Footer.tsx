@@ -2,6 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import { Logo } from './Logo';
 import { TAXONOMY_SECTIONS, BRAND, CONTACT, SHOP, FINANCE, SITE } from '@/config/site';
+import { waLink } from '@/lib/whatsapp';
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
@@ -90,12 +91,12 @@ export function Footer() {
               <p>
                 WhatsApp:{' '}
                 <a
-                  href={`https://wa.me/${CONTACT.whatsapp.replace(/[^0-9]/g, '')}`}
+                  href={waLink('I have a question about your electric dirt bikes.')}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-emerald-400 hover:underline"
                 >
-                  Direct Technician Chat (+61 480 031 899)
+                  Direct Technician Chat ({CONTACT.whatsapp})
                 </a>
               </p>
             </div>

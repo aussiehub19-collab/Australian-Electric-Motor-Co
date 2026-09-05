@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { SITE, CONTACT, SHOP, CATEGORIES, PRODUCTS } from '@/config/site';
+import { SITE, SHOP, CATEGORIES, PRODUCTS } from '@/config/site';
+import { waLink } from '@/lib/whatsapp';
 
 const TOOLS = [
   {
@@ -262,8 +263,14 @@ export async function POST(req: NextRequest) {
         const items = args.items || [];
         const notes = args.notes || '';
 
-        const text = `Order Draft from MCP Agent:\nItems: ${JSON.stringify(items)}\nNotes: ${notes}`;
-        const waUrl = `https://wa.me/${CONTACT.whatsapp.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(text)}`;
+        const waUrl = waLink([
+          '*NEW ORDER* (via agent)',
+          '',
+          `Items: ${JSON.stringify(items)}`,
+          notes ? `Notes: ${notes}` : '',
+          '',
+          'Please confirm stock allocation and dispatch timeline.',
+        ]);
 
         return NextResponse.json(
           {

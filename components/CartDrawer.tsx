@@ -3,7 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { SmartImage } from './SmartImage';
-import { SHOP, FINANCE, CONTACT, SITE, STARTER_PACK_BUNDLE } from '@/src/config/site';
+import { SHOP, FINANCE, SITE, STARTER_PACK_BUNDLE } from '@/src/config/site';
+import { waOrderLink } from '@/lib/whatsapp';
 
 export interface CartItem {
   slug: string;
@@ -160,44 +161,32 @@ export function CartDrawer({
   const gstOnTotal = gstPortion(grandTotal);
   const gstOnDisplayedTotal = gstPortion(displayedTotal);
 
-  // Build WhatsApp Order Link
+  // Build the "new order" WhatsApp message — every figure the drawer shows the
+  // customer is carried through (see lib/whatsapp.ts).
   const buildWhatsAppOrderUrl = () => {
-    const lines = [
-      `G'day Australian Electric Motor Co team! I would like to place an order:`,
-      ...items.map((i) => `• ${i.quantity}x ${i.name} ($${i.price.toLocaleString()} AUD Inc. GST)`),
-      `Subtotal: $${subtotal.toLocaleString()} AUD (Inc. GST)`,
-      bundleSavings > 0
-        ? `Bundle Discount — 5% off parts & accessories bought with a bike: -$${bundleSavings.toLocaleString()} AUD`
-        : '',
-      isPayIn4
-        ? `Order Subtotal After Discounts: $${netSubtotal.toLocaleString()} AUD (1st Instalment Due Today: $${displayedSubtotal.toLocaleString()} AUD)`
-        : '',
-      paymentMethod === 'crypto' ? `10% Crypto Discount: -$${cryptoSavings.toLocaleString()} AUD` : '',
-      isPayIn4
-        ? `Payment Terms: Pay in 4 Selected (1st Instalment: $${displayedTotal.toLocaleString()} AUD today, followed by 3x $${payIn4Instalment.toLocaleString()} AUD fortnightly)`
-        : '',
-      isPayIn4 && shippingCost > 0
-        ? `Estimated Freight (1st Instalment): $${displayedShipping.toLocaleString()} AUD (Full Freight: $${shippingCost} AUD)`
-        : `Estimated Freight: ${shippingCost === 0 ? 'FREE' : `$${shippingCost} AUD (Enclosed Crate / Courier)`}`,
-      isPayIn4
-        ? `Total Payable Today (1st Instalment): $${displayedTotal.toLocaleString()} AUD (Full Order Value: $${grandTotal.toLocaleString()} AUD Inc. GST)`
-        : `Total Payable: $${grandTotal.toLocaleString()} AUD (Inc. GST)`,
-      `GST included in this order (10%): $${gstOnTotal.toLocaleString()} AUD`,
-      `Selected Payment Option: ${
-        paymentMethod === 'crypto'
-          ? 'Bitcoin (BTC) / Tether (USDT) with 10% Discount'
-          : paymentMethod === 'pay-in-4'
-          ? 'Pay in 4 (Interest-Free Fortnightly — 1st Instalment Today)'
-          : paymentMethod === 'payid'
-          ? 'PayID Instant Transfer'
-          : 'Direct Bank EFT'
-      }`,
-      `Delivery Location: NSW / Australia wide (ABN: 97 628 671 689)`,
-      `Please confirm stock allocation and dispatch timeline. Cheers!`,
-    ].filter(Boolean);
+    const paymentLabel =
+      paymentMethod === 'crypto'
+        ? 'Bitcoin (BTC) / Tether (USDT) — 10% discount'
+        : paymentMethod === 'pay-in-4'
+        ? 'Pay in 4 (interest-free fortnightly)'
+        : paymentMethod === 'payid'
+        ? 'PayID instant transfer'
+        : 'Direct bank EFT';
 
-    const text = encodeURIComponent(lines.join('\n'));
-    return `https://wa.me/${CONTACT.whatsapp.replace(/[^0-9]/g, '')}?text=${text}`;
+    return waOrderLink({
+      items,
+      subtotal,
+      bundleSavings,
+      cryptoSavings,
+      shippingCost,
+      shippingIsFree: shippingCost === 0,
+      grandTotal,
+      gstPortion: gstOnTotal,
+      paymentLabel,
+      payIn4: isPayIn4
+        ? { instalment: payIn4Instalment, dueToday: displayedTotal }
+        : null,
+    });
   };
 
   const handleCopyPayId = () => {

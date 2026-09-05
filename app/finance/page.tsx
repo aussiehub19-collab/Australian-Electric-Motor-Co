@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { PRODUCTS, CONTACT, SITE, FINANCE, SHOP } from '@/config/site';
+import { waLink } from '@/lib/whatsapp';
 
 export default function FinancePage() {
   const bikes = PRODUCTS.filter((p) => !p.category.includes('parts') && !p.category.includes('gear'));
@@ -29,11 +30,11 @@ export default function FinancePage() {
   const totalRepayable = Math.round(monthlyPayment * termMonths) + deposit;
   const totalInterest = Math.max(0, totalRepayable - selectedBikePrice);
 
-  const whatsappUrl = `https://wa.me/${CONTACT.whatsapp.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(
+  const whatsappUrl = waLink(
     financeMode === 'pay-in-4'
-      ? `G'day Australian Electric Motor Co! I want to order a bike valued at $${selectedBikePrice.toLocaleString()} AUD using the Pay in 4 plan (4x $${payIn4Instalment.toLocaleString()} AUD fortnightly payments). Can you assist with setup and crate delivery to my address?`
-      : `G'day Australian Electric Motor Co! I am inquiring about commercial / station asset finance for $${selectedBikePrice.toLocaleString()} AUD with a $${deposit.toLocaleString()} deposit over ${termMonths} months (approx. $${weeklyPayment}/week). Can you connect me with your Australian finance broker?`
-  )}`;
+      ? `I want to order a bike valued at $${selectedBikePrice.toLocaleString()} AUD using the Pay in 4 plan (4x $${payIn4Instalment.toLocaleString()} AUD fortnightly payments). Can you assist with setup and crate delivery to my address?`
+      : `I am inquiring about commercial / station asset finance for $${selectedBikePrice.toLocaleString()} AUD with a $${deposit.toLocaleString()} deposit over ${termMonths} months (approx. $${weeklyPayment}/week). Can you connect me with your Australian finance broker?`,
+  );
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 space-y-10">

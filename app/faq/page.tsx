@@ -2,8 +2,9 @@ import React from 'react';
 import Link from 'next/link';
 import { JsonLd } from '@/components/JsonLd';
 import { FaqAccordion } from '@/components/FaqAccordion';
-import { FAQ, FAQ_FULL_BANK, CONTACT, SITE } from '@/config/site';
+import { FAQ, FAQ_FULL_BANK, SITE } from '@/config/site';
 import { buildFaqSchema } from '@/lib/faq';
+import { waLink } from '@/lib/whatsapp';
 
 export const metadata = {
   title: 'Electric Dirt Bike FAQ | Australia | AEMC',
@@ -97,7 +98,7 @@ export default function FAQPage() {
         </p>
         <div className="pt-2 flex flex-wrap justify-center gap-4">
           <a
-            href={`https://wa.me/${CONTACT.whatsapp.replace(/[^0-9]/g, '')}`}
+            href={waLink('I have a question about suspension tuning, battery upgrades, or booking a private test ride.')}
             target="_blank"
             rel="noopener noreferrer"
             className="bg-[#25D366] hover:bg-[#20bd5a] text-black font-bold px-6 py-3 rounded-xl text-xs transition shadow-lg"

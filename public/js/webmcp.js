@@ -47,7 +47,7 @@
           }
         },
         execute: async ({ message }) => {
-          const cleanPhone = "61480031899";
+          const cleanPhone = "61480811308";
           const url = message ? `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}` : `https://wa.me/${cleanPhone}`;
           window.open(url, '_blank');
           return { url };

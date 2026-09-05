@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { CONTACT, FORMS, SITE } from '@/config/site';
+import { waLink } from '@/lib/whatsapp';
 
 export default function ContactPage() {
   const [loading, setLoading] = useState(false);
@@ -207,7 +208,7 @@ export default function ContactPage() {
                   <div>
                     <div className="text-xs text-stone-400">WhatsApp Instant Chat:</div>
                     <a
-                      href={`https://wa.me/${CONTACT.whatsapp.replace(/[^0-9]/g, '')}`}
+                      href={waLink("I'd like to chat with your NSW workshop about electric dirt bikes.")}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-emerald-400 hover:underline font-mono"
