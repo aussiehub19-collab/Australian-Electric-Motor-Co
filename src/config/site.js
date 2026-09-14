@@ -85,14 +85,11 @@ export const FINANCE = {
 };
 
 export const FORMS = {
-  provider: 'web3forms',
-  // Set NEXT_PUBLIC_WEB3FORMS_KEY in Vercel → Settings → Environment Variables
-  // (all environments). The destination inbox is chosen in the Web3Forms
-  // dashboard when you create the key, not here. Falls back to 'pending', which
-  // the contact/wholesale forms detect and route to the thank-you page instead
-  // of a failed POST.
-  web3formsKey: process.env.NEXT_PUBLIC_WEB3FORMS_KEY || 'pending',
-  resendFrom: 'orders@australianelectricmotorco.com.au',
+  // Contact + wholesale forms send via Zoho Mail SMTP (lib/mailer.ts,
+  // app/api/contact, app/api/wholesale). Set ZOHO_SMTP_USER and
+  // ZOHO_SMTP_PASSWORD (a Zoho app-specific password) in Vercel → Settings →
+  // Environment Variables (all environments) — see .env.example.
+  provider: 'zoho-smtp',
   turnstileSiteKey: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || '',
 };
 

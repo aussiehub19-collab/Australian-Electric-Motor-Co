@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { CONTACT, FORMS, SITE } from '@/config/site';
+import { CONTACT } from '@/config/site';
 import { waLink } from '@/lib/whatsapp';
 
 export default function ContactPage() {
@@ -14,27 +14,17 @@ export default function ContactPage() {
     setLoading(true);
     setErrorMessage('');
 
-    const form = e.currentTarget;
-    const keyInput = form.querySelector('[name="access_key"]') as HTMLInputElement;
-    const key = keyInput?.value;
-
-    // WebForge v9.1 Mandate: Key-pending fallback
-    if (!key || key === 'pending' || key.startsWith('YOUR-')) {
-      window.location.href = '/thank-you-contact/';
-      return;
-    }
+    const payload = Object.fromEntries(new FormData(e.currentTarget).entries());
 
     try {
-      const res = await fetch('https://api.web3forms.com/submit', {
+      const res = await fetch('/api/contact', {
         method: 'POST',
-        headers: {
-          Accept: 'application/json', // Accept ONLY — NO Content-Type
-        },
-        body: new FormData(form),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
       });
 
       const data = await res.json();
-      if (res.status === 200 && data.success) {
+      if (res.ok && data.success) {
         window.location.href = '/thank-you-contact/';
       } else {
         throw new Error(data?.message || 'Submission failed');
@@ -84,11 +74,8 @@ export default function ContactPage() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Hidden Inputs Required by WebForge & Web3Forms */}
-            <input type="hidden" name="access_key" value={FORMS.web3formsKey || 'pending'} />
-            <input type="hidden" name="subject" value="New Electric Dirt Bike Inquiry — Australian Electric Motor Co" />
-            <input type="hidden" name="from_name" value={SITE.name} />
-            <input type="checkbox" name="botcheck" className="hidden" style={{ display: 'none' }} />
+            {/* Honeypot — real visitors never see or fill this field */}
+            <input type="checkbox" name="botcheck" className="hidden" style={{ display: 'none' }} tabIndex={-1} autoComplete="off" />
 
             <div>
               <label htmlFor="name" className="block text-xs font-semibold text-stone-300 uppercase tracking-wider mb-1.5">
@@ -142,9 +129,10 @@ export default function ContactPage() {
                 className="w-full bg-[#1D2024] border border-[#2B2F36] rounded-xl px-4 py-3 text-sm text-stone-100 focus:ring-1 focus:ring-amber-500"
               >
                 <option value="General Inquiry">General Inquiry</option>
-                <option value="Apex 72R Pro MX">Apex 72R Pro Motocross (22kW)</option>
-                <option value="Terra-X Stealth Trail">Terra-X Stealth Trail Bike</option>
-                <option value="Outback Scout Enduro">Outback Scout Station E-Moto</option>
+                <option value="Full-Size Motocross">Full-Size Electric Motocross</option>
+                <option value="Trail & Enduro">Trail &amp; Mid-Weight Enduro</option>
+                <option value="Road-Legal ADR">Road-Legal (ADR) Dirt Bikes</option>
+                <option value="Farm & Utility">Farm &amp; Utility E-Bikes</option>
                 <option value="Book Test Ride NSW">Book NSW Test Ride / Consultation</option>
                 <option value="Finance Pre-Approval">Finance &amp; Pay in 4 Inquiries</option>
               </select>

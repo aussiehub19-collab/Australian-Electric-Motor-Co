@@ -32,16 +32,17 @@ Sept 2026.
   validity, or mobile/accessibility. Don't treat "crosscheck passes" as "SEO/a11y clean checked" —
   Sept 2026's full audit was done manually; re-run that kind of pass before trusting a big change.
 
-## Live placeholders — must be resolved before GSC / keyword-mapping work has any effect
-- **Domain:** `SITE.domain` = `australianelectricmotorco.com.au`, and every canonical/OG/JSON-LD/
-  sitemap URL already points there — but the domain does **not resolve** (DNS not connected as of
-  Sept 2026). The only live URL is the Vercel deployment. Connect the domain in the Vercel dashboard
-  + DNS before submitting the sitemap to Search Console; until then, canonicals point nowhere.
-- **GSC verification:** `SITE.gscVerification` = `'pending'` — the meta tag renders with that literal
-  string. Replace with the real verification code once the domain is connected and the property is added.
-- **Web3Forms key:** `FORMS.web3formsKey` = `'pending'` — contact/order/wholesale forms fall back
-  cleanly to the thank-you page but deliver nowhere. WhatsApp is the only live order channel until
-  a real key is set.
+## Live status (as of Sept 2026)
+- **Domain + GSC:** `SITE.domain` = `australianelectricmotorco.com.au`, DNS delegated to Vercel
+  nameservers, GSC + Bing verified and sitemap submitted. Live, not a placeholder.
+- **Email:** contact (`/contact/`) and wholesale (`/wholesale/`) forms POST to `/api/contact` /
+  `/api/wholesale`, which send branded HTML mail via Zoho SMTP (`lib/mailer.ts`,
+  `lib/emailTemplate.ts`). Needs `ZOHO_SMTP_USER` + `ZOHO_SMTP_PASSWORD` (a Zoho app-specific
+  password) set in Vercel env vars — see `.env.example`. Without them, `sendMail()` returns
+  `{sent:false}` and the API responds 503; the form UI falls back to its WhatsApp/phone message.
+  WhatsApp (`lib/whatsapp.ts`) remains the only channel for cart checkout — there is no order form.
+- **Analytics:** GA4 via `components/Analytics.tsx`, gated on `NEXT_PUBLIC_GA_ID` — empty means no
+  tag renders at all.
 
 ## Brand facts (only these are true — never invent more)
 - Founded: 2021, Sydney, New South Wales, Australia. HQ/dispatch: Unit 3, 42 Enterprise Circuit,

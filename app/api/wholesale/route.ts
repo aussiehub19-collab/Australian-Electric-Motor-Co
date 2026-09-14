@@ -6,35 +6,35 @@ import { buildEmailHtml } from '@/lib/emailTemplate';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, email, phone, interest, message, botcheck } = body;
+    const { company, name, email, phone, units, notes, botcheck } = body;
 
-    // Honeypot — bots fill every field, humans never see this one.
     if (botcheck) return NextResponse.json({ success: true });
 
-    if (!name || !email || !message) {
+    if (!company || !name || !email || !phone) {
       return NextResponse.json(
-        { success: false, message: 'Missing required fields (name, email, message)' },
+        { success: false, message: 'Missing required fields (company, name, email, phone)' },
         { status: 400 },
       );
     }
 
     const html = buildEmailHtml({
-      heading: 'New Technical Inquiry',
-      intro: `${name} sent a message through the contact form.`,
+      heading: 'New Wholesale / Fleet Inquiry',
+      intro: `${name} at ${company} submitted a commercial application.`,
       rows: [
-        { label: 'Name', value: name },
+        { label: 'Business & ABN', value: company },
+        { label: 'Contact', value: name },
         { label: 'Email', value: email },
-        { label: 'Phone', value: phone || '' },
-        { label: 'Interest', value: interest || 'General Inquiry' },
-        { label: 'Message', value: message },
+        { label: 'Phone', value: phone },
+        { label: 'Est. Units', value: units || '' },
+        { label: 'Notes', value: notes || '' },
       ],
       replyTo: email,
     });
-    const text = `New technical inquiry\nName: ${name}\nEmail: ${email}\nPhone: ${phone || '-'}\nInterest: ${interest || 'General Inquiry'}\n\n${message}`;
+    const text = `New wholesale / fleet inquiry\nBusiness: ${company}\nContact: ${name}\nEmail: ${email}\nPhone: ${phone}\nEst. units: ${units || '-'}\n\n${notes || ''}`;
 
     const result = await sendMail({
       to: CONTACT.email,
-      subject: `New Inquiry: ${interest || 'General'} — ${name}`,
+      subject: `Wholesale Inquiry: ${company}`,
       html,
       text,
       replyTo: email,
@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
     }
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Contact API error:', error);
+    console.error('Wholesale API error:', error);
     return NextResponse.json({ success: false, message: 'Something went wrong' }, { status: 500 });
   }
 }

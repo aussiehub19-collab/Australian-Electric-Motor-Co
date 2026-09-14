@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { CONTACT, FORMS, SITE } from '@/config/site';
+import { CONTACT } from '@/config/site';
 import { waLink } from '@/lib/whatsapp';
 
 export default function WholesalePage() {
@@ -14,26 +14,17 @@ export default function WholesalePage() {
     setLoading(true);
     setErrorMessage('');
 
-    const form = e.currentTarget;
-    const keyInput = form.querySelector('[name="access_key"]') as HTMLInputElement;
-    const key = keyInput?.value;
-
-    if (!key || key === 'pending' || key.startsWith('YOUR-')) {
-      window.location.href = '/thank-you-wholesale/';
-      return;
-    }
+    const payload = Object.fromEntries(new FormData(e.currentTarget).entries());
 
     try {
-      const res = await fetch('https://api.web3forms.com/submit', {
+      const res = await fetch('/api/wholesale', {
         method: 'POST',
-        headers: {
-          Accept: 'application/json',
-        },
-        body: new FormData(form),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
       });
 
       const data = await res.json();
-      if (res.status === 200 && data.success) {
+      if (res.ok && data.success) {
         window.location.href = '/thank-you-wholesale/';
       } else {
         throw new Error(data?.message || 'Submission failed');
@@ -109,10 +100,8 @@ export default function WholesalePage() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            <input type="hidden" name="access_key" value={FORMS.web3formsKey || 'pending'} />
-            <input type="hidden" name="subject" value="Commercial / Wholesale Fleet Inquiry — Australian Electric Motor Co" />
-            <input type="hidden" name="from_name" value={SITE.name} />
-            <input type="checkbox" name="botcheck" className="hidden" style={{ display: 'none' }} />
+            {/* Honeypot — real visitors never see or fill this field */}
+            <input type="checkbox" name="botcheck" className="hidden" style={{ display: 'none' }} tabIndex={-1} autoComplete="off" />
 
             <div>
               <label htmlFor="company" className="block text-xs font-semibold text-stone-300 uppercase tracking-wider mb-1.5">
