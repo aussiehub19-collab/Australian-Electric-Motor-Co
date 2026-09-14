@@ -91,7 +91,7 @@ export function AddToCartButton({ product }: AddToCartButtonProps) {
     } else {
       window.dispatchEvent(
         new CustomEvent('open-cart', {
-          detail: { paymentMethod: 'pay-in-4' },
+          detail: { payInFour: true },
         })
       );
     }

@@ -49,7 +49,10 @@ export function CartDrawer({
       return [];
     }
   });
-  const [paymentMethod, setPaymentMethod] = useState<'crypto' | 'pay-in-4' | 'payid' | 'bank'>('crypto');
+  const [paymentMethod, setPaymentMethod] = useState<'crypto' | 'payid' | 'bank'>('crypto');
+  // Pay in 4 is a way of TIMING payment, not a payment method — it combines
+  // with any of the three above (crypto still gets its 10% off, split 4 ways).
+  const [payInFour, setPayInFour] = useState(false);
   const [copiedPayId, setCopiedPayId] = useState(false);
   const [customer, setCustomer] = useState<OrderCustomer>({
     name: '',
@@ -80,6 +83,9 @@ export function CartDrawer({
     const handleOpenCart = (e: any) => {
       if (e?.detail?.paymentMethod) {
         setPaymentMethod(e.detail.paymentMethod);
+      }
+      if (e?.detail?.payInFour) {
+        setPayInFour(true);
       }
     };
     window.addEventListener('cart-updated', handleCartUpdate);
@@ -160,11 +166,13 @@ export function CartDrawer({
   const shippingCost = items.length === 0 ? 0 : hasBike ? SHOP.bikeCrateFreight : netSubtotal >= SHOP.freeShippingThreshold ? 0 : SHOP.shippingFee;
   const grandTotal = finalTotal + shippingCost;
 
-  // Pay in 4 calculations: Automatically updates subtotal and total to 1st instalment
-  const isPayIn4 = paymentMethod === 'pay-in-4';
-  const payIn4SubtotalInstalment = Math.round(netSubtotal / 4);
+  // Pay in 4 calculations: Automatically updates subtotal and total to 1st instalment.
+  // Split off finalTotal (post bundle + crypto discounts), not netSubtotal — Pay in 4
+  // now combines with any payment method, so a crypto instalment must still be 10% off.
+  const isPayIn4 = payInFour;
+  const payIn4SubtotalInstalment = Math.round(finalTotal / 4);
   const payIn4ShippingInstalment = shippingCost > 0 ? Math.round(shippingCost / 4) : 0;
-  const payIn4Instalment = Math.round((netSubtotal + shippingCost) / 4);
+  const payIn4Instalment = Math.round((finalTotal + shippingCost) / 4);
 
   // Dynamic figures according to selected payment method
   const displayedSubtotal = isPayIn4 ? payIn4SubtotalInstalment : subtotal;
@@ -178,14 +186,15 @@ export function CartDrawer({
   const gstOnTotal = gstPortion(grandTotal);
   const gstOnDisplayedTotal = gstPortion(displayedTotal);
 
-  const paymentLabel =
+  const paymentMethodLabel =
     paymentMethod === 'crypto'
       ? 'Bitcoin (BTC) / Tether (USDT) — 10% discount'
-      : paymentMethod === 'pay-in-4'
-      ? 'Pay in 4 (interest-free fortnightly)'
       : paymentMethod === 'payid'
       ? 'PayID instant transfer'
       : 'Direct bank EFT';
+  const paymentLabel = isPayIn4
+    ? `${paymentMethodLabel}, Pay in 4 (interest-free fortnightly)`
+    : paymentMethodLabel;
 
   // Same order shape feeds both checkout channels — see lib/order.ts.
   const buildOrderSummary = (): OrderSummary => ({
@@ -424,13 +433,13 @@ export function CartDrawer({
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
                   <label className="text-[11px] font-mono font-semibold text-stone-400 uppercase tracking-wider">
-                    Select Payment Plan
+                    Select Payment Method
                   </label>
                   <span className="text-[11px] font-mono text-amber-300 font-bold">
                     ⚡ 10% Off via Crypto
                   </span>
                 </div>
-                <div className="grid grid-cols-4 gap-1.5">
+                <div className="grid grid-cols-3 gap-1.5">
                   <button
                     type="button"
                     onClick={() => setPaymentMethod('crypto')}
@@ -441,17 +450,6 @@ export function CartDrawer({
                     }`}
                   >
                     Crypto (-10%)
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setPaymentMethod('pay-in-4')}
-                    className={`py-2 px-1 text-[11px] font-mono font-medium rounded-lg border text-center transition ${
-                      paymentMethod === 'pay-in-4'
-                        ? 'border-amber-500 bg-amber-500/20 text-amber-300 font-bold ring-1 ring-amber-500/50'
-                        : 'border-[#2B2F36] bg-[#1D2024] text-stone-400 hover:border-stone-600'
-                    }`}
-                  >
-                    Pay in 4
                   </button>
                   <button
                     type="button"
@@ -476,10 +474,24 @@ export function CartDrawer({
                     Bank EFT
                   </button>
                 </div>
+
+                {/* Pay in 4 is a timing option, not a payment method — combine it with any of the three above */}
+                <label className="flex items-center gap-2.5 p-2.5 bg-[#1D2024] border border-[#2B2F36] rounded-lg cursor-pointer hover:border-stone-600 transition">
+                  <input
+                    type="checkbox"
+                    checked={payInFour}
+                    onChange={(e) => setPayInFour(e.target.checked)}
+                    className="w-4 h-4 accent-amber-500 shrink-0"
+                  />
+                  <span className="text-[11px] text-stone-300 font-mono leading-tight">
+                    <strong className="text-amber-300">Split into Pay in 4</strong> — 4 fortnightly
+                    instalments, 0% interest, no deposit
+                  </span>
+                </label>
               </div>
 
               {/* Pay in 4 Schedule Snippet */}
-              {paymentMethod === 'pay-in-4' && (
+              {isPayIn4 && (
                 <div className="p-3 bg-[#17191C] border border-amber-500/30 rounded-xl text-xs text-stone-300 space-y-2">
                   <div className="flex items-center justify-between text-amber-300 font-bold font-mono">
                     <span className="flex items-center gap-1">💳 Pay in 4 Schedule</span>
@@ -555,7 +567,7 @@ export function CartDrawer({
                     </span>
                     {isPayIn4 && (
                       <div className="text-[10px] text-stone-400 line-through">
-                        Full: ${(bundleSavings > 0 ? netSubtotal : subtotal).toLocaleString()} AUD
+                        Full: ${finalTotal.toLocaleString()} AUD
                       </div>
                     )}
                   </div>
