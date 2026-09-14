@@ -7,24 +7,16 @@ import { CartDrawer } from './CartDrawer';
 import { Logo } from './Logo';
 import { AbnBar } from './AbnBar';
 import { TAXONOMY_SECTIONS, CATEGORIES, SITE } from '@/config/site';
+import { useCartStorage } from '@/lib/useCartStorage';
 
 export function Nav() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [shopDropdownOpen, setShopDropdownOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
-  const [cartCount, setCartCount] = useState<number>(() => {
-    if (typeof window === 'undefined') return 0;
-    try {
-      const stored = localStorage.getItem(SITE.cartKey || 'mm-cart');
-      if (stored) {
-        const items = JSON.parse(stored);
-        return items.reduce((acc: number, item: { quantity: number }) => acc + (item.quantity || 1), 0);
-      }
-      return 0;
-    } catch {
-      return 0;
-    }
-  });
+  // isHydrated so the count badge doesn't render (mismatching) until the
+  // client has actually read localStorage — see lib/useCartStorage.ts.
+  const { items: cartItems, isHydrated: cartHydrated } = useCartStorage();
+  const cartCount = cartHydrated ? cartItems.reduce((acc, item) => acc + (item.quantity || 1), 0) : 0;
   const pathname = usePathname();
   const [prevPathname, setPrevPathname] = useState(pathname);
 
@@ -35,27 +27,9 @@ export function Nav() {
   }
 
   useEffect(() => {
-    const updateCount = () => {
-      try {
-        const stored = localStorage.getItem(SITE.cartKey || 'mm-cart');
-        if (stored) {
-          const items = JSON.parse(stored);
-          const total = items.reduce((acc: number, item: { quantity: number }) => acc + (item.quantity || 1), 0);
-          setCartCount(total);
-        } else {
-          setCartCount(0);
-        }
-      } catch {
-        setCartCount(0);
-      }
-    };
     const handleOpenCart = () => setCartOpen(true);
-    window.addEventListener('cart-updated', updateCount);
     window.addEventListener('open-cart', handleOpenCart);
-    return () => {
-      window.removeEventListener('cart-updated', updateCount);
-      window.removeEventListener('open-cart', handleOpenCart);
-    };
+    return () => window.removeEventListener('open-cart', handleOpenCart);
   }, []);
 
   const brands = CATEGORIES.filter((c) => c.section === 'brands' && c.parent === 'brands');

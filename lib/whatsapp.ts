@@ -41,7 +41,9 @@ export function waEnquiryLink(topic?: string): string {
  * arrives complete, plus the customer's own delivery details.
  */
 export function waOrderLink(o: OrderSummary, customer: OrderCustomer): string {
-  const lines: string[] = ['*NEW ORDER*', ''];
+  const lines: string[] = ['*NEW ORDER*'];
+  if (o.orderNumber) lines.push(`Order #: ${o.orderNumber}`);
+  lines.push('');
 
   for (const it of o.items) {
     const lineTotal = it.price * it.quantity;

@@ -3,11 +3,9 @@
 import { EBIKES_DATA } from './ebikes.js';
 import { ALL_BATTERIES_AND_CHARGERS } from './batteries-chargers.js';
 import { RIDING_GEAR_CATEGORIES, RIDING_GEAR_PRODUCTS } from './riding-gear.js';
-import { ACCESSORIES_CATEGORIES, ACCESSORIES_PRODUCTS, STARTER_PACK_BUNDLE } from './accessories.js';
+import { ACCESSORIES_CATEGORIES, ACCESSORIES_PRODUCTS } from './accessories.js';
 import { PARTS_PRODUCTS } from './parts.js';
 import { GENERIC_GEAR_PRODUCTS } from './gear-generic.js';
-
-export { STARTER_PACK_BUNDLE };
 
 export const SITE = {
   name: 'Australian Electric Motor Co',

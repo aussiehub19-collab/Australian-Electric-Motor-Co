@@ -1,38 +1,19 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import { SmartImage } from './SmartImage';
-import { SHOP, FINANCE, SITE, STARTER_PACK_BUNDLE } from '@/src/config/site';
-import { waOrderLink } from '@/lib/whatsapp';
-import { AU_STATES, isCustomerComplete, type OrderCustomer, type OrderSummary } from '@/lib/order';
+import { SHOP } from '@/src/config/site';
+import { useCartStorage } from '@/lib/useCartStorage';
+import { computeCartTotals, bundleEligible, bundleItemPrice, itemIsBike, type CartItem } from '@/lib/cart';
 
-export interface CartItem {
-  slug: string;
-  name: string;
-  price: number;
-  category: string;
-  image: string;
-  quantity: number;
-  isBike?: boolean;
-}
+export type { CartItem };
 
-/** 5% "bundle" discount rate applied to parts / accessories / gear when a bike is in the cart. */
-const BUNDLE_RATE = 0.05;
-
-/** Fallback bike test for cart items saved before `isBike` was stored. */
-const itemIsBike = (item: CartItem) =>
-  item.isBike ??
-  (!item.category.includes('parts') &&
-    !item.category.includes('gear') &&
-    !item.category.includes('accessories') &&
-    !item.category.includes('charger') &&
-    !item.category.includes('rotor') &&
-    !item.category.includes('helmet') &&
-    !item.category.includes('boot') &&
-    !item.category.includes('glove') &&
-    !item.category.includes('batter'));
-
+/**
+ * The side panel is cart contents only — quantities, the bundle discount,
+ * a plain total, and one action: Proceed to Checkout. Payment method, Pay in
+ * 4, delivery details and the WhatsApp/Email choice all live on /checkout/.
+ */
 export function CartDrawer({
   isOpen,
   onClose,
@@ -40,221 +21,18 @@ export function CartDrawer({
   isOpen: boolean;
   onClose: () => void;
 }) {
-  const [items, setItems] = useState<CartItem[]>(() => {
-    if (typeof window === 'undefined') return [];
-    try {
-      const stored = localStorage.getItem(SITE.cartKey || 'mm-cart');
-      return stored ? JSON.parse(stored) : [];
-    } catch {
-      return [];
-    }
-  });
-  const [paymentMethod, setPaymentMethod] = useState<'crypto' | 'payid' | 'bank'>('crypto');
-  // Pay in 4 is a way of TIMING payment, not a payment method — it combines
-  // with any of the three above (crypto still gets its 10% off, split 4 ways).
-  const [payInFour, setPayInFour] = useState(false);
-  const [copiedPayId, setCopiedPayId] = useState(false);
-  const [customer, setCustomer] = useState<OrderCustomer>({
-    name: '',
-    email: '',
-    phone: '',
-    address: '',
-    suburb: '',
-    state: 'NSW',
-    postcode: '',
-  });
-  const [orderStatus, setOrderStatus] = useState<'idle' | 'sending' | 'error'>('idle');
-  const [orderError, setOrderError] = useState('');
-  const customerValid = isCustomerComplete(customer);
+  const { items, updateQuantity, removeItem } = useCartStorage();
 
-  const updateCustomer =
-    (field: keyof OrderCustomer) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
-      setCustomer((c) => ({ ...c, [field]: e.target.value }));
-
-  useEffect(() => {
-    const handleCartUpdate = () => {
-      try {
-        const stored = localStorage.getItem(SITE.cartKey || 'mm-cart');
-        setItems(stored ? JSON.parse(stored) : []);
-      } catch (e) {
-        console.error('Failed to load cart:', e);
-      }
-    };
-    const handleOpenCart = (e: any) => {
-      if (e?.detail?.paymentMethod) {
-        setPaymentMethod(e.detail.paymentMethod);
-      }
-      if (e?.detail?.payInFour) {
-        setPayInFour(true);
-      }
-    };
-    window.addEventListener('cart-updated', handleCartUpdate);
-    window.addEventListener('open-cart', handleOpenCart);
-    return () => {
-      window.removeEventListener('cart-updated', handleCartUpdate);
-      window.removeEventListener('open-cart', handleOpenCart);
-    };
-  }, []);
-
-  const saveCart = (newItems: CartItem[]) => {
-    setItems(newItems);
-    localStorage.setItem(SITE.cartKey || 'mm-cart', JSON.stringify(newItems));
-    window.dispatchEvent(new Event('cart-updated'));
-  };
-
-  const updateQuantity = (slug: string, delta: number) => {
-    const updated = items
-      .map((item) => {
-        if (item.slug === slug) {
-          const newQty = item.quantity + delta;
-          return newQty > 0 ? { ...item, quantity: newQty } : null;
-        }
-        return item;
-      })
-      .filter(Boolean) as CartItem[];
-    saveCart(updated);
-  };
-
-  const removeItem = (slug: string) => {
-    const updated = items.filter((item) => item.slug !== slug);
-    saveCart(updated);
-  };
-
-  const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-
-  // Has a bike in the cart? Parts / batteries / chargers / accessories / gear then
-  // qualify for a 5% "bought-with-a-bike" bundle discount.
-  const hasBike = items.some(itemIsBike);
-  const hasStarterPack = items.some((item) => item.slug === 'essential-starter-pack');
-
-  /** Line items eligible for the 5% bundle discount (non-bike items when a bike is in the cart). */
-  const bundleEligible = (item: CartItem) =>
-    hasBike && !itemIsBike(item) && item.slug !== 'essential-starter-pack';
-
-  const bundleItemPrice = (item: CartItem) =>
-    bundleEligible(item) ? Math.round(item.price * (1 - BUNDLE_RATE)) : item.price;
-
-  const bundleSavings = items.reduce(
-    (sum, item) => sum + (item.price - bundleItemPrice(item)) * item.quantity,
-    0
-  );
-
-  // Net subtotal after the bundle discount — this is the base for crypto / Pay in 4 / totals.
-  const netSubtotal = subtotal - bundleSavings;
-
-  const cryptoDiscountRate = SHOP.cryptoDiscount || 10;
-  const cryptoSavings = paymentMethod === 'crypto' ? Math.round(netSubtotal * (cryptoDiscountRate / 100)) : 0;
-  const finalTotal = netSubtotal - cryptoSavings;
-
-  const addStarterPackToCart = () => {
-    const existingIndex = items.findIndex((i) => i.slug === 'essential-starter-pack');
-    if (existingIndex > -1) {
-      updateQuantity('essential-starter-pack', 1);
-    } else {
-      const newItem: CartItem = {
-        slug: 'essential-starter-pack',
-        name: STARTER_PACK_BUNDLE.name,
-        price: STARTER_PACK_BUNDLE.price,
-        category: 'accessories',
-        image: STARTER_PACK_BUNDLE.image,
-        quantity: 1,
-      };
-      saveCart([...items, newItem]);
-    }
-  };
-
-  const shippingCost = items.length === 0 ? 0 : hasBike ? SHOP.bikeCrateFreight : netSubtotal >= SHOP.freeShippingThreshold ? 0 : SHOP.shippingFee;
-  const grandTotal = finalTotal + shippingCost;
-
-  // Pay in 4 calculations: Automatically updates subtotal and total to 1st instalment.
-  // Split off finalTotal (post bundle + crypto discounts), not netSubtotal — Pay in 4
-  // now combines with any payment method, so a crypto instalment must still be 10% off.
-  const isPayIn4 = payInFour;
-  const payIn4SubtotalInstalment = Math.round(finalTotal / 4);
-  const payIn4ShippingInstalment = shippingCost > 0 ? Math.round(shippingCost / 4) : 0;
-  const payIn4Instalment = Math.round((finalTotal + shippingCost) / 4);
-
-  // Dynamic figures according to selected payment method
-  const displayedSubtotal = isPayIn4 ? payIn4SubtotalInstalment : subtotal;
-  const displayedShipping = isPayIn4 ? payIn4ShippingInstalment : shippingCost;
-  const displayedTotal = isPayIn4 ? payIn4Instalment : grandTotal;
-
-  // GST is 10% and already included in every AUD price. The GST portion of a
-  // GST-inclusive amount is amount ÷ 11.
-  const GST_RATE = 0.1;
-  const gstPortion = (inclAmount: number) => Math.round(inclAmount - inclAmount / (1 + GST_RATE));
-  const gstOnTotal = gstPortion(grandTotal);
-  const gstOnDisplayedTotal = gstPortion(displayedTotal);
-
-  const paymentMethodLabel =
-    paymentMethod === 'crypto'
-      ? 'Bitcoin (BTC) / Tether (USDT) — 10% discount'
-      : paymentMethod === 'payid'
-      ? 'PayID instant transfer'
-      : 'Direct bank EFT';
-  const paymentLabel = isPayIn4
-    ? `${paymentMethodLabel}, Pay in 4 (interest-free fortnightly)`
-    : paymentMethodLabel;
-
-  // Same order shape feeds both checkout channels — see lib/order.ts.
-  const buildOrderSummary = (): OrderSummary => ({
+  // Neutral totals (no payment-method discount, no Pay in 4 split) — those are chosen at checkout.
+  const { hasBike, subtotal, bundleSavings, shippingCost, grandTotal, gstOnTotal } = computeCartTotals({
     items,
-    subtotal,
-    bundleSavings,
-    cryptoSavings,
-    shippingCost,
-    shippingIsFree: shippingCost === 0,
-    grandTotal,
-    gstPortion: gstOnTotal,
-    paymentLabel,
-    payIn4: isPayIn4 ? { instalment: payIn4Instalment, dueToday: displayedTotal } : null,
+    paymentMethod: 'bank',
+    payInFour: false,
+    cryptoDiscountRate: SHOP.cryptoDiscount || 10,
+    freeShippingThreshold: SHOP.freeShippingThreshold,
+    shippingFee: SHOP.shippingFee,
+    bikeCrateFreight: SHOP.bikeCrateFreight,
   });
-
-  const buildWhatsAppOrderUrl = () => waOrderLink(buildOrderSummary(), customer);
-
-  const handleWhatsAppClick = (e: React.MouseEvent) => {
-    if (!customerValid) {
-      e.preventDefault();
-      setOrderError('Please complete your delivery details above first.');
-    } else {
-      setOrderError('');
-    }
-  };
-
-  const handleEmailOrder = async () => {
-    if (!customerValid) {
-      setOrderError('Please complete your delivery details above first.');
-      return;
-    }
-    setOrderStatus('sending');
-    setOrderError('');
-    try {
-      const res = await fetch('/api/order/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ customer, order: buildOrderSummary() }),
-      });
-      const data = await res.json();
-      if (res.ok && data.success) {
-        saveCart([]);
-        window.location.href = '/thank-you-order/';
-      } else {
-        throw new Error(data?.message || 'Submission failed');
-      }
-    } catch (err) {
-      console.error('Order email error:', err);
-      setOrderError('Unable to email your order automatically. Please use Checkout via WhatsApp instead.');
-      setOrderStatus('error');
-    }
-  };
-
-  const handleCopyPayId = () => {
-    if (SHOP.payId) {
-      navigator.clipboard.writeText(SHOP.payId);
-      setCopiedPayId(true);
-      setTimeout(() => setCopiedPayId(false), 2000);
-    }
-  };
 
   if (!isOpen) return null;
 
@@ -320,10 +98,10 @@ export function CartDrawer({
                   <div className="flex-1 min-w-0">
                     <h3 className="text-sm font-semibold text-stone-100 truncate">{item.name}</h3>
                     <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-0.5">
-                      {bundleEligible(item) ? (
+                      {bundleEligible(item, hasBike) ? (
                         <>
                           <span className="text-xs text-amber-400 font-mono font-bold">
-                            ${bundleItemPrice(item).toLocaleString()} AUD
+                            ${bundleItemPrice(item, hasBike).toLocaleString()} AUD
                           </span>
                           <span className="text-[10px] text-stone-400 font-mono line-through">
                             ${item.price.toLocaleString()}
@@ -337,9 +115,9 @@ export function CartDrawer({
                           ${item.price.toLocaleString()} AUD
                         </span>
                       )}
-                      {paymentMethod === 'crypto' && (
-                        <span className="text-[10px] text-emerald-400 font-mono">
-                          (${Math.round(bundleItemPrice(item) * 0.9).toLocaleString()} in BTC/USDT)
+                      {item.discountTag && (
+                        <span className="text-[9px] font-mono font-bold text-amber-300 bg-amber-500/15 border border-amber-500/30 rounded px-1 py-0.5 uppercase tracking-wide">
+                          New Owner −15%
                         </span>
                       )}
                     </div>
@@ -377,33 +155,6 @@ export function CartDrawer({
               ))
             )}
 
-            {/* Essential Starter Pack Cross-Category Upsell Hook */}
-            {hasBike && !hasStarterPack && items.length > 0 && (
-              <div className="p-3.5 bg-gradient-to-br from-amber-950/30 via-[#1D2024] to-[#17191C] border border-amber-500/40 rounded-xl space-y-2.5 mt-2">
-                <div className="flex items-start justify-between gap-2">
-                  <div>
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-xs">⚡</span>
-                      <span className="text-[11px] font-mono font-bold text-amber-300 uppercase tracking-wide">
-                        Essential Starter Pack Offer (Save 15%)
-                      </span>
-                    </div>
-                    <p className="text-[11px] text-stone-300 mt-1 font-sans leading-tight">
-                      Add Polisport Foldable Stand + Ballard&apos;s Tie-Downs + Muc-Off Waterless Wash for <strong>$229 AUD</strong> (Regular $270 AUD).
-                    </p>
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  onClick={addStarterPackToCart}
-                  className="w-full py-2 px-3 bg-[#8C4A2F] hover:bg-[#A35839] text-white text-xs font-bold rounded-lg transition shadow flex items-center justify-center gap-1.5 font-mono"
-                >
-                  <span>+ Add Starter Pack ($229 AUD)</span>
-                  <span className="text-amber-200 text-[10px]">(Save $41)</span>
-                </button>
-              </div>
-            )}
-
             {/* Bike + accessory bundle discount status */}
             {items.length > 0 && bundleSavings > 0 && (
               <div className="p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-xl flex items-start gap-2 mt-2">
@@ -428,360 +179,44 @@ export function CartDrawer({
 
           {/* Footer / Summary */}
           {items.length > 0 && (
-            <div className="p-4 sm:p-5 border-t border-[#2B2F36] bg-[#121417] space-y-4">
-              {/* Payment selector */}
-              <div className="space-y-1.5">
-                <div className="flex items-center justify-between">
-                  <label className="text-[11px] font-mono font-semibold text-stone-400 uppercase tracking-wider">
-                    Select Payment Method
-                  </label>
-                  <span className="text-[11px] font-mono text-amber-300 font-bold">
-                    ⚡ 10% Off via Crypto
-                  </span>
+            <div className="p-4 sm:p-5 border-t border-[#2B2F36] bg-[#121417] space-y-3">
+              <div className="space-y-1.5 text-xs text-stone-400 font-mono">
+                <div className="flex justify-between">
+                  <span>Subtotal</span>
+                  <span className="font-semibold text-stone-200">${subtotal.toLocaleString()} AUD</span>
                 </div>
-                <div className="grid grid-cols-3 gap-1.5">
-                  <button
-                    type="button"
-                    onClick={() => setPaymentMethod('crypto')}
-                    className={`py-2 px-1 text-[11px] font-mono font-medium rounded-lg border text-center transition ${
-                      paymentMethod === 'crypto'
-                        ? 'border-amber-500 bg-amber-500/20 text-amber-300 font-bold ring-1 ring-amber-500/50'
-                        : 'border-[#2B2F36] bg-[#1D2024] text-stone-400 hover:border-stone-600'
-                    }`}
-                  >
-                    Crypto (-10%)
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setPaymentMethod('payid')}
-                    className={`py-2 px-1 text-[11px] font-mono font-medium rounded-lg border text-center transition ${
-                      paymentMethod === 'payid'
-                        ? 'border-amber-500 bg-amber-500/20 text-amber-300 font-bold ring-1 ring-amber-500/50'
-                        : 'border-[#2B2F36] bg-[#1D2024] text-stone-400 hover:border-stone-600'
-                    }`}
-                  >
-                    PayID
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setPaymentMethod('bank')}
-                    className={`py-2 px-1 text-[11px] font-mono font-medium rounded-lg border text-center transition ${
-                      paymentMethod === 'bank'
-                        ? 'border-amber-500 bg-amber-500/20 text-amber-300 font-bold ring-1 ring-amber-500/50'
-                        : 'border-[#2B2F36] bg-[#1D2024] text-stone-400 hover:border-stone-600'
-                    }`}
-                  >
-                    Bank EFT
-                  </button>
-                </div>
-
-                {/* Pay in 4 is a timing option, not a payment method — combine it with any of the three above */}
-                <label className="flex items-center gap-2.5 p-2.5 bg-[#1D2024] border border-[#2B2F36] rounded-lg cursor-pointer hover:border-stone-600 transition">
-                  <input
-                    type="checkbox"
-                    checked={payInFour}
-                    onChange={(e) => setPayInFour(e.target.checked)}
-                    className="w-4 h-4 accent-amber-500 shrink-0"
-                  />
-                  <span className="text-[11px] text-stone-300 font-mono leading-tight">
-                    <strong className="text-amber-300">Split into Pay in 4</strong> — 4 fortnightly
-                    instalments, 0% interest, no deposit
-                  </span>
-                </label>
-              </div>
-
-              {/* Pay in 4 Schedule Snippet */}
-              {isPayIn4 && (
-                <div className="p-3 bg-[#17191C] border border-amber-500/30 rounded-xl text-xs text-stone-300 space-y-2">
-                  <div className="flex items-center justify-between text-amber-300 font-bold font-mono">
-                    <span className="flex items-center gap-1">💳 Pay in 4 Schedule</span>
-                    <span>0% Interest</span>
-                  </div>
-                  <div className="grid grid-cols-4 gap-1 text-[11px] text-center font-mono">
-                    <div className="bg-[#121417] p-1.5 rounded border border-stone-800">
-                      <div className="text-stone-400">Today</div>
-                      <div className="font-bold text-white">${payIn4Instalment}</div>
-                    </div>
-                    <div className="bg-[#121417] p-1.5 rounded border border-stone-800">
-                      <div className="text-stone-400">2 Wks</div>
-                      <div className="font-bold text-white">${payIn4Instalment}</div>
-                    </div>
-                    <div className="bg-[#121417] p-1.5 rounded border border-stone-800">
-                      <div className="text-stone-400">4 Wks</div>
-                      <div className="font-bold text-white">${payIn4Instalment}</div>
-                    </div>
-                    <div className="bg-[#121417] p-1.5 rounded border border-stone-800">
-                      <div className="text-stone-400">6 Wks</div>
-                      <div className="font-bold text-white">${payIn4Instalment}</div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* PayID snippet if selected */}
-              {paymentMethod === 'payid' && (
-                <div className="p-2.5 bg-[#17191C] border border-[#2B2F36] rounded-xl text-xs text-stone-300 space-y-1">
-                  <div className="flex justify-between items-center">
-                    <span className="text-stone-400 font-mono">PayID Aussie Transfer:</span>
-                    <button
-                      type="button"
-                      onClick={handleCopyPayId}
-                      className="text-amber-400 hover:underline font-mono text-[11px] font-bold"
-                    >
-                      {copiedPayId ? 'Copied!' : 'Copy PayID'}
-                    </button>
-                  </div>
-                  <p className="font-mono text-stone-100 font-bold">{SHOP.payId}</p>
-                </div>
-              )}
-
-              {/* Bank Transfer details if selected */}
-              {paymentMethod === 'bank' && (
-                <div className="p-2.5 bg-[#17191C] border border-[#2B2F36] rounded-xl text-xs text-stone-300 space-y-1 font-mono">
-                  <div className="text-stone-400 font-semibold">{SHOP.bankDetails.bankName}</div>
-                  <div className="flex justify-between">
-                    <span>BSB:</span>
-                    <span className="font-bold text-white">{SHOP.bankDetails.bsb}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Account:</span>
-                    <span className="font-bold text-white">{SHOP.bankDetails.accountNumber}</span>
-                  </div>
-                </div>
-              )}
-
-              {/* Price calculations */}
-              <div className="space-y-1.5 text-xs text-stone-400 font-mono bg-[#141619] p-3 rounded-xl border border-[#2B2F36]">
-                <div className="flex justify-between items-baseline">
-                  <span className="flex items-center gap-1.5">
-                    <span>Subtotal</span>
-                    {isPayIn4 && (
-                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold border border-amber-500/40">
-                        1st Instalment
-                      </span>
-                    )}
-                  </span>
-                  <div className="text-right">
-                    <span className="font-semibold text-stone-200">
-                      ${displayedSubtotal.toLocaleString()} AUD
-                    </span>
-                    {isPayIn4 && (
-                      <div className="text-[10px] text-stone-400 line-through">
-                        Full: ${finalTotal.toLocaleString()} AUD
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {bundleSavings > 0 && !isPayIn4 && (
+                {bundleSavings > 0 && (
                   <div className="flex justify-between text-emerald-400 font-bold">
-                    <span>Bundle Discount (5% off parts &amp; gear with a bike)</span>
+                    <span>Bundle Discount (5%)</span>
                     <span>-${bundleSavings.toLocaleString()} AUD</span>
                   </div>
                 )}
-                {bundleSavings > 0 && isPayIn4 && (
-                  <div className="flex justify-between text-emerald-400/90 text-[10px]">
-                    <span>Incl. 5% bundle discount on parts &amp; gear</span>
-                    <span>-${bundleSavings.toLocaleString()} AUD</span>
-                  </div>
-                )}
-
-                {paymentMethod === 'crypto' && (
-                  <div className="flex justify-between text-emerald-400 font-bold">
-                    <span>10% Crypto Discount (BTC/USDT)</span>
-                    <span>-${cryptoSavings.toLocaleString()} AUD</span>
-                  </div>
-                )}
-
-                <div className="flex justify-between items-baseline">
-                  <span className="flex items-center gap-1.5">
-                    <span>Freight Delivery</span>
-                    {isPayIn4 && shippingCost > 0 && (
-                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-300 font-semibold">
-                        1st of 4
-                      </span>
-                    )}
-                  </span>
-                  <div className="text-right">
-                    <span>
-                      {shippingCost === 0 ? (
-                        <span className="text-emerald-400 uppercase font-bold">Free</span>
-                      ) : (
-                        `$${displayedShipping.toLocaleString()} AUD`
-                      )}
-                    </span>
-                    {isPayIn4 && shippingCost > 0 && (
-                      <div className="text-[10px] text-stone-400 line-through">
-                        Full: ${shippingCost} AUD
-                      </div>
-                    )}
-                  </div>
+                <div className="flex justify-between">
+                  <span>Freight Delivery</span>
+                  <span>{shippingCost === 0 ? <span className="text-emerald-400 uppercase font-bold">Free</span> : `$${shippingCost.toLocaleString()} AUD`}</span>
                 </div>
-
-                <div className="flex justify-between items-baseline">
-                  <span className="flex items-center gap-1.5">
-                    <span>GST (10%, included)</span>
-                    {isPayIn4 && (
-                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-300 font-semibold">
-                        this instalment
-                      </span>
-                    )}
-                  </span>
-                  <div className="text-right">
-                    <span className="text-stone-300">${gstOnDisplayedTotal.toLocaleString()} AUD</span>
-                    {isPayIn4 && (
-                      <div className="text-[10px] text-stone-400">
-                        Full order GST: ${gstOnTotal.toLocaleString()} AUD
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                <div className="flex justify-between items-baseline text-sm font-bold text-stone-100 pt-2.5 border-t border-[#2B2F36]">
+                <div className="flex justify-between items-baseline text-sm font-bold text-stone-100 pt-2 border-t border-[#2B2F36]">
                   <div>
-                    <span className="text-white">
-                      {isPayIn4 ? 'Total (1st Instalment Due Today)' : 'Total Amount (Inc. GST)'}
-                    </span>
-                    <div className="text-[10px] font-normal text-emerald-400 mt-0.5 font-mono">
-                      ✓ Incl. ${gstOnDisplayedTotal.toLocaleString()} AUD GST (10%) · Tax invoice provided
+                    <span className="text-white">Total (Inc. GST)</span>
+                    <div className="text-[10px] font-normal text-emerald-400 mt-0.5">
+                      ✓ Incl. ${gstOnTotal.toLocaleString()} AUD GST (10%)
                     </div>
-                    {isPayIn4 && (
-                      <div className="text-[10px] font-normal text-amber-400/90 mt-0.5">
-                        Followed by 3 fortnightly payments of ${payIn4Instalment.toLocaleString()} AUD
-                      </div>
-                    )}
                   </div>
-                  <div className="text-right">
-                    <span className="text-amber-400 text-lg font-black font-mono">
-                      ${displayedTotal.toLocaleString()} AUD
-                    </span>
-                    {isPayIn4 && (
-                      <div className="text-[10px] font-normal text-stone-400 line-through">
-                        Full Order: ${grandTotal.toLocaleString()} AUD
-                      </div>
-                    )}
-                  </div>
+                  <span className="text-amber-400 text-lg font-black font-mono">${grandTotal.toLocaleString()} AUD</span>
                 </div>
-              </div>
-
-              {/* Delivery details — required before either checkout option */}
-              <div className="space-y-2 bg-[#141619] p-3 rounded-xl border border-[#2B2F36]">
-                <h3 className="text-[11px] font-bold uppercase tracking-wider text-stone-300 font-mono">
-                  Delivery Details
-                </h3>
-                <div className="grid grid-cols-2 gap-2">
-                  <input
-                    type="text"
-                    value={customer.name}
-                    onChange={updateCustomer('name')}
-                    placeholder="Full Name *"
-                    aria-label="Full name"
-                    className="col-span-2 bg-[#1D2024] border border-[#2B2F36] rounded-lg px-3 py-2 text-xs text-stone-100 placeholder-stone-600 focus:ring-1 focus:ring-amber-500 focus:border-amber-500"
-                  />
-                  <input
-                    type="email"
-                    value={customer.email}
-                    onChange={updateCustomer('email')}
-                    placeholder="Email *"
-                    aria-label="Email address"
-                    className="bg-[#1D2024] border border-[#2B2F36] rounded-lg px-3 py-2 text-xs text-stone-100 placeholder-stone-600 focus:ring-1 focus:ring-amber-500 focus:border-amber-500"
-                  />
-                  <input
-                    type="tel"
-                    value={customer.phone}
-                    onChange={updateCustomer('phone')}
-                    placeholder="Phone *"
-                    aria-label="Phone number"
-                    className="bg-[#1D2024] border border-[#2B2F36] rounded-lg px-3 py-2 text-xs text-stone-100 placeholder-stone-600 focus:ring-1 focus:ring-amber-500 focus:border-amber-500"
-                  />
-                  <input
-                    type="text"
-                    value={customer.address}
-                    onChange={updateCustomer('address')}
-                    placeholder="Street Address *"
-                    aria-label="Street address"
-                    className="col-span-2 bg-[#1D2024] border border-[#2B2F36] rounded-lg px-3 py-2 text-xs text-stone-100 placeholder-stone-600 focus:ring-1 focus:ring-amber-500 focus:border-amber-500"
-                  />
-                  <input
-                    type="text"
-                    value={customer.suburb}
-                    onChange={updateCustomer('suburb')}
-                    placeholder="Suburb *"
-                    aria-label="Suburb"
-                    className="bg-[#1D2024] border border-[#2B2F36] rounded-lg px-3 py-2 text-xs text-stone-100 placeholder-stone-600 focus:ring-1 focus:ring-amber-500 focus:border-amber-500"
-                  />
-                  <select
-                    value={customer.state}
-                    onChange={updateCustomer('state')}
-                    aria-label="State"
-                    className="bg-[#1D2024] border border-[#2B2F36] rounded-lg px-3 py-2 text-xs text-stone-100 focus:ring-1 focus:ring-amber-500 focus:border-amber-500"
-                  >
-                    {AU_STATES.map((s) => (
-                      <option key={s} value={s}>{s}</option>
-                    ))}
-                  </select>
-                  <input
-                    type="text"
-                    value={customer.postcode}
-                    onChange={updateCustomer('postcode')}
-                    placeholder="Postcode *"
-                    aria-label="Postcode"
-                    className="col-span-2 bg-[#1D2024] border border-[#2B2F36] rounded-lg px-3 py-2 text-xs text-stone-100 placeholder-stone-600 focus:ring-1 focus:ring-amber-500 focus:border-amber-500"
-                  />
-                </div>
-              </div>
-
-              {/* Checkout actions */}
-              <div className="space-y-2 pt-1">
-                {orderError && (
-                  <p className="text-[11px] text-rose-400 font-semibold text-center">{orderError}</p>
-                )}
-                <a
-                  href={customerValid ? buildWhatsAppOrderUrl() : '#'}
-                  target={customerValid ? '_blank' : undefined}
-                  rel="noopener noreferrer"
-                  aria-disabled={!customerValid}
-                  onClick={handleWhatsAppClick}
-                  className={`w-full flex items-center justify-center gap-2 font-bold py-3 px-4 rounded-xl text-sm transition shadow-lg text-center ${
-                    customerValid
-                      ? 'bg-[#25D366] hover:bg-[#20bd5a] text-black cursor-pointer'
-                      : 'bg-[#25D366]/40 text-black/60 cursor-not-allowed'
-                  }`}
-                >
-                  <svg className="w-5 h-5 shrink-0" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766 0-3.18-2.586-5.771-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.007c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.303-.058.116-.087.188-.173.289l-.26.303c-.087.087-.179.183-.077.359.101.176.449.741.964 1.201.662.591 1.221.774 1.394.861.173.086.275.072.376-.044.101-.116.433-.506.549-.679.116-.173.231-.145.39-.087s1.011.477 1.184.564c.173.087.289.13.332.202.043.073.043.419-.101.824z" />
-                  </svg>
-                  <span>
-                    {isPayIn4
-                      ? `Checkout via WhatsApp (1st Instalment: $${displayedTotal.toLocaleString()} AUD)`
-                      : 'Checkout via WhatsApp'}
-                  </span>
-                </a>
-
-                <button
-                  type="button"
-                  onClick={handleEmailOrder}
-                  disabled={orderStatus === 'sending'}
-                  className={`w-full flex items-center justify-center gap-2 font-bold py-3 px-4 rounded-xl text-sm transition text-center ${
-                    customerValid
-                      ? 'bg-[#8C4A2F] hover:bg-[#A35839] text-white cursor-pointer'
-                      : 'bg-[#8C4A2F]/40 text-white/60 cursor-not-allowed'
-                  }`}
-                >
-                  {orderStatus === 'sending' ? (
-                    <span>Sending Order...</span>
-                  ) : (
-                    <span>
-                      {isPayIn4
-                        ? `Email My Order (1st Instalment: $${displayedTotal.toLocaleString()} AUD)`
-                        : 'Email My Order'}
-                    </span>
-                  )}
-                </button>
-                <p className="text-[10px] text-stone-500 text-center">
-                  Both options send the same order details — pick whichever you check more often.
+                <p className="text-[10px] text-stone-500 text-center pt-1">
+                  10% off with crypto &amp; Pay in 4 available at checkout
                 </p>
               </div>
+
+              <Link
+                href="/checkout/"
+                onClick={onClose}
+                className="w-full flex items-center justify-center gap-2 bg-[#8C4A2F] hover:bg-[#A35839] text-white font-bold py-3.5 px-4 rounded-xl text-sm transition shadow-lg text-center"
+              >
+                <span>Proceed to Checkout</span>
+                <span>&rarr;</span>
+              </Link>
             </div>
           )}
         </div>

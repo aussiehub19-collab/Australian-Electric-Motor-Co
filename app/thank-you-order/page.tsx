@@ -1,6 +1,5 @@
 import React from 'react';
 import Link from 'next/link';
-import { SITE } from '@/config/site';
 
 export const metadata = {
   title: 'Order Received | Australian Electric Motor Co',
@@ -14,7 +13,13 @@ export const metadata = {
   },
 };
 
-export default function ThankYouOrderPage() {
+export default async function ThankYouOrderPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ ref?: string }>;
+}) {
+  const { ref } = await searchParams;
+
   return (
     <div className="max-w-2xl mx-auto px-4 py-20 text-center space-y-6">
       <div className="w-16 h-16 bg-amber-500/20 border border-amber-500/40 rounded-full flex items-center justify-center mx-auto text-amber-400 text-2xl font-bold">
@@ -26,8 +31,15 @@ export default function ThankYouOrderPage() {
       <h1 className="text-3xl sm:text-4xl font-black uppercase text-white tracking-tight">
         Thank You For Your Order
       </h1>
+      {ref && (
+        <div className="inline-block bg-[#17191C] border border-[#2B2F36] rounded-xl px-5 py-3">
+          <div className="text-[11px] font-mono uppercase tracking-wider text-stone-400">Order Reference</div>
+          <div className="text-lg font-mono font-black text-amber-400">{ref}</div>
+        </div>
+      )}
       <p className="text-sm text-stone-300 leading-relaxed">
         We have received your order details. In accordance with Australian electric motorbike delivery standards and crate logistics, our sales coordinator will contact you directly to confirm delivery depot details and invoice payment.
+        {ref && ' Quote your order reference above in any follow-up.'}
       </p>
       <div className="pt-4 flex justify-center gap-4">
         <Link

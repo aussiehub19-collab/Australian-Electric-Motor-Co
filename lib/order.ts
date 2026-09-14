@@ -29,6 +29,20 @@ export interface OrderSummary {
   gstPortion: number;
   paymentLabel: string;
   payIn4?: { instalment: number; dueToday: number } | null;
+  orderNumber?: string;
+}
+
+/**
+ * A reference number for correspondence — there's no backend/order database
+ * (see CLAUDE.md), so this isn't a sequential ID, just a short, readable tag
+ * the customer and the WhatsApp/email order share so both sides can refer to
+ * "the same order" without one being generated after the other.
+ */
+export function generateOrderNumber(): string {
+  const d = new Date();
+  const datePart = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`;
+  const rand = Math.random().toString(36).slice(2, 6).toUpperCase();
+  return `AEMC-${datePart}-${rand}`;
 }
 
 export const AU_STATES = ['NSW', 'VIC', 'QLD', 'WA', 'SA', 'TAS', 'ACT', 'NT'] as const;

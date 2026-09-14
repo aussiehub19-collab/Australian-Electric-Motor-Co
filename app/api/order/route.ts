@@ -24,6 +24,7 @@ export async function POST(request: NextRequest) {
       .join('\n');
 
     const rows = [
+      { label: 'Order #', value: order.orderNumber || '' },
       { label: 'Items', value: itemsText },
       { label: 'Subtotal', value: money(order.subtotal) },
       { label: 'Bundle Discount', value: order.bundleSavings ? `-${money(order.bundleSavings)}` : '' },
@@ -44,17 +45,17 @@ export async function POST(request: NextRequest) {
     ];
 
     const html = buildEmailHtml({
-      heading: 'New Order',
+      heading: order.orderNumber ? `New Order — ${order.orderNumber}` : 'New Order',
       intro: `${customer.name} placed an order through the website checkout.`,
       rows,
       replyTo: customer.email,
     });
 
-    const text = `New order\n\n${itemsText}\n\nSubtotal: ${money(order.subtotal)}\nTotal payable: ${money(order.grandTotal)}\nPayment: ${order.paymentLabel}\n\nCustomer: ${customer.name}\nEmail: ${customer.email}\nPhone: ${customer.phone}\nDeliver to: ${formatAddress(customer)}`;
+    const text = `New order ${order.orderNumber || ''}\n\n${itemsText}\n\nSubtotal: ${money(order.subtotal)}\nTotal payable: ${money(order.grandTotal)}\nPayment: ${order.paymentLabel}\n\nCustomer: ${customer.name}\nEmail: ${customer.email}\nPhone: ${customer.phone}\nDeliver to: ${formatAddress(customer)}`;
 
     const result = await sendMail({
       to: CONTACT.email,
-      subject: `New Order: ${customer.name} — ${money(order.grandTotal)}`,
+      subject: `New Order${order.orderNumber ? ` ${order.orderNumber}` : ''}: ${customer.name} — ${money(order.grandTotal)}`,
       html,
       text,
       replyTo: customer.email,

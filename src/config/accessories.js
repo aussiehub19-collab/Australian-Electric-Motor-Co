@@ -34,61 +34,6 @@ export const ACCESSORIES_CATEGORIES = [
   },
 ];
 
-export const STARTER_PACK_BUNDLE = {
-  id: 'starter-pack-bundle',
-  slug: 'essential-starter-pack',
-  name: 'Essential Starter Pack',
-  tagline: 'Polisport Foldable Stand + Ballard’s Tie-Downs + Muc-Off Waterless Wash',
-  originalPrice: 270,
-  bundlePrice: 229,
-  price: 229,
-  savings: 41,
-  savingsPercent: 15,
-  discountPercent: 15,
-  image: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=1200&q=80',
-  description: 'The must-have gear kit for every new electric dirt bike owner in Australia. Includes a space-saving 250kg rated foldable stand, heavy-duty soft-loop ratchet tie-downs for ute/trailer hauling, and electrical-safe waterless wash.',
-  includedItems: [
-    {
-      name: 'Polisport Foldable Bike Stand',
-      slug: 'polisport-foldable-bike-stand',
-      individualPrice: 149,
-      price: 149,
-      image: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=600&q=80',
-    },
-    {
-      name: "Ballard's Ratchet Tie-Down Straps (Pair)",
-      slug: 'ballards-ratchet-tie-down-straps',
-      individualPrice: 49,
-      price: 49,
-      image: 'https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?auto=format&fit=crop&w=600&q=80',
-    },
-    {
-      name: 'Muc-Off High-Performance Waterless Wash (750ml)',
-      slug: 'muc-off-waterless-wash-750ml',
-      individualPrice: 29,
-      price: 29,
-      image: 'https://images.unsplash.com/photo-1508873696983-2df5293cb32b?auto=format&fit=crop&w=600&q=80',
-    },
-  ],
-  items: [
-    {
-      name: 'Polisport Foldable Bike Stand',
-      slug: 'polisport-foldable-bike-stand',
-      price: 149,
-    },
-    {
-      name: "Ballard's Ratchet Tie-Down Straps (Pair)",
-      slug: 'ballards-ratchet-tie-down-straps',
-      price: 49,
-    },
-    {
-      name: 'Muc-Off High-Performance Waterless Wash (750ml)',
-      slug: 'muc-off-waterless-wash-750ml',
-      price: 29,
-    },
-  ],
-};
-
 export const ACCESSORIES_PRODUCTS = [
   // =========================================================================
   // SUB-CATEGORY 1: Bike Stands & Pit Mats
