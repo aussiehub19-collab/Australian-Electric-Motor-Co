@@ -242,6 +242,9 @@ if (SITE.gscVerification === 'pending') {
 if (!process.env.ZOHO_SMTP_USER || !process.env.ZOHO_SMTP_PASSWORD) {
   warnings.push('ZOHO_SMTP_USER / ZOHO_SMTP_PASSWORD are not set — contact/wholesale form emails will not send; WhatsApp remains the only guaranteed-live channel. (Set them in Vercel env vars; locally this warning is expected.)');
 }
+if (!process.env.ADMIN_PASSCODE) {
+  warnings.push('ADMIN_PASSCODE is not set — /admin/send-payment-email/ will reject every send with 503. (Set it in Vercel env vars; locally this warning is expected.)');
+}
 if (SITE.domain && SITE.domain.includes('DOMAIN.')) {
   failures.push('B1: SITE.domain is still a placeholder in a production build.');
 }

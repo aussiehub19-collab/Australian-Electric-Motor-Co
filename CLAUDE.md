@@ -1,7 +1,9 @@
 # Australian Electric Motor Co — Project Instructions
 
 React/Next.js (App Router) electric dirt bike ecommerce site. Vercel target, deployed via GitHub —
-push to `main` deploys automatically. No client backend (static content, no `/admin`).
+push to `main` deploys automatically. No client backend/CMS — the one exception is
+`/admin/send-payment-email/`, a single-purpose passcode-gated compose tool (see Live status below),
+not a dashboard onto any data store.
 
 ## Architecture
 `src/config/site.js` is the single source of truth (it assembles `PRODUCTS` from `ebikes.js`,
@@ -35,12 +37,22 @@ Sept 2026.
 ## Live status (as of Sept 2026)
 - **Domain + GSC:** `SITE.domain` = `australianelectricmotorco.com.au`, DNS delegated to Vercel
   nameservers, GSC + Bing verified and sitemap submitted. Live, not a placeholder.
-- **Email:** contact (`/contact/`) and wholesale (`/wholesale/`) forms POST to `/api/contact` /
-  `/api/wholesale`, which send branded HTML mail via Zoho SMTP (`lib/mailer.ts`,
-  `lib/emailTemplate.ts`). Needs `ZOHO_SMTP_USER` + `ZOHO_SMTP_PASSWORD` (a Zoho app-specific
-  password) set in Vercel env vars — see `.env.example`. Without them, `sendMail()` returns
-  `{sent:false}` and the API responds 503; the form UI falls back to its WhatsApp/phone message.
-  WhatsApp (`lib/whatsapp.ts`) remains the only channel for cart checkout — there is no order form.
+- **Email:** contact (`/contact/`), wholesale (`/wholesale/`) and order (`/checkout/`) all send
+  branded HTML mail via Zoho SMTP (`lib/mailer.ts`, `lib/emailTemplate.ts`). Needs
+  `ZOHO_SMTP_USER` + `ZOHO_SMTP_PASSWORD` (a Zoho app-specific password) in Vercel env vars — see
+  `.env.example`. Without them, `sendMail()` returns `{sent:false}`, the API responds 503, and the
+  form/checkout UI falls back to its WhatsApp/phone message.
+- **Checkout (`/checkout/`):** cart is items-only in the side drawer (`components/CartDrawer.tsx`,
+  `lib/useCartStorage.ts`, `lib/cart.ts`) — delivery details, payment method, Pay in 4, and the
+  WhatsApp-vs-Email choice all live on the checkout page. Both channels carry an order number
+  (`lib/order.ts#generateOrderNumber`, client-generated — no order database). Email places two
+  sends: a notification to the business and a confirmation to the customer, the second promising a
+  follow-up "payment details" email.
+- **`/admin/send-payment-email/`:** that follow-up — a human fills in the order # and payment
+  instructions by hand (no order lookup, nothing is stored) and sends a matching branded email.
+  Gated on `ADMIN_PASSCODE` (server-only env var, checked in `app/api/admin/send-payment-email`);
+  the page itself is reachable by anyone who finds the URL, nothing sends without the passcode.
+  `robots.txt` disallows `/admin/`.
 - **Analytics:** GA4 via `components/Analytics.tsx`, gated on `NEXT_PUBLIC_GA_ID` — empty means no
   tag renders at all.
 

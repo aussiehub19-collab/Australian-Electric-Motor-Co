@@ -91,6 +91,7 @@ const robotsTxt = `User-agent: *
 Disallow: /thank-you-contact/
 Disallow: /thank-you-order/
 Disallow: /thank-you-wholesale/
+Disallow: /admin/
 Sitemap: ${baseUrl}/sitemap.xml
 
 Content-Signal: search=yes, ai-input=yes, ai-train=no
