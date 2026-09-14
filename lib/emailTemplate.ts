@@ -51,7 +51,7 @@ export function buildEmailHtml(opts: {
           <tr>
             <td style="background:#17191C;padding:28px 32px;">
               <div style="font-family:Arial,Helvetica,sans-serif;font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#C87D55;">${escapeHtml(SITE.name)}</div>
-              <div style="font-family:'Courier New',Courier,monospace;font-size:11px;color:#9A9DA3;margin-top:6px;">${escapeHtml(SITE.domain)}</div>
+              <div style="font-family:'Courier New',Courier,monospace;font-size:11px;color:#9A9DA3;margin-top:6px;">ABN ${escapeHtml(CONTACT.abn)} &middot; ${escapeHtml(SITE.domain)}</div>
             </td>
           </tr>
           <tr>

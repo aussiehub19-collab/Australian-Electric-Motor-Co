@@ -75,7 +75,7 @@ export async function POST(request: NextRequest) {
     try {
       const customerHtml = buildEmailHtml({
         heading: order.orderNumber ? `Order Confirmed — ${order.orderNumber}` : 'Order Confirmed',
-        intro: `Thanks for your order, ${customer.name}! We've received it and our NSW team will confirm stock and dispatch shortly. Keep this email as your order reference.`,
+        intro: `Thanks for your order, ${customer.name}! We've received it. You'll receive a second email shortly with payment details — once that's confirmed, we'll finalise your order for dispatch. Keep this email as your order reference.`,
         rows: [
           ...orderRows,
           { label: 'Delivering To', value: formatAddress(customer) },
@@ -85,7 +85,7 @@ export async function POST(request: NextRequest) {
         ctaLabel: 'Contact Us →',
         ctaHref: `mailto:${CONTACT.email}`,
       });
-      const customerText = `Order Confirmed ${order.orderNumber || ''}\n\nThanks for your order, ${customer.name}!\n\n${itemsText}\n\nSubtotal: ${money(order.subtotal)}\nTotal payable: ${money(order.grandTotal)}\nPayment: ${order.paymentLabel}\nDelivering to: ${formatAddress(customer)}\n\n${CONTACT.email} · ${CONTACT.phone}\n\nAustralian Electric Motor Co Pty Ltd · ABN ${CONTACT.abn}`;
+      const customerText = `Order Confirmed ${order.orderNumber || ''}\n\nThanks for your order, ${customer.name}! You'll receive a second email shortly with payment details — once that's confirmed, we'll finalise your order for dispatch.\n\n${itemsText}\n\nSubtotal: ${money(order.subtotal)}\nTotal payable: ${money(order.grandTotal)}\nPayment: ${order.paymentLabel}\nDelivering to: ${formatAddress(customer)}\n\n${CONTACT.email} · ${CONTACT.phone}\n\nAustralian Electric Motor Co Pty Ltd · ABN ${CONTACT.abn}`;
 
       await sendMail({
         to: customer.email,
