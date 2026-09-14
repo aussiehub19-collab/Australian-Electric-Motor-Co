@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
+import Link from 'next/link';
 import { SITE, PRODUCTS } from '@/config/site';
 import { SmartImage } from './SmartImage';
 
@@ -154,6 +155,16 @@ export function NewOwnerAccessoriesModal({ isOpen, bikeName, bikeBrandName, onCl
             );
           })}
         </div>
+
+        <Link
+          href="/shop/accessories/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center justify-between text-xs font-mono text-stone-400 hover:text-amber-300 border border-[#2B2F36] hover:border-amber-500/40 rounded-xl px-3.5 py-2.5 transition"
+        >
+          <span>Not what you're after? Browse all accessories &amp; gear</span>
+          <span>&rarr;</span>
+        </Link>
 
         {selectedItems.length > 0 && (
           <div className="bg-[#121417] border border-[#2B2F36] rounded-xl p-3 flex items-center justify-between font-mono text-xs">
