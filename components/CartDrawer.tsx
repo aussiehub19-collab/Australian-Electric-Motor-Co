@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { SmartImage } from './SmartImage';
 import { SHOP, FINANCE, SITE, STARTER_PACK_BUNDLE } from '@/src/config/site';
 import { waOrderLink } from '@/lib/whatsapp';
+import { AU_STATES, isCustomerComplete, type OrderCustomer, type OrderSummary } from '@/lib/order';
 
 export interface CartItem {
   slug: string;
@@ -50,6 +51,22 @@ export function CartDrawer({
   });
   const [paymentMethod, setPaymentMethod] = useState<'crypto' | 'pay-in-4' | 'payid' | 'bank'>('crypto');
   const [copiedPayId, setCopiedPayId] = useState(false);
+  const [customer, setCustomer] = useState<OrderCustomer>({
+    name: '',
+    email: '',
+    phone: '',
+    address: '',
+    suburb: '',
+    state: 'NSW',
+    postcode: '',
+  });
+  const [orderStatus, setOrderStatus] = useState<'idle' | 'sending' | 'error'>('idle');
+  const [orderError, setOrderError] = useState('');
+  const customerValid = isCustomerComplete(customer);
+
+  const updateCustomer =
+    (field: keyof OrderCustomer) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
+      setCustomer((c) => ({ ...c, [field]: e.target.value }));
 
   useEffect(() => {
     const handleCartUpdate = () => {
@@ -161,32 +178,65 @@ export function CartDrawer({
   const gstOnTotal = gstPortion(grandTotal);
   const gstOnDisplayedTotal = gstPortion(displayedTotal);
 
-  // Build the "new order" WhatsApp message — every figure the drawer shows the
-  // customer is carried through (see lib/whatsapp.ts).
-  const buildWhatsAppOrderUrl = () => {
-    const paymentLabel =
-      paymentMethod === 'crypto'
-        ? 'Bitcoin (BTC) / Tether (USDT) — 10% discount'
-        : paymentMethod === 'pay-in-4'
-        ? 'Pay in 4 (interest-free fortnightly)'
-        : paymentMethod === 'payid'
-        ? 'PayID instant transfer'
-        : 'Direct bank EFT';
+  const paymentLabel =
+    paymentMethod === 'crypto'
+      ? 'Bitcoin (BTC) / Tether (USDT) — 10% discount'
+      : paymentMethod === 'pay-in-4'
+      ? 'Pay in 4 (interest-free fortnightly)'
+      : paymentMethod === 'payid'
+      ? 'PayID instant transfer'
+      : 'Direct bank EFT';
 
-    return waOrderLink({
-      items,
-      subtotal,
-      bundleSavings,
-      cryptoSavings,
-      shippingCost,
-      shippingIsFree: shippingCost === 0,
-      grandTotal,
-      gstPortion: gstOnTotal,
-      paymentLabel,
-      payIn4: isPayIn4
-        ? { instalment: payIn4Instalment, dueToday: displayedTotal }
-        : null,
-    });
+  // Same order shape feeds both checkout channels — see lib/order.ts.
+  const buildOrderSummary = (): OrderSummary => ({
+    items,
+    subtotal,
+    bundleSavings,
+    cryptoSavings,
+    shippingCost,
+    shippingIsFree: shippingCost === 0,
+    grandTotal,
+    gstPortion: gstOnTotal,
+    paymentLabel,
+    payIn4: isPayIn4 ? { instalment: payIn4Instalment, dueToday: displayedTotal } : null,
+  });
+
+  const buildWhatsAppOrderUrl = () => waOrderLink(buildOrderSummary(), customer);
+
+  const handleWhatsAppClick = (e: React.MouseEvent) => {
+    if (!customerValid) {
+      e.preventDefault();
+      setOrderError('Please complete your delivery details above first.');
+    } else {
+      setOrderError('');
+    }
+  };
+
+  const handleEmailOrder = async () => {
+    if (!customerValid) {
+      setOrderError('Please complete your delivery details above first.');
+      return;
+    }
+    setOrderStatus('sending');
+    setOrderError('');
+    try {
+      const res = await fetch('/api/order/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ customer, order: buildOrderSummary() }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        saveCart([]);
+        window.location.href = '/thank-you-order/';
+      } else {
+        throw new Error(data?.message || 'Submission failed');
+      }
+    } catch (err) {
+      console.error('Order email error:', err);
+      setOrderError('Unable to email your order automatically. Please use Checkout via WhatsApp instead.');
+      setOrderStatus('error');
+    }
   };
 
   const handleCopyPayId = () => {
@@ -602,13 +652,89 @@ export function CartDrawer({
                 </div>
               </div>
 
+              {/* Delivery details — required before either checkout option */}
+              <div className="space-y-2 bg-[#141619] p-3 rounded-xl border border-[#2B2F36]">
+                <h3 className="text-[11px] font-bold uppercase tracking-wider text-stone-300 font-mono">
+                  Delivery Details
+                </h3>
+                <div className="grid grid-cols-2 gap-2">
+                  <input
+                    type="text"
+                    value={customer.name}
+                    onChange={updateCustomer('name')}
+                    placeholder="Full Name *"
+                    aria-label="Full name"
+                    className="col-span-2 bg-[#1D2024] border border-[#2B2F36] rounded-lg px-3 py-2 text-xs text-stone-100 placeholder-stone-600 focus:ring-1 focus:ring-amber-500 focus:border-amber-500"
+                  />
+                  <input
+                    type="email"
+                    value={customer.email}
+                    onChange={updateCustomer('email')}
+                    placeholder="Email *"
+                    aria-label="Email address"
+                    className="bg-[#1D2024] border border-[#2B2F36] rounded-lg px-3 py-2 text-xs text-stone-100 placeholder-stone-600 focus:ring-1 focus:ring-amber-500 focus:border-amber-500"
+                  />
+                  <input
+                    type="tel"
+                    value={customer.phone}
+                    onChange={updateCustomer('phone')}
+                    placeholder="Phone *"
+                    aria-label="Phone number"
+                    className="bg-[#1D2024] border border-[#2B2F36] rounded-lg px-3 py-2 text-xs text-stone-100 placeholder-stone-600 focus:ring-1 focus:ring-amber-500 focus:border-amber-500"
+                  />
+                  <input
+                    type="text"
+                    value={customer.address}
+                    onChange={updateCustomer('address')}
+                    placeholder="Street Address *"
+                    aria-label="Street address"
+                    className="col-span-2 bg-[#1D2024] border border-[#2B2F36] rounded-lg px-3 py-2 text-xs text-stone-100 placeholder-stone-600 focus:ring-1 focus:ring-amber-500 focus:border-amber-500"
+                  />
+                  <input
+                    type="text"
+                    value={customer.suburb}
+                    onChange={updateCustomer('suburb')}
+                    placeholder="Suburb *"
+                    aria-label="Suburb"
+                    className="bg-[#1D2024] border border-[#2B2F36] rounded-lg px-3 py-2 text-xs text-stone-100 placeholder-stone-600 focus:ring-1 focus:ring-amber-500 focus:border-amber-500"
+                  />
+                  <select
+                    value={customer.state}
+                    onChange={updateCustomer('state')}
+                    aria-label="State"
+                    className="bg-[#1D2024] border border-[#2B2F36] rounded-lg px-3 py-2 text-xs text-stone-100 focus:ring-1 focus:ring-amber-500 focus:border-amber-500"
+                  >
+                    {AU_STATES.map((s) => (
+                      <option key={s} value={s}>{s}</option>
+                    ))}
+                  </select>
+                  <input
+                    type="text"
+                    value={customer.postcode}
+                    onChange={updateCustomer('postcode')}
+                    placeholder="Postcode *"
+                    aria-label="Postcode"
+                    className="col-span-2 bg-[#1D2024] border border-[#2B2F36] rounded-lg px-3 py-2 text-xs text-stone-100 placeholder-stone-600 focus:ring-1 focus:ring-amber-500 focus:border-amber-500"
+                  />
+                </div>
+              </div>
+
               {/* Checkout actions */}
               <div className="space-y-2 pt-1">
+                {orderError && (
+                  <p className="text-[11px] text-rose-400 font-semibold text-center">{orderError}</p>
+                )}
                 <a
-                  href={buildWhatsAppOrderUrl()}
-                  target="_blank"
+                  href={customerValid ? buildWhatsAppOrderUrl() : '#'}
+                  target={customerValid ? '_blank' : undefined}
                   rel="noopener noreferrer"
-                  className="w-full flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#20bd5a] text-black font-bold py-3 px-4 rounded-xl text-sm transition shadow-lg text-center"
+                  aria-disabled={!customerValid}
+                  onClick={handleWhatsAppClick}
+                  className={`w-full flex items-center justify-center gap-2 font-bold py-3 px-4 rounded-xl text-sm transition shadow-lg text-center ${
+                    customerValid
+                      ? 'bg-[#25D366] hover:bg-[#20bd5a] text-black cursor-pointer'
+                      : 'bg-[#25D366]/40 text-black/60 cursor-not-allowed'
+                  }`}
                 >
                   <svg className="w-5 h-5 shrink-0" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766 0-3.18-2.586-5.771-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.007c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.303-.058.116-.087.188-.173.289l-.26.303c-.087.087-.179.183-.077.359.101.176.449.741.964 1.201.662.591 1.221.774 1.394.861.173.086.275.072.376-.044.101-.116.433-.506.549-.679.116-.173.231-.145.39-.087s1.011.477 1.184.564c.173.087.289.13.332.202.043.073.043.419-.101.824z" />
@@ -620,19 +746,29 @@ export function CartDrawer({
                   </span>
                 </a>
 
-                <Link
-                  href={`/contact/?subject=${encodeURIComponent(
-                    isPayIn4
-                      ? `Pay in 4 Order Inquiry (1st Instalment $${displayedTotal} AUD)`
-                      : 'Order Inquiry'
-                  )}`}
-                  onClick={onClose}
-                  className="w-full flex items-center justify-center bg-[#8C4A2F] hover:bg-[#A35839] text-white font-bold py-3 px-4 rounded-xl text-sm transition text-center"
+                <button
+                  type="button"
+                  onClick={handleEmailOrder}
+                  disabled={orderStatus === 'sending'}
+                  className={`w-full flex items-center justify-center gap-2 font-bold py-3 px-4 rounded-xl text-sm transition text-center ${
+                    customerValid
+                      ? 'bg-[#8C4A2F] hover:bg-[#A35839] text-white cursor-pointer'
+                      : 'bg-[#8C4A2F]/40 text-white/60 cursor-not-allowed'
+                  }`}
                 >
-                  {isPayIn4
-                    ? `Request Official Invoice (1st Instalment: $${displayedTotal.toLocaleString()} AUD)`
-                    : 'Request Official Invoice & Pay in 4'}
-                </Link>
+                  {orderStatus === 'sending' ? (
+                    <span>Sending Order...</span>
+                  ) : (
+                    <span>
+                      {isPayIn4
+                        ? `Email My Order (1st Instalment: $${displayedTotal.toLocaleString()} AUD)`
+                        : 'Email My Order'}
+                    </span>
+                  )}
+                </button>
+                <p className="text-[10px] text-stone-500 text-center">
+                  Both options send the same order details — pick whichever you check more often.
+                </p>
               </div>
             </div>
           )}

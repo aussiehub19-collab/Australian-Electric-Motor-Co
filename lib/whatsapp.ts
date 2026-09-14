@@ -1,4 +1,5 @@
 import { CONTACT, SITE } from '@/config/site';
+import { money, formatAddress, type OrderSummary, type OrderCustomer } from '@/lib/order';
 
 /** Digits-only WhatsApp number, ready for a wa.me/<number> link. */
 export const WHATSAPP_NUMBER = CONTACT.whatsapp.replace(/[^0-9]/g, '');
@@ -34,33 +35,12 @@ export function waEnquiryLink(topic?: string): string {
   );
 }
 
-export interface WaOrderItem {
-  name: string;
-  quantity: number;
-  price: number;
-}
-
-export interface WaOrderSummary {
-  items: WaOrderItem[];
-  subtotal: number;
-  bundleSavings?: number;
-  cryptoSavings?: number;
-  shippingCost: number;
-  shippingIsFree: boolean;
-  grandTotal: number;
-  gstPortion: number;
-  paymentLabel: string;
-  payIn4?: { instalment: number; dueToday: number } | null;
-}
-
 /**
  * Compose the "new order" WhatsApp message from the cart. Every figure the
  * checkout drawer shows the customer is carried into the message so the order
- * arrives complete.
+ * arrives complete, plus the customer's own delivery details.
  */
-export function waOrderLink(o: WaOrderSummary): string {
-  const money = (n: number) => `$${Math.round(n).toLocaleString()} AUD`;
-
+export function waOrderLink(o: OrderSummary, customer: OrderCustomer): string {
   const lines: string[] = ['*NEW ORDER*', ''];
 
   for (const it of o.items) {
@@ -89,7 +69,10 @@ export function waOrderLink(o: WaOrderSummary): string {
       `Pay in 4: ${money(o.payIn4.dueToday)} due today, then 3x ${money(o.payIn4.instalment)} fortnightly`,
     );
   }
-  lines.push(`Deliver to: (name, address, suburb, state, postcode)`);
+  lines.push('');
+  lines.push(`Customer: ${customer.name} (${customer.phone})`);
+  lines.push(`Email: ${customer.email}`);
+  lines.push(`Deliver to: ${formatAddress(customer)}`);
   lines.push('');
   lines.push('Please confirm stock allocation and dispatch timeline. Cheers!');
 
