@@ -21,7 +21,10 @@ export const WA_HEADER = `*${SITE.name}*`;
  * is how the site puts the brand in the message itself.
  */
 export function waLink(body: string | string[]): string {
-  const text = Array.isArray(body) ? body.filter(Boolean).join('\n') : body;
+  // Preserve '' entries as intentional blank lines (spacing between
+  // sections) — callers omit a conditional line entirely with an `if`
+  // rather than pushing '', so nothing here is meant to be stripped.
+  const text = Array.isArray(body) ? body.join('\n') : body;
   const message = `${WA_HEADER}\n\n${text}`;
   return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
 }
@@ -35,23 +38,28 @@ export function waEnquiryLink(topic?: string): string {
   );
 }
 
+const DIVIDER = '┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄';
+
 /**
  * Compose the "new order" WhatsApp message from the cart. Every figure the
- * checkout drawer shows the customer is carried into the message so the order
- * arrives complete, plus the customer's own delivery details.
+ * checkout page shows the customer is carried into the message so the order
+ * arrives complete, plus the customer's own delivery details. Dividers +
+ * section emoji keep a long order readable as a chat message rather than a
+ * wall of "Label: value" lines.
  */
 export function waOrderLink(o: OrderSummary, customer: OrderCustomer): string {
-  const lines: string[] = ['*NEW ORDER*'];
-  if (o.orderNumber) lines.push(`Order #: ${o.orderNumber}`);
-  lines.push('');
+  const lines: string[] = [
+    o.orderNumber ? `🛵 *NEW ORDER* · ${o.orderNumber}` : '🛵 *NEW ORDER*',
+    DIVIDER,
+  ];
 
   for (const it of o.items) {
     const lineTotal = it.price * it.quantity;
     const each = it.quantity > 1 ? ` (${money(it.price)} ea)` : '';
-    lines.push(`${it.quantity}x ${it.name} — ${money(lineTotal)}${each}`);
+    lines.push(`▪️ ${it.quantity}x ${it.name} — ${money(lineTotal)}${each}`);
   }
+  lines.push(DIVIDER);
 
-  lines.push('');
   lines.push(`Subtotal: ${money(o.subtotal)} (inc. GST)`);
   if (o.bundleSavings && o.bundleSavings > 0) {
     lines.push(`Bundle discount (5%): -${money(o.bundleSavings)}`);
@@ -62,19 +70,22 @@ export function waOrderLink(o: OrderSummary, customer: OrderCustomer): string {
   lines.push(
     `Freight: ${o.shippingIsFree ? 'FREE' : `${money(o.shippingCost)} (enclosed crate / courier)`}`,
   );
+  lines.push(DIVIDER);
   lines.push(`*Total payable: ${money(o.grandTotal)} (inc. GST)*`);
   lines.push(`GST included (10%): ${money(o.gstPortion)}`);
   lines.push('');
-  lines.push(`Payment: ${o.paymentLabel}`);
+
+  lines.push(`💳 *Payment:* ${o.paymentLabel}`);
   if (o.payIn4) {
     lines.push(
-      `Pay in 4: ${money(o.payIn4.dueToday)} due today, then 3x ${money(o.payIn4.instalment)} fortnightly`,
+      `${money(o.payIn4.dueToday)} due today, then 3x ${money(o.payIn4.instalment)} fortnightly`,
     );
   }
   lines.push('');
-  lines.push(`Customer: ${customer.name} (${customer.phone})`);
-  lines.push(`Email: ${customer.email}`);
-  lines.push(`Deliver to: ${formatAddress(customer)}`);
+
+  lines.push(`👤 *Customer:* ${customer.name} (${customer.phone})`);
+  lines.push(`✉️ ${customer.email}`);
+  lines.push(`📍 ${formatAddress(customer)}`);
   lines.push('');
   lines.push('Please confirm stock allocation and dispatch timeline. Cheers!');
 

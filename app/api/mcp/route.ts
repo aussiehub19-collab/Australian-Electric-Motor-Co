@@ -263,14 +263,16 @@ export async function POST(req: NextRequest) {
         const items = args.items || [];
         const notes = args.notes || '';
 
-        const waUrl = waLink([
-          '*NEW ORDER* (via agent)',
-          '',
-          `Items: ${JSON.stringify(items)}`,
-          notes ? `Notes: ${notes}` : '',
-          '',
-          'Please confirm stock allocation and dispatch timeline.',
-        ]);
+        const waUrl = waLink(
+          [
+            '*NEW ORDER* (via agent)',
+            '',
+            `Items: ${JSON.stringify(items)}`,
+            notes ? `Notes: ${notes}` : null,
+            '',
+            'Please confirm stock allocation and dispatch timeline.',
+          ].filter((line): line is string => line !== null),
+        );
 
         return NextResponse.json(
           {

@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { SmartImage } from '@/components/SmartImage';
+import { NewOwnerAccessoriesModal } from '@/components/NewOwnerAccessoriesModal';
 import { SITE, SHOP } from '@/config/site';
 
 export interface ProductCardProps {
@@ -34,8 +35,20 @@ export function ProductCard({ product, className = '', priority = false }: Produ
   const router = useRouter();
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
+  const [showBundleModal, setShowBundleModal] = useState(false);
 
   const productUrl = `/shop/${product.category}/${product.slug}/`;
+
+  const isBike =
+    product.isBike ??
+    (!product.category.includes('parts') &&
+      !product.category.includes('gear') &&
+      !product.category.includes('accessories') &&
+      !product.category.includes('charger') &&
+      !product.category.includes('rotor') &&
+      !product.category.includes('helmet') &&
+      !product.category.includes('boot') &&
+      !product.category.includes('glove'));
 
   const discountedPrice = SHOP.cryptoDiscount
     ? Math.round(product.price * (1 - SHOP.cryptoDiscount / 100))
@@ -97,13 +110,20 @@ export function ProductCard({ product, className = '', priority = false }: Produ
           category: product.category,
           image: product.images?.[0] || '/images/home/hero-1.webp',
           quantity: qtyToAdd,
-          isBike: !!product.isBike,
+          isBike,
         });
       }
 
       localStorage.setItem(cartKey, JSON.stringify(items));
       window.dispatchEvent(new Event('cart-updated'));
-      window.dispatchEvent(new Event('open-cart'));
+
+      // Bikes get the "choose your accessories" offer first — it opens the
+      // cart itself once dismissed. Everything else opens the cart directly.
+      if (isBike) {
+        setShowBundleModal(true);
+      } else {
+        window.dispatchEvent(new Event('open-cart'));
+      }
 
       setAdded(true);
       setTimeout(() => setAdded(false), 2000);
@@ -113,6 +133,7 @@ export function ProductCard({ product, className = '', priority = false }: Produ
   };
 
   return (
+    <>
     <div
       onClick={handleCardClick}
       className={`group flex flex-col justify-between bg-[#17191C] rounded-2xl border border-[#2B2F36] overflow-hidden hover:border-[#8C4A2F]/80 transition-all duration-300 hover:shadow-xl hover:shadow-black/60 cursor-pointer ${className}`}
@@ -333,5 +354,12 @@ export function ProductCard({ product, className = '', priority = false }: Produ
         </div>
       </div>
     </div>
+    <NewOwnerAccessoriesModal
+      isOpen={showBundleModal}
+      bikeName={product.name}
+      bikeBrandName={product.brandName || product.brand}
+      onClose={() => setShowBundleModal(false)}
+    />
+    </>
   );
 }
