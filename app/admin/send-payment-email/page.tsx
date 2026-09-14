@@ -13,6 +13,26 @@ const PAYMENT_METHODS: PaymentMethod[] = [
   'Pay in 4 (fortnightly instalments)',
 ];
 
+const METHOD_CODE_MAP: Record<string, PaymentMethod> = {
+  bank: 'Direct Bank EFT',
+  payid: 'PayID',
+  crypto: 'Bitcoin (BTC) / Tether (USDT)',
+  payin4: 'Pay in 4 (fortnightly instalments)',
+};
+
+/** Reverses the base64url the order email's "Send Payment Details" link carries — see app/api/order/route.ts#buildPaymentEmailLink. */
+function decodeOrderParam(param: string): { o?: string; n?: string; e?: string; a?: string; m?: string } | null {
+  try {
+    const b64 = param.replace(/-/g, '+').replace(/_/g, '/');
+    const padded = b64 + '='.repeat((4 - (b64.length % 4)) % 4);
+    const bytes = Uint8Array.from(atob(padded), (c) => c.charCodeAt(0));
+    const json = new TextDecoder().decode(bytes);
+    return JSON.parse(json);
+  } catch {
+    return null;
+  }
+}
+
 function defaultInstructions(method: PaymentMethod, amountDue: string, orderNumber: string): string {
   switch (method) {
     case 'Direct Bank EFT':
@@ -51,6 +71,20 @@ export default function SendPaymentEmailPage() {
     } catch {
       // ignore
     }
+  }, []);
+
+  // Pre-fill from the order email's "Send Payment Details" link (?order=...)
+  // — nothing is stored anywhere, the order data only ever lives in that one link.
+  useEffect(() => {
+    const param = new URLSearchParams(window.location.search).get('order');
+    if (!param) return;
+    const data = decodeOrderParam(param);
+    if (!data) return;
+    if (data.o) setOrderNumber(data.o);
+    if (data.n) setCustomerName(data.n);
+    if (data.e) setCustomerEmail(data.e);
+    if (data.a) setAmountDue(data.a);
+    if (data.m && METHOD_CODE_MAP[data.m]) setPaymentMethod(METHOD_CODE_MAP[data.m]);
   }, []);
 
   // Keep the instructions template in sync with the method/amount/order —
