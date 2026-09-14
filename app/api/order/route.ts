@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
       .map((it) => `${it.quantity}x ${it.name} — ${money(it.price * it.quantity)}`)
       .join('\n');
 
-    const rows = [
+    const orderRows = [
       { label: 'Order #', value: order.orderNumber || '' },
       { label: 'Items', value: itemsText },
       { label: 'Subtotal', value: money(order.subtotal) },
@@ -39,34 +39,65 @@ export async function POST(request: NextRequest) {
           ? `${money(order.payIn4.dueToday)} due today, then 3x ${money(order.payIn4.instalment)} fortnightly`
           : '',
       },
-      { label: 'Customer', value: customer.name },
-      { label: 'Phone', value: customer.phone },
-      { label: 'Delivery Address', value: formatAddress(customer) },
     ];
 
-    const html = buildEmailHtml({
+    // --- Email 1: internal notification, to the business ---
+    const businessHtml = buildEmailHtml({
       heading: order.orderNumber ? `New Order — ${order.orderNumber}` : 'New Order',
       intro: `${customer.name} placed an order through the website checkout.`,
-      rows,
+      rows: [
+        ...orderRows,
+        { label: 'Customer', value: customer.name },
+        { label: 'Phone', value: customer.phone },
+        { label: 'Delivery Address', value: formatAddress(customer) },
+      ],
       replyTo: customer.email,
     });
+    const businessText = `New order ${order.orderNumber || ''}\n\n${itemsText}\n\nSubtotal: ${money(order.subtotal)}\nTotal payable: ${money(order.grandTotal)}\nPayment: ${order.paymentLabel}\n\nCustomer: ${customer.name}\nEmail: ${customer.email}\nPhone: ${customer.phone}\nDeliver to: ${formatAddress(customer)}`;
 
-    const text = `New order ${order.orderNumber || ''}\n\n${itemsText}\n\nSubtotal: ${money(order.subtotal)}\nTotal payable: ${money(order.grandTotal)}\nPayment: ${order.paymentLabel}\n\nCustomer: ${customer.name}\nEmail: ${customer.email}\nPhone: ${customer.phone}\nDeliver to: ${formatAddress(customer)}`;
-
-    const result = await sendMail({
+    const businessResult = await sendMail({
       to: CONTACT.email,
       subject: `New Order${order.orderNumber ? ` ${order.orderNumber}` : ''}: ${customer.name} — ${money(order.grandTotal)}`,
-      html,
-      text,
+      html: businessHtml,
+      text: businessText,
       replyTo: customer.email,
     });
 
-    if (!result.sent) {
+    if (!businessResult.sent) {
       return NextResponse.json(
         { success: false, message: 'Email delivery is not configured yet' },
         { status: 503 },
       );
     }
+
+    // --- Email 2: confirmation copy, to the customer — best-effort, never
+    // fails the request (the business already has the order either way) ---
+    try {
+      const customerHtml = buildEmailHtml({
+        heading: order.orderNumber ? `Order Confirmed — ${order.orderNumber}` : 'Order Confirmed',
+        intro: `Thanks for your order, ${customer.name}! We've received it and our NSW team will confirm stock and dispatch shortly. Keep this email as your order reference.`,
+        rows: [
+          ...orderRows,
+          { label: 'Delivering To', value: formatAddress(customer) },
+          { label: 'Need Help?', value: `${CONTACT.phone} · WhatsApp ${CONTACT.whatsapp}\n${CONTACT.email}` },
+        ],
+        replyTo: CONTACT.email,
+        ctaLabel: 'Contact Us →',
+        ctaHref: `mailto:${CONTACT.email}`,
+      });
+      const customerText = `Order Confirmed ${order.orderNumber || ''}\n\nThanks for your order, ${customer.name}!\n\n${itemsText}\n\nSubtotal: ${money(order.subtotal)}\nTotal payable: ${money(order.grandTotal)}\nPayment: ${order.paymentLabel}\nDelivering to: ${formatAddress(customer)}\n\n${CONTACT.email} · ${CONTACT.phone}\n\nAustralian Electric Motor Co Pty Ltd · ABN ${CONTACT.abn}`;
+
+      await sendMail({
+        to: customer.email,
+        subject: `Order Confirmed${order.orderNumber ? ` ${order.orderNumber}` : ''} — ${money(order.grandTotal)}`,
+        html: customerHtml,
+        text: customerText,
+        replyTo: CONTACT.email,
+      });
+    } catch (err) {
+      console.error('Order API: customer confirmation email failed (business notification already sent):', err);
+    }
+
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Order API error:', error);

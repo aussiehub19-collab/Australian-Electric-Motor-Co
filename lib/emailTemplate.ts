@@ -20,6 +20,10 @@ export function buildEmailHtml(opts: {
   intro?: string;
   rows: EmailRow[];
   replyTo?: string;
+  /** Overrides the CTA button text — defaults to "Reply directly →" when replyTo is set. */
+  ctaLabel?: string;
+  /** Overrides the CTA button link — defaults to mailto:{replyTo}. */
+  ctaHref?: string;
 }): string {
   const rowsHtml = opts.rows
     .filter((r) => r.value)
@@ -56,8 +60,8 @@ export function buildEmailHtml(opts: {
               ${opts.intro ? `<p style="margin:0 0 20px;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.6;color:#4B4F56;">${escapeHtml(opts.intro)}</p>` : ''}
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0">${rowsHtml}</table>
               ${
-                opts.replyTo
-                  ? `<a href="mailto:${escapeHtml(opts.replyTo)}" style="display:inline-block;margin-top:24px;background:#8C4A2F;color:#FFFFFF;text-decoration:none;font-family:Arial,Helvetica,sans-serif;font-size:13px;font-weight:700;padding:14px 26px;border-radius:10px;">Reply directly &rarr;</a>`
+                opts.ctaHref || opts.replyTo
+                  ? `<a href="${escapeHtml(opts.ctaHref || `mailto:${opts.replyTo}`)}" style="display:inline-block;margin-top:24px;background:#8C4A2F;color:#FFFFFF;text-decoration:none;font-family:Arial,Helvetica,sans-serif;font-size:13px;font-weight:700;padding:14px 26px;border-radius:10px;">${escapeHtml(opts.ctaLabel || 'Reply directly →')}</a>`
                   : ''
               }
             </td>
