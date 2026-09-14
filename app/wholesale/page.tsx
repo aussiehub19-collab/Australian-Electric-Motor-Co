@@ -17,7 +17,7 @@ export default function WholesalePage() {
     const payload = Object.fromEntries(new FormData(e.currentTarget).entries());
 
     try {
-      const res = await fetch('/api/wholesale', {
+      const res = await fetch('/api/wholesale/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
