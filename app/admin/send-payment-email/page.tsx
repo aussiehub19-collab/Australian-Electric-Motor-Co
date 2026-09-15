@@ -4,9 +4,11 @@ import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { SHOP, CONTACT } from '@/src/config/site';
 import { buildEmailHtml } from '@/lib/emailTemplate';
-import { paymentTermsText } from '@/lib/order';
+import { paymentTermsHtml } from '@/lib/order';
+import { waPaymentConfirmationLink } from '@/lib/whatsapp';
 import { useAdminPasscode } from '@/lib/useAdminPasscode';
 import { PasscodeGate } from '@/components/admin/PasscodeGate';
+import { PaymentTermsList } from '@/components/PaymentTermsList';
 import type { StoredOrder } from '@/lib/orderStore';
 
 type PaymentMethod = 'Direct Bank EFT' | 'PayID' | 'Bitcoin (BTC) / Tether (USDT)' | 'Pay in 4 (fortnightly instalments)';
@@ -28,9 +30,9 @@ const METHOD_CODE_MAP: Record<string, PaymentMethod> = {
 function defaultInstructions(method: PaymentMethod, amountDue: string, orderNumber: string): string {
   switch (method) {
     case 'Direct Bank EFT':
-      return `Please transfer ${amountDue || '[amount]'} to:\n${SHOP.bankDetails.bankName}\nBSB: ${SHOP.bankDetails.bsb}\nAccount: ${SHOP.bankDetails.accountNumber}\nReference: ${orderNumber || '[order number]'}\n\nWe'll dispatch once the transfer clears.`;
+      return `Please transfer ${amountDue || '[amount]'} via Osko/PayID-enabled bank transfer where possible — it clears instantly — to:\n${SHOP.bankDetails.bankName}\nAccount Name: ${SHOP.bankDetails.accountName}\nBSB: ${SHOP.bankDetails.bsb}\nAccount: ${SHOP.bankDetails.accountNumber}\nReference: ${orderNumber || '[order number]'}\n\nWe'll dispatch once the transfer clears.`;
     case 'PayID':
-      return `Please pay ${amountDue || '[amount]'} via PayID to:\n${SHOP.payId}\nReference: ${orderNumber || '[order number]'}\n\nPayID transfers are usually instant — we'll dispatch as soon as it lands.`;
+      return `Please pay ${amountDue || '[amount]'} via PayID (an Osko instant transfer) to:\n${SHOP.payId}\nReference: ${orderNumber || '[order number]'}\n\nPayID/Osko transfers are usually instant — we'll dispatch as soon as it lands.`;
     case 'Bitcoin (BTC) / Tether (USDT)':
       return `We'll send the wallet address and exact BTC/USDT amount for ${amountDue || '[amount]'} in a follow-up message — reply here if you'd prefer it sent via WhatsApp instead.`;
     case 'Pay in 4 (fortnightly instalments)':
@@ -119,9 +121,19 @@ export default function SendPaymentEmailPage() {
     setInstructionsTouched(true);
   };
 
-  const paymentTerms = useMemo(
-    () => paymentTermsText(orderNumber, CONTACT.email, CONTACT.whatsapp),
-    [orderNumber],
+  const showOsko = paymentMethod === 'Direct Bank EFT' || paymentMethod === 'PayID';
+  const whatsappLink = useMemo(() => waPaymentConfirmationLink(orderNumber || 'your order'), [orderNumber]);
+
+  const paymentTermsHtmlValue = useMemo(
+    () =>
+      paymentTermsHtml({
+        orderNumber,
+        contactEmail: CONTACT.email,
+        whatsapp: CONTACT.whatsapp,
+        whatsappLink,
+        showOskoNote: showOsko,
+      }),
+    [orderNumber, whatsappLink, showOsko],
   );
 
   const previewHtml = useMemo(
@@ -134,14 +146,14 @@ export default function SendPaymentEmailPage() {
           { label: 'Amount Due', value: amountDue, mono: true },
           { label: 'Payment Method', value: paymentMethod },
           { label: 'Instructions', value: instructions, mono: true },
-          { label: 'Payment Terms', value: paymentTerms },
+          { label: 'Payment Terms', html: paymentTermsHtmlValue },
           { label: 'Notes', value: notes },
         ],
         replyTo: CONTACT.email,
         ctaLabel: 'Questions? Contact Us →',
         ctaHref: `mailto:${CONTACT.email}`,
       }),
-    [orderNumber, customerName, amountDue, paymentMethod, instructions, paymentTerms, notes],
+    [orderNumber, customerName, amountDue, paymentMethod, instructions, paymentTermsHtmlValue, notes],
   );
 
   const formValid = orderNumber && customerName && customerEmail && amountDue && instructions;
@@ -298,11 +310,11 @@ export default function SendPaymentEmailPage() {
           </p>
         </div>
         <div className="bg-[#1D2024] border border-[#2B2F36] rounded-xl px-4 py-3">
-          <div className="flex items-center justify-between mb-1">
+          <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-semibold text-stone-300 uppercase tracking-wider font-mono">Payment Terms</span>
             <span className="text-[10px] text-stone-500 font-mono">always included</span>
           </div>
-          <p className="text-xs text-stone-400 leading-relaxed">{paymentTerms}</p>
+          <PaymentTermsList orderNumber={orderNumber || '[order number]'} whatsappLink={whatsappLink} showOsko={showOsko} />
         </div>
         <div>
           <label className={labelClass}>Notes (optional)</label>

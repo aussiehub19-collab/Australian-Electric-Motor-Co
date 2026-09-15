@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { SmartImage } from '@/components/SmartImage';
+import { CopyField } from '@/components/CopyField';
 import { SHOP } from '@/src/config/site';
 import { useCartStorage } from '@/lib/useCartStorage';
 import { computeCartTotals, bundleItemPrice, bundleEligible } from '@/lib/cart';
@@ -14,7 +15,6 @@ export default function CheckoutPage() {
 
   const [paymentMethod, setPaymentMethod] = useState<'crypto' | 'payid' | 'bank'>('crypto');
   const [payInFour, setPayInFour] = useState(false);
-  const [copiedPayId, setCopiedPayId] = useState(false);
   const [customer, setCustomer] = useState<OrderCustomer>({
     name: '',
     email: '',
@@ -97,7 +97,7 @@ export default function CheckoutPage() {
       const data = await res.json();
       if (res.ok && data.success) {
         saveCart([]);
-        window.location.href = `/thank-you-order/?ref=${encodeURIComponent(orderNumber)}`;
+        window.location.href = `/thank-you-order/?ref=${encodeURIComponent(orderNumber)}&pm=${encodeURIComponent(paymentMethod)}`;
       } else {
         throw new Error(data?.message || 'Submission failed');
       }
@@ -105,14 +105,6 @@ export default function CheckoutPage() {
       console.error('Order email error:', err);
       setOrderError('Unable to email your order automatically. Please use Checkout via WhatsApp instead.');
       setOrderStatus('idle');
-    }
-  };
-
-  const handleCopyPayId = () => {
-    if (SHOP.payId) {
-      navigator.clipboard.writeText(SHOP.payId);
-      setCopiedPayId(true);
-      setTimeout(() => setCopiedPayId(false), 2000);
     }
   };
 
@@ -234,20 +226,25 @@ export default function CheckoutPage() {
       )}
 
       {paymentMethod === 'payid' && (
-        <div className="p-2.5 bg-[#17191C] border border-[#2B2F36] rounded-xl text-xs text-stone-300 space-y-1">
-          <div className="flex justify-between items-center">
-            <span className="text-stone-400 font-mono">PayID Aussie Transfer:</span>
-            <button type="button" onClick={handleCopyPayId} className="text-amber-400 hover:underline font-mono text-[11px] font-bold">{copiedPayId ? 'Copied!' : 'Copy PayID'}</button>
-          </div>
-          <p className="font-mono text-stone-100 font-bold">{SHOP.payId}</p>
+        <div className="p-3 bg-[#17191C] border border-[#2B2F36] rounded-xl text-xs text-stone-300 space-y-2 font-mono">
+          <p className="text-[11px] text-amber-200 leading-snug bg-amber-500/10 border border-amber-500/30 rounded-lg px-2.5 py-2">
+            <strong className="text-amber-300 font-bold">PayID pays via Osko</strong> — it clears instantly, so your order gets confirmed fastest.
+          </p>
+          <CopyField label="PayID" value={SHOP.payId} />
+          <CopyField label="Reference" value={orderNumber} />
         </div>
       )}
 
       {paymentMethod === 'bank' && (
-        <div className="p-2.5 bg-[#17191C] border border-[#2B2F36] rounded-xl text-xs text-stone-300 space-y-1 font-mono">
+        <div className="p-3 bg-[#17191C] border border-[#2B2F36] rounded-xl text-xs text-stone-300 space-y-2 font-mono">
+          <p className="text-[11px] text-amber-200 leading-snug bg-amber-500/10 border border-amber-500/30 rounded-lg px-2.5 py-2">
+            <strong className="text-amber-300 font-bold">Use Osko / PayID transfer</strong> where your bank supports it — it clears instantly, so your order gets confirmed fastest.
+          </p>
           <div className="text-stone-400 font-semibold">{SHOP.bankDetails.bankName}</div>
-          <div className="flex justify-between"><span>BSB:</span><span className="font-bold text-white">{SHOP.bankDetails.bsb}</span></div>
-          <div className="flex justify-between"><span>Account:</span><span className="font-bold text-white">{SHOP.bankDetails.accountNumber}</span></div>
+          <CopyField label="Account Name" value={SHOP.bankDetails.accountName} />
+          <CopyField label="BSB" value={SHOP.bankDetails.bsb} />
+          <CopyField label="Account Number" value={SHOP.bankDetails.accountNumber} />
+          <CopyField label="Reference" value={orderNumber} />
         </div>
       )}
 

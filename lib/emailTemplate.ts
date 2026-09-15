@@ -2,13 +2,19 @@ import { SITE, CONTACT } from '@/config/site';
 
 interface EmailRow {
   label: string;
-  value: string;
+  /** Plain text value — escaped, with \n turned into <br>. Use `html` instead
+   * when the cell needs real markup (a bullet list, a link). */
+  value?: string;
+  /** Pre-built HTML for the value cell, used instead of `value`. Bypasses
+   * escaping, so only ever pass hand-built markup here (e.g. from
+   * lib/order.ts#paymentTermsHtml) — never raw user/customer input. */
+  html?: string;
   /** Monospace value — for order numbers, account numbers, wallet addresses
    * and anything else a customer needs to select and copy exactly. */
   mono?: boolean;
 }
 
-function escapeHtml(s: string): string {
+export function escapeHtml(s: string): string {
   return String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c] as string));
 }
 
@@ -29,12 +35,12 @@ export function buildEmailHtml(opts: {
   ctaHref?: string;
 }): string {
   const rowsHtml = opts.rows
-    .filter((r) => r.value)
+    .filter((r) => r.value || r.html)
     .map(
       (r) => `
       <tr>
         <td style="padding:10px 0;border-bottom:1px solid #E5E1DB;font-family:'Courier New',Courier,monospace;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#8C4A2F;vertical-align:top;width:150px;">${escapeHtml(r.label)}</td>
-        <td style="padding:10px 0 10px 16px;border-bottom:1px solid #E5E1DB;font-family:${r.mono ? "'Courier New',Courier,monospace" : 'Arial,Helvetica,sans-serif'};font-size:14px;line-height:1.55;color:#17191C;">${escapeHtml(r.value).replace(/\n/g, '<br>')}</td>
+        <td style="padding:10px 0 10px 16px;border-bottom:1px solid #E5E1DB;font-family:${r.mono ? "'Courier New',Courier,monospace" : 'Arial,Helvetica,sans-serif'};font-size:14px;line-height:1.55;color:#17191C;">${r.html ?? escapeHtml(r.value || '').replace(/\n/g, '<br>')}</td>
       </tr>`,
     )
     .join('');

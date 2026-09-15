@@ -38,6 +38,17 @@ export function waEnquiryLink(topic?: string): string {
   );
 }
 
+/**
+ * wa.me link pre-filled to open a payment-confirmation chat for a specific
+ * order — used wherever a customer is asked to send their payment
+ * screenshot via WhatsApp (the order-confirmation page, the payment-details
+ * email). The intro line does the work of routing the chat; the screenshot
+ * itself still has to be attached by the customer once the chat opens.
+ */
+export function waPaymentConfirmationLink(orderNumber: string): string {
+  return waLink([`Hi, here's my payment confirmation for Order ${orderNumber}.`, 'Screenshot attached below 👇']);
+}
+
 const DIVIDER = '┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄';
 
 /**

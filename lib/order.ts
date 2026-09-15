@@ -1,3 +1,5 @@
+import { escapeHtml } from '@/lib/emailTemplate';
+
 // Shared order shape used by both the WhatsApp order message (lib/whatsapp.ts)
 // and the "Email My Order" API route (app/api/order) — one definition so the
 // two channels never drift apart on what an order actually contains.
@@ -57,13 +59,56 @@ export function isCustomerComplete(c: Partial<OrderCustomer>): c is OrderCustome
   return !!(c.name && c.email && c.phone && c.address && c.suburb && c.state && c.postcode);
 }
 
+export interface PaymentTermsOptions {
+  orderNumber: string;
+  contactEmail: string;
+  /** Display text for the WhatsApp number, e.g. "+61 480 811 308". */
+  whatsapp: string;
+  /** Full wa.me link, pre-filled — build with lib/whatsapp.ts#waPaymentConfirmationLink.
+   * Taken as a prop rather than built here to avoid a circular import
+   * (lib/whatsapp.ts itself imports OrderSummary/money from this file). */
+  whatsappLink: string;
+  /** Shows the Osko/PayID fast-transfer callout — only relevant for bank
+   * transfer and PayID, where an instant-clearing rail actually exists. */
+  showOskoNote?: boolean;
+}
+
 /**
  * Standard payment terms appended to every payment-details email — kept in
- * one place so the 48-hour deadline, reference convention, and confirmation
- * step are worded identically whether the admin used the template or pasted
- * their own instructions (lib/order.ts is imported by both the compose page
- * and the send API, so preview and outgoing email never drift).
+ * one place so the 48-hour deadline, reference convention, Osko/PayID note
+ * and confirmation step are worded identically everywhere they appear
+ * (admin preview, outgoing email, the order-confirmation page).
  */
-export function paymentTermsText(orderNumber: string, contactEmail: string, whatsapp: string): string {
-  return `Please complete payment within 48 hours to confirm this order. Use your order number, ${orderNumber || '[order number]'}, as the payment reference/description. Once paid, send a screenshot of the completed payment to ${contactEmail} or WhatsApp ${whatsapp} so we can confirm and get your order ready for dispatch.`;
+export function paymentTermsLines(opts: PaymentTermsOptions): string[] {
+  const lines = [
+    'Complete payment within 48 hours to confirm this order.',
+    `Use your order number — ${opts.orderNumber || '[order number]'} — as the payment reference/description.`,
+  ];
+  if (opts.showOskoNote) {
+    lines.push('Use Osko / PayID transfer where possible — it clears instantly, so your order gets confirmed fastest.');
+  }
+  lines.push(`Once paid, send a screenshot of the completed payment to ${opts.contactEmail} or WhatsApp ${opts.whatsapp} for confirmation.`);
+  return lines;
+}
+
+/** Same content as paymentTermsLines(), as an HTML bullet list with a
+ * clickable mailto: and WhatsApp link — for the actual outbound email
+ * (lib/emailTemplate.ts's EmailRow.html), which needs real markup rather
+ * than escaped plain text. */
+export function paymentTermsHtml(opts: PaymentTermsOptions): string {
+  const points = [
+    'Complete payment within <strong>48 hours</strong> to confirm this order.',
+    `Use your order number — <strong>${escapeHtml(opts.orderNumber || '[order number]')}</strong> — as the payment reference/description.`,
+  ];
+  if (opts.showOskoNote) {
+    points.push(
+      '<strong style="color:#8C4A2F;">Use Osko / PayID transfer</strong> where possible — it clears instantly, so your order gets confirmed fastest.',
+    );
+  }
+  points.push(
+    `Once paid, send a screenshot of the completed payment to <a href="mailto:${escapeHtml(opts.contactEmail)}" style="color:#8C4A2F;font-weight:700;text-decoration:underline;">${escapeHtml(opts.contactEmail)}</a> or WhatsApp <a href="${escapeHtml(opts.whatsappLink)}" style="color:#8C4A2F;font-weight:700;text-decoration:underline;">${escapeHtml(opts.whatsapp)}</a> for confirmation.`,
+  );
+  return `<ul style="margin:0;padding-left:18px;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.7;color:#17191C;">${points
+    .map((p) => `<li style="margin-bottom:6px;">${p}</li>`)
+    .join('')}</ul>`;
 }
