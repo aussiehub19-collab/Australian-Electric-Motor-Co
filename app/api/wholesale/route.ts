@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { CONTACT } from '@/config/site';
 import { sendMail } from '@/lib/mailer';
 import { buildEmailHtml } from '@/lib/emailTemplate';
-import { saveEnquiry, generateEnquiryId } from '@/lib/enquiryStore';
+import { saveEnquiry, generateEnquiryId, enquiryReplyLink } from '@/lib/enquiryStore';
 
 export async function POST(request: NextRequest) {
   try {
@@ -20,9 +20,10 @@ export async function POST(request: NextRequest) {
 
     // Best-effort: record the enquiry so /admin/enquiries can list and reply
     // to it, regardless of whether email delivery succeeds below.
+    const enquiryId = generateEnquiryId();
     try {
       await saveEnquiry({
-        id: generateEnquiryId(),
+        id: enquiryId,
         type: 'wholesale',
         name,
         email,
@@ -48,8 +49,10 @@ export async function POST(request: NextRequest) {
         { label: 'Notes', value: notes || '' },
       ],
       replyTo: email,
+      ctaLabel: 'Reply in Dashboard →',
+      ctaHref: enquiryReplyLink(enquiryId),
     });
-    const text = `New wholesale / fleet inquiry\nBusiness: ${company}\nContact: ${name}\nEmail: ${email}\nPhone: ${phone}\nEst. units: ${units || '-'}\n\n${notes || ''}`;
+    const text = `New wholesale / fleet inquiry\nBusiness: ${company}\nContact: ${name}\nEmail: ${email}\nPhone: ${phone}\nEst. units: ${units || '-'}\n\n${notes || ''}\n\nReply in dashboard: ${enquiryReplyLink(enquiryId)}`;
 
     const result = await sendMail({
       to: CONTACT.email,

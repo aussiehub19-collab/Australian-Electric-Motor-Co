@@ -1,4 +1,5 @@
 import { getRedis, isRedisConfigured } from '@/lib/redis';
+import { SITE } from '@/config/site';
 
 /**
  * Contact-form and wholesale-enquiry storage — same Redis-backed pattern as
@@ -33,6 +34,14 @@ export function isEnquiryStoreConfigured(): boolean {
 export function generateEnquiryId(): string {
   const rand = Math.random().toString(36).slice(2, 8).toUpperCase();
   return `ENQ-${rand}`;
+}
+
+/** Direct link to the admin reply tool for one enquiry — same idea as
+ * app/api/order/route.ts's paymentEmailLink, so the "New Inquiry" /
+ * "New Wholesale Inquiry" notification email can open straight into
+ * /admin/reply-enquiry/ instead of the admin having to find it in the list. */
+export function enquiryReplyLink(id: string): string {
+  return `https://${SITE.domain}/admin/reply-enquiry/?id=${encodeURIComponent(id)}`;
 }
 
 export async function saveEnquiry(enquiry: StoredEnquiry): Promise<boolean> {
