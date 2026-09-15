@@ -6,10 +6,31 @@ import { Redis } from '@upstash/redis';
  * function). There is deliberately no other data store in this project (see
  * CLAUDE.md) — this exists only so the business can see recent orders in one
  * place and open one to send payment details, instead of hunting through
- * email. Every function degrades to a no-op / empty result when
- * UPSTASH_REDIS_REST_URL / UPSTASH_REDIS_REST_TOKEN aren't set, so the rest
- * of checkout keeps working (email + WhatsApp) even before this is wired up.
+ * email. Every function degrades to a no-op / empty result when no
+ * recognised credential pair is set, so the rest of checkout keeps working
+ * (email + WhatsApp) even before this is wired up.
  */
+
+// Vercel's "Connect a Project" flow lets you pick any custom prefix for the
+// auto-created env vars (defaults to STORAGE_*, matching its generic KV/Blob
+// naming — not Upstash's own UPSTASH_REDIS_* convention). Rather than making
+// the setup depend on typing the prefix exactly right, check every name
+// Vercel is realistically going to produce.
+const CREDENTIAL_CANDIDATES: [string, string][] = [
+  ['UPSTASH_REDIS_REST_URL', 'UPSTASH_REDIS_REST_TOKEN'],
+  ['KV_REST_API_URL', 'KV_REST_API_TOKEN'],
+  ['STORAGE_REST_API_URL', 'STORAGE_REST_API_TOKEN'],
+  ['STORAGE_KV_REST_API_URL', 'STORAGE_KV_REST_API_TOKEN'],
+];
+
+function resolveCredentials(): { url: string; token: string } | null {
+  for (const [urlKey, tokenKey] of CREDENTIAL_CANDIDATES) {
+    const url = process.env[urlKey];
+    const token = process.env[tokenKey];
+    if (url && token) return { url, token };
+  }
+  return null;
+}
 
 export interface StoredOrder {
   orderNumber: string;
@@ -30,11 +51,12 @@ let redis: Redis | null | undefined;
 
 function getRedis(): Redis | null {
   if (redis !== undefined) return redis;
-  if (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN) {
+  const creds = resolveCredentials();
+  if (!creds) {
     redis = null;
     return null;
   }
-  redis = Redis.fromEnv();
+  redis = new Redis({ url: creds.url, token: creds.token });
   return redis;
 }
 

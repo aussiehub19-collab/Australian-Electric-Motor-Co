@@ -49,9 +49,11 @@ Sept 2026.
   the business (with a "Send Payment Details" button, see below) and a confirmation to the customer
   promising a follow-up payment-details email.
 - **`/admin/orders/` + `/admin/send-payment-email/`:** `app/api/order` best-effort records every
-  order to `lib/orderStore.ts` (Upstash Redis — `UPSTASH_REDIS_REST_URL`/`_TOKEN`, auto-added by
-  Vercel's Storage tab when you create a Redis database; without them checkout still emails/
-  WhatsApps fine, orders just don't appear in the dashboard). `/admin/orders/` lists them; opening
+  order to `lib/orderStore.ts` (Upstash Redis, via Vercel's Storage tab → Create Database. That
+  flow lets you pick any env var prefix, so `resolveCredentials()` checks several likely names —
+  `UPSTASH_REDIS_REST_*`, `KV_REST_API_*`, `STORAGE_REST_API_*`, `STORAGE_KV_REST_API_*` — instead
+  of requiring one exact prefix; without any of them checkout still emails/WhatsApps fine, orders
+  just don't appear in the dashboard). `/admin/orders/` lists them; opening
   one goes to `/admin/send-payment-email/?id=<orderNumber>`, which fetches that order
   (`app/api/admin/orders/[id]`) and pre-fills the payment-details compose form — same destination
   the button in the order notification email opens. Sending marks the order `payment-sent`. All
