@@ -1,9 +1,9 @@
 # Australian Electric Motor Co — Project Instructions
 
 React/Next.js (App Router) electric dirt bike ecommerce site. Vercel target, deployed via GitHub —
-push to `main` deploys automatically. No client backend/CMS — the one exception is
-`/admin/send-payment-email/`, a single-purpose passcode-gated compose tool (see Live status below),
-not a dashboard onto any data store.
+push to `main` deploys automatically. No client-editable CMS for site content — the one exception is
+`/admin/orders/` + `/admin/send-payment-email/`, a small passcode-gated order dashboard + compose
+tool (see Live status below) backed by Upstash Redis, not a general backend.
 
 ## Architecture
 `src/config/site.js` is the single source of truth (it assembles `PRODUCTS` from `ebikes.js`,
@@ -45,14 +45,19 @@ Sept 2026.
 - **Checkout (`/checkout/`):** cart is items-only in the side drawer (`components/CartDrawer.tsx`,
   `lib/useCartStorage.ts`, `lib/cart.ts`) — delivery details, payment method, Pay in 4, and the
   WhatsApp-vs-Email choice all live on the checkout page. Both channels carry an order number
-  (`lib/order.ts#generateOrderNumber`, client-generated — no order database). Email places two
-  sends: a notification to the business and a confirmation to the customer, the second promising a
-  follow-up "payment details" email.
-- **`/admin/send-payment-email/`:** that follow-up — a human fills in the order # and payment
-  instructions by hand (no order lookup, nothing is stored) and sends a matching branded email.
-  Gated on `ADMIN_PASSCODE` (server-only env var, checked in `app/api/admin/send-payment-email`);
-  the page itself is reachable by anyone who finds the URL, nothing sends without the passcode.
-  `robots.txt` disallows `/admin/`.
+  (`lib/order.ts#generateOrderNumber`, client-generated). Email places two sends: a notification to
+  the business (with a "Send Payment Details" button, see below) and a confirmation to the customer
+  promising a follow-up payment-details email.
+- **`/admin/orders/` + `/admin/send-payment-email/`:** `app/api/order` best-effort records every
+  order to `lib/orderStore.ts` (Upstash Redis — `UPSTASH_REDIS_REST_URL`/`_TOKEN`, auto-added by
+  Vercel's Storage tab when you create a Redis database; without them checkout still emails/
+  WhatsApps fine, orders just don't appear in the dashboard). `/admin/orders/` lists them; opening
+  one goes to `/admin/send-payment-email/?id=<orderNumber>`, which fetches that order
+  (`app/api/admin/orders/[id]`) and pre-fills the payment-details compose form — same destination
+  the button in the order notification email opens. Sending marks the order `payment-sent`. All
+  three admin API routes are gated on `ADMIN_PASSCODE` (server-only env var, `X-Admin-Passcode`
+  header, checked in `lib/adminAuth.ts`) — the pages render for anyone who finds the URL, but
+  nothing loads or sends without it. `robots.txt` disallows `/admin/`.
 - **Analytics:** GA4 via `components/Analytics.tsx`, gated on `NEXT_PUBLIC_GA_ID` — empty means no
   tag renders at all.
 
@@ -68,4 +73,5 @@ Sept 2026.
 - Bundle discount: any part/battery/charger/accessory/gear item gets 5% off automatically when a
   bike is in the same cart.
 - Warranty: 2-Year Australian Factory Warranty on frame, motor, controller, battery.
-- No client backend/CMS. No banned-term compliance list configured for this vertical.
+- No client-editable content CMS (the order dashboard is not one — see Live status). No
+  banned-term compliance list configured for this vertical.

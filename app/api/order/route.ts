@@ -3,9 +3,10 @@ import { SITE, CONTACT } from '@/config/site';
 import { sendMail } from '@/lib/mailer';
 import { buildEmailHtml } from '@/lib/emailTemplate';
 import { money, formatAddress, isCustomerComplete, type OrderSummary } from '@/lib/order';
+import { saveOrder, type StoredOrder } from '@/lib/orderStore';
 
 /** Which of the admin form's payment-method options this order's label maps to. */
-function detectPaymentMethodCode(order: OrderSummary): 'bank' | 'payid' | 'crypto' | 'payin4' {
+function detectPaymentMethodCode(order: OrderSummary): StoredOrder['paymentMethodCode'] {
   if (order.payIn4) return 'payin4';
   const label = (order.paymentLabel || '').toLowerCase();
   if (label.includes('bitcoin') || label.includes('usdt') || label.includes('crypto')) return 'crypto';
@@ -13,23 +14,8 @@ function detectPaymentMethodCode(order: OrderSummary): 'bank' | 'payid' | 'crypt
   return 'bank';
 }
 
-/**
- * Base64url-encodes just enough of the order to pre-fill
- * /admin/send-payment-email — never put in a database, only carried in this
- * one link inside the business notification email. Decoded client-side in
- * that page.
- */
-function buildPaymentEmailLink(order: OrderSummary, customer: { name: string; email: string }): string {
-  const amountDue = order.payIn4 ? money(order.payIn4.dueToday) : money(order.grandTotal);
-  const payload = {
-    o: order.orderNumber || '',
-    n: customer.name,
-    e: customer.email,
-    a: amountDue,
-    m: detectPaymentMethodCode(order),
-  };
-  const encoded = Buffer.from(JSON.stringify(payload)).toString('base64url');
-  return `https://${SITE.domain}/admin/send-payment-email/?order=${encoded}`;
+function paymentEmailLink(orderNumber: string): string {
+  return `https://${SITE.domain}/admin/send-payment-email/?id=${encodeURIComponent(orderNumber)}`;
 }
 
 export async function POST(request: NextRequest) {
@@ -69,8 +55,31 @@ export async function POST(request: NextRequest) {
       },
     ];
 
+    // Best-effort: record the order so the /admin/orders dashboard has it,
+    // regardless of whether email delivery succeeds below.
+    if (order.orderNumber) {
+      try {
+        await saveOrder({
+          orderNumber: order.orderNumber,
+          customerName: customer.name,
+          customerEmail: customer.email,
+          customerPhone: customer.phone,
+          deliveryAddress: formatAddress(customer),
+          itemsSummary: itemsText,
+          amountDue: money(order.payIn4 ? order.payIn4.dueToday : order.grandTotal),
+          grandTotal: money(order.grandTotal),
+          paymentMethodCode: detectPaymentMethodCode(order),
+          paymentLabel: order.paymentLabel,
+          createdAt: Date.now(),
+          status: 'pending',
+        });
+      } catch (err) {
+        console.error('Order API: saveOrder failed (emails still sent):', err);
+      }
+    }
+
     // --- Email 1: internal notification, to the business ---
-    const paymentEmailLink = buildPaymentEmailLink(order, customer);
+    const paymentLink = order.orderNumber ? paymentEmailLink(order.orderNumber) : `https://${SITE.domain}/admin/orders/`;
     const businessHtml = buildEmailHtml({
       heading: order.orderNumber ? `New Order — ${order.orderNumber}` : 'New Order',
       intro: `${customer.name} placed an order through the website checkout.`,
@@ -82,9 +91,9 @@ export async function POST(request: NextRequest) {
       ],
       replyTo: customer.email,
       ctaLabel: 'Send Payment Details →',
-      ctaHref: paymentEmailLink,
+      ctaHref: paymentLink,
     });
-    const businessText = `New order ${order.orderNumber || ''}\n\n${itemsText}\n\nSubtotal: ${money(order.subtotal)}\nTotal payable: ${money(order.grandTotal)}\nPayment: ${order.paymentLabel}\n\nCustomer: ${customer.name}\nEmail: ${customer.email}\nPhone: ${customer.phone}\nDeliver to: ${formatAddress(customer)}\n\nSend payment details: ${paymentEmailLink}`;
+    const businessText = `New order ${order.orderNumber || ''}\n\n${itemsText}\n\nSubtotal: ${money(order.subtotal)}\nTotal payable: ${money(order.grandTotal)}\nPayment: ${order.paymentLabel}\n\nCustomer: ${customer.name}\nEmail: ${customer.email}\nPhone: ${customer.phone}\nDeliver to: ${formatAddress(customer)}\n\nSend payment details: ${paymentLink}`;
 
     const businessResult = await sendMail({
       to: CONTACT.email,

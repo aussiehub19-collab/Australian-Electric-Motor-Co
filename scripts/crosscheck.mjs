@@ -245,6 +245,9 @@ if (!process.env.ZOHO_SMTP_USER || !process.env.ZOHO_SMTP_PASSWORD) {
 if (!process.env.ADMIN_PASSCODE) {
   warnings.push('ADMIN_PASSCODE is not set — /admin/send-payment-email/ will reject every send with 503. (Set it in Vercel env vars; locally this warning is expected.)');
 }
+if (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN) {
+  warnings.push('UPSTASH_REDIS_REST_URL / UPSTASH_REDIS_REST_TOKEN are not set — the /admin/orders/ dashboard will be empty and checkout orders will not be recorded (email/WhatsApp still work). (Create a Redis database in Vercel → Storage; locally this warning is expected.)');
+}
 if (SITE.domain && SITE.domain.includes('DOMAIN.')) {
   failures.push('B1: SITE.domain is still a placeholder in a production build.');
 }

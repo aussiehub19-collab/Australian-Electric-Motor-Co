@@ -1,8 +1,12 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
+import Link from 'next/link';
 import { SHOP, CONTACT } from '@/src/config/site';
 import { buildEmailHtml } from '@/lib/emailTemplate';
+import { useAdminPasscode } from '@/lib/useAdminPasscode';
+import { PasscodeGate } from '@/components/admin/PasscodeGate';
+import type { StoredOrder } from '@/lib/orderStore';
 
 type PaymentMethod = 'Direct Bank EFT' | 'PayID' | 'Bitcoin (BTC) / Tether (USDT)' | 'Pay in 4 (fortnightly instalments)';
 
@@ -20,19 +24,6 @@ const METHOD_CODE_MAP: Record<string, PaymentMethod> = {
   payin4: 'Pay in 4 (fortnightly instalments)',
 };
 
-/** Reverses the base64url the order email's "Send Payment Details" link carries — see app/api/order/route.ts#buildPaymentEmailLink. */
-function decodeOrderParam(param: string): { o?: string; n?: string; e?: string; a?: string; m?: string } | null {
-  try {
-    const b64 = param.replace(/-/g, '+').replace(/_/g, '/');
-    const padded = b64 + '='.repeat((4 - (b64.length % 4)) % 4);
-    const bytes = Uint8Array.from(atob(padded), (c) => c.charCodeAt(0));
-    const json = new TextDecoder().decode(bytes);
-    return JSON.parse(json);
-  } catch {
-    return null;
-  }
-}
-
 function defaultInstructions(method: PaymentMethod, amountDue: string, orderNumber: string): string {
   switch (method) {
     case 'Direct Bank EFT':
@@ -49,9 +40,7 @@ function defaultInstructions(method: PaymentMethod, amountDue: string, orderNumb
 }
 
 export default function SendPaymentEmailPage() {
-  const [unlocked, setUnlocked] = useState(false);
-  const [passcode, setPasscode] = useState('');
-  const [gateError, setGateError] = useState('');
+  const { unlocked, passcode, unlock, lock } = useAdminPasscode();
 
   const [orderNumber, setOrderNumber] = useState('');
   const [customerName, setCustomerName] = useState('');
@@ -62,30 +51,48 @@ export default function SendPaymentEmailPage() {
   const [instructionsTouched, setInstructionsTouched] = useState(false);
   const [notes, setNotes] = useState('');
 
+  const [loadingOrder, setLoadingOrder] = useState(false);
+  const [loadError, setLoadError] = useState('');
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent'>('idle');
   const [error, setError] = useState('');
 
+  // Pre-fill from an order in the dashboard — the "Send Payment Details" link
+  // in the order email, or a click from /admin/orders/, both use ?id=.
   useEffect(() => {
-    try {
-      if (sessionStorage.getItem('aemc_admin_passcode')) setUnlocked(true);
-    } catch {
-      // ignore
-    }
-  }, []);
+    if (!unlocked || !passcode) return;
+    const id = new URLSearchParams(window.location.search).get('id');
+    if (!id) return;
 
-  // Pre-fill from the order email's "Send Payment Details" link (?order=...)
-  // — nothing is stored anywhere, the order data only ever lives in that one link.
-  useEffect(() => {
-    const param = new URLSearchParams(window.location.search).get('order');
-    if (!param) return;
-    const data = decodeOrderParam(param);
-    if (!data) return;
-    if (data.o) setOrderNumber(data.o);
-    if (data.n) setCustomerName(data.n);
-    if (data.e) setCustomerEmail(data.e);
-    if (data.a) setAmountDue(data.a);
-    if (data.m && METHOD_CODE_MAP[data.m]) setPaymentMethod(METHOD_CODE_MAP[data.m]);
-  }, []);
+    let cancelled = false;
+    setLoadingOrder(true);
+    setLoadError('');
+    fetch(`/api/admin/orders/${encodeURIComponent(id)}/`, { headers: { 'X-Admin-Passcode': passcode } })
+      .then(async (res) => {
+        const data = await res.json();
+        if (cancelled) return;
+        if (res.ok && data.success) {
+          const order = data.order as StoredOrder;
+          setOrderNumber(order.orderNumber);
+          setCustomerName(order.customerName);
+          setCustomerEmail(order.customerEmail);
+          setAmountDue(order.amountDue);
+          if (METHOD_CODE_MAP[order.paymentMethodCode]) setPaymentMethod(METHOD_CODE_MAP[order.paymentMethodCode]);
+        } else {
+          if (res.status === 401) lock();
+          setLoadError(data?.message || 'Could not load that order.');
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setLoadError('Could not load that order.');
+      })
+      .finally(() => {
+        if (!cancelled) setLoadingOrder(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [unlocked, passcode, lock]);
 
   // Keep the instructions template in sync with the method/amount/order —
   // unless the user has actually edited it, so we never clobber manual edits.
@@ -114,21 +121,6 @@ export default function SendPaymentEmailPage() {
     [orderNumber, customerName, amountDue, paymentMethod, instructions, notes],
   );
 
-  const handleUnlock = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!passcode.trim()) {
-      setGateError('Enter your passcode.');
-      return;
-    }
-    try {
-      sessionStorage.setItem('aemc_admin_passcode', passcode);
-    } catch {
-      // ignore
-    }
-    setUnlocked(true);
-    setGateError('');
-  };
-
   const formValid = orderNumber && customerName && customerEmail && amountDue && instructions;
 
   const handleSend = async () => {
@@ -139,29 +131,16 @@ export default function SendPaymentEmailPage() {
     setStatus('sending');
     setError('');
     try {
-      const storedPasscode = sessionStorage.getItem('aemc_admin_passcode') || '';
       const res = await fetch('/api/admin/send-payment-email/', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          passcode: storedPasscode,
-          orderNumber,
-          customerName,
-          customerEmail,
-          amountDue,
-          paymentMethod,
-          instructions,
-          notes,
-        }),
+        headers: { 'Content-Type': 'application/json', 'X-Admin-Passcode': passcode },
+        body: JSON.stringify({ orderNumber, customerName, customerEmail, amountDue, paymentMethod, instructions, notes }),
       });
       const data = await res.json();
       if (res.ok && data.success) {
         setStatus('sent');
       } else {
-        if (res.status === 401) {
-          sessionStorage.removeItem('aemc_admin_passcode');
-          setUnlocked(false);
-        }
+        if (res.status === 401) lock();
         throw new Error(data?.message || 'Send failed');
       }
     } catch (err: any) {
@@ -188,26 +167,7 @@ export default function SendPaymentEmailPage() {
   const labelClass = 'block text-xs font-semibold text-stone-300 uppercase tracking-wider mb-1.5 font-mono';
 
   if (!unlocked) {
-    return (
-      <div className="max-w-sm mx-auto px-4 py-24">
-        <form onSubmit={handleUnlock} className="bg-[#17191C] border border-[#2B2F36] rounded-2xl p-6 space-y-4">
-          <h1 className="text-lg font-bold text-white">Send Payment Details</h1>
-          <p className="text-xs text-stone-400">Enter your passcode to continue.</p>
-          <input
-            type="password"
-            value={passcode}
-            onChange={(e) => setPasscode(e.target.value)}
-            placeholder="Passcode"
-            autoFocus
-            className={inputClass}
-          />
-          {gateError && <p className="text-xs text-rose-400">{gateError}</p>}
-          <button type="submit" className="w-full bg-[#8C4A2F] hover:bg-[#A35839] text-white font-bold py-3 rounded-xl text-sm transition">
-            Continue
-          </button>
-        </form>
-      </div>
-    );
+    return <PasscodeGate title="Send Payment Details" onUnlock={unlock} />;
   }
 
   if (status === 'sent') {
@@ -216,19 +176,28 @@ export default function SendPaymentEmailPage() {
         <div className="w-14 h-14 mx-auto rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 text-2xl">✓</div>
         <h1 className="text-lg font-bold text-white">Sent to {customerEmail}</h1>
         <p className="text-xs text-stone-400">Payment details for Order {orderNumber} are on their way.</p>
-        <button type="button" onClick={resetForm} className="bg-[#8C4A2F] hover:bg-[#A35839] text-white font-bold py-3 px-6 rounded-xl text-sm transition">
-          Send Another
-        </button>
+        <div className="flex flex-col gap-2 pt-2">
+          <button type="button" onClick={resetForm} className="bg-[#8C4A2F] hover:bg-[#A35839] text-white font-bold py-3 px-6 rounded-xl text-sm transition">
+            Send Another
+          </button>
+          <Link href="/admin/orders/" className="text-xs font-mono text-stone-400 hover:text-white">
+            ← Back to Orders
+          </Link>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-6">
+      <Link href="/admin/orders/" className="text-xs font-mono text-stone-400 hover:text-white inline-block">
+        ← All Orders
+      </Link>
       <h1 className="text-2xl font-black uppercase text-white tracking-tight">Send Payment Details</h1>
       <p className="text-xs text-stone-400">
-        Fill this in from the order you received, review the preview below, then send.
+        {loadingOrder ? 'Loading order…' : 'Fill this in from the order you received, review the preview below, then send.'}
       </p>
+      {loadError && <p className="text-xs text-rose-400 font-semibold">{loadError}</p>}
 
       <div className="bg-[#17191C] border border-[#2B2F36] rounded-2xl p-5 space-y-4">
         <div className="grid grid-cols-2 gap-3">

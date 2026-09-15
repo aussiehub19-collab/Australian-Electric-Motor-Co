@@ -2,30 +2,23 @@ import { NextRequest, NextResponse } from 'next/server';
 import { CONTACT } from '@/config/site';
 import { sendMail } from '@/lib/mailer';
 import { buildEmailHtml } from '@/lib/emailTemplate';
+import { checkAdminPasscode } from '@/lib/adminAuth';
+import { markOrderSent } from '@/lib/orderStore';
 
 /**
  * Sends the "payment details" follow-up email a human picks the moment
- * they've reviewed an order and decided how the customer should pay —
- * there's no order database (see CLAUDE.md), so this is a compose-and-send
- * tool, not automation. Gated on ADMIN_PASSCODE (server-only env var); the
- * page itself shows the form to anyone who finds the URL, but nothing
- * sends without the correct passcode.
+ * they've reviewed an order and decided how the customer should pay — this
+ * is a compose-and-send tool, not automation. Gated on ADMIN_PASSCODE
+ * (X-Admin-Passcode header, checked server-side); the page itself shows the
+ * form to anyone who finds the URL, but nothing sends without it.
  */
 export async function POST(request: NextRequest) {
+  const authError = checkAdminPasscode(request);
+  if (authError) return authError;
+
   try {
     const body = await request.json();
-    const { passcode, orderNumber, customerName, customerEmail, amountDue, paymentMethod, instructions, notes } = body;
-
-    const expected = process.env.ADMIN_PASSCODE;
-    if (!expected) {
-      return NextResponse.json(
-        { success: false, message: 'ADMIN_PASSCODE is not configured in Vercel env vars yet.' },
-        { status: 503 },
-      );
-    }
-    if (!passcode || passcode !== expected) {
-      return NextResponse.json({ success: false, message: 'Incorrect passcode.' }, { status: 401 });
-    }
+    const { orderNumber, customerName, customerEmail, amountDue, paymentMethod, instructions, notes } = body;
 
     if (!customerName || !customerEmail || !orderNumber || !amountDue || !paymentMethod || !instructions) {
       return NextResponse.json({ success: false, message: 'Missing required fields.' }, { status: 400 });
@@ -61,6 +54,13 @@ export async function POST(request: NextRequest) {
     if (!result.sent) {
       return NextResponse.json({ success: false, message: 'Email delivery is not configured yet' }, { status: 503 });
     }
+
+    try {
+      await markOrderSent(orderNumber);
+    } catch (err) {
+      console.error('send-payment-email: markOrderSent failed (email already sent):', err);
+    }
+
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Admin send-payment-email error:', error);
