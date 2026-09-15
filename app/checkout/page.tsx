@@ -97,7 +97,7 @@ export default function CheckoutPage() {
       const data = await res.json();
       if (res.ok && data.success) {
         saveCart([]);
-        window.location.href = `/thank-you-order/?ref=${encodeURIComponent(orderNumber)}&pm=${encodeURIComponent(paymentMethod)}`;
+        window.location.href = `/thank-you-order/?ref=${encodeURIComponent(orderNumber)}`;
       } else {
         throw new Error(data?.message || 'Submission failed');
       }

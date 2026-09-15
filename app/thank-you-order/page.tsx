@@ -1,8 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
 import OrderReferenceCopy from '@/components/OrderReferenceCopy';
-import { PaymentTermsList } from '@/components/PaymentTermsList';
-import { waPaymentConfirmationLink } from '@/lib/whatsapp';
 
 export const metadata = {
   title: 'Order Received | Australian Electric Motor Co',
@@ -19,10 +17,9 @@ export const metadata = {
 export default async function ThankYouOrderPage({
   searchParams,
 }: {
-  searchParams: Promise<{ ref?: string; pm?: string }>;
+  searchParams: Promise<{ ref?: string }>;
 }) {
-  const { ref, pm } = await searchParams;
-  const showOsko = pm === 'bank' || pm === 'payid';
+  const { ref } = await searchParams;
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-20 text-center space-y-6">
@@ -40,12 +37,27 @@ export default async function ThankYouOrderPage({
         We have received your order details. In accordance with Australian electric motorbike delivery standards and crate logistics, our sales coordinator will contact you directly to confirm delivery depot details and invoice payment.
         {ref && ' Quote your order reference above in any follow-up.'}
       </p>
-      {ref && (
-        <div className="bg-[#17191C] border border-[#2B2F36] rounded-xl px-5 py-4 text-left space-y-2">
-          <p className="text-xs font-mono uppercase tracking-wider text-[#C87D55] font-bold">Next steps</p>
-          <PaymentTermsList orderNumber={ref} whatsappLink={waPaymentConfirmationLink(ref)} showOsko={showOsko} />
-        </div>
-      )}
+      <div className="bg-[#17191C] border border-[#2B2F36] rounded-xl px-5 py-4 text-left space-y-2">
+        <p className="text-xs font-mono uppercase tracking-wider text-[#C87D55] font-bold">Next steps</p>
+        <ul className="text-sm text-stone-300 leading-relaxed list-disc list-inside space-y-1.5">
+          <li>Our team is reviewing your order now.</li>
+          <li>
+            Watch your inbox — you'll receive a follow-up email shortly with your payment details (bank
+            transfer, PayID, crypto or Pay in 4, whichever you chose at checkout).
+          </li>
+          <li>
+            Complete payment as instructed in that email
+            {ref ? (
+              <>
+                {' '}
+                — using your order number, <span className="font-mono text-amber-400">{ref}</span>, as the
+                reference
+              </>
+            ) : ''}{' '}
+            — to confirm your order.
+          </li>
+        </ul>
+      </div>
       <div className="pt-4 flex justify-center gap-4">
         <Link
           href="/shop/"
