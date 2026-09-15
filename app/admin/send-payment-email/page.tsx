@@ -27,19 +27,58 @@ const METHOD_CODE_MAP: Record<string, PaymentMethod> = {
   payin4: 'Pay in 4 (fortnightly instalments)',
 };
 
-function defaultInstructions(method: PaymentMethod, amountDue: string, orderNumber: string): string {
+/**
+ * Instructions split into three pieces — an opening line, the payment
+ * detail block, and a closing line — instead of one fixed paragraph. Paste
+ * mode below only replaces the middle piece, so pasting a wallet address or
+ * an updated BSB/account still comes out wrapped in the usual "Please
+ * transfer... to:" / "We'll dispatch..." framing rather than replacing it.
+ */
+function instructionsParts(
+  method: PaymentMethod,
+  amountDue: string,
+  orderNumber: string,
+): { opening: string; detail: string; closing: string } {
   switch (method) {
     case 'Direct Bank EFT':
-      return `Please transfer ${amountDue || '[amount]'} via Osko/PayID-enabled bank transfer where possible — it clears instantly — to:\n${SHOP.bankDetails.bankName}\nAccount Name: ${SHOP.bankDetails.accountName}\nBSB: ${SHOP.bankDetails.bsb}\nAccount: ${SHOP.bankDetails.accountNumber}\nReference: ${orderNumber || '[order number]'}\n\nWe'll dispatch once the transfer clears.`;
+      return {
+        opening: `Please transfer ${amountDue || '[amount]'} via Osko/PayID-enabled bank transfer where possible — it clears instantly — to:`,
+        detail: `${SHOP.bankDetails.bankName}\nAccount Name: ${SHOP.bankDetails.accountName}\nBSB: ${SHOP.bankDetails.bsb}\nAccount: ${SHOP.bankDetails.accountNumber}\nReference: ${orderNumber || '[order number]'}`,
+        closing: `We'll dispatch once the transfer clears.`,
+      };
     case 'PayID':
-      return `Please pay ${amountDue || '[amount]'} via PayID (an Osko instant transfer) to:\n${SHOP.payId}\nReference: ${orderNumber || '[order number]'}\n\nPayID/Osko transfers are usually instant — we'll dispatch as soon as it lands.`;
+      return {
+        opening: `Please pay ${amountDue || '[amount]'} via PayID (an Osko instant transfer) to:`,
+        detail: `${SHOP.payId}\nReference: ${orderNumber || '[order number]'}`,
+        closing: `PayID/Osko transfers are usually instant — we'll dispatch as soon as it lands.`,
+      };
     case 'Bitcoin (BTC) / Tether (USDT)':
-      return `We'll send the wallet address and exact BTC/USDT amount for ${amountDue || '[amount]'} in a follow-up message — reply here if you'd prefer it sent via WhatsApp instead.`;
+      return {
+        opening: `Please send the exact amount for ${amountDue || '[amount]'} to the wallet address below:`,
+        detail: `[wallet address + exact BTC/USDT amount]`,
+        closing: `We'll dispatch as soon as it's received — reply here if you'd prefer these details sent via WhatsApp instead.`,
+      };
     case 'Pay in 4 (fortnightly instalments)':
-      return `First instalment of ${amountDue || '[amount]'} is due now — reply to this email or contact us and we'll send a secure payment link. The remaining 3 fortnightly instalments follow automatically at 0% interest.`;
+      return {
+        opening: `First instalment of ${amountDue || '[amount]'} is due now.`,
+        detail: '',
+        closing: `Reply to this email or contact us and we'll send a secure payment link. The remaining 3 fortnightly instalments follow automatically at 0% interest.`,
+      };
     default:
-      return '';
+      return { opening: '', detail: '', closing: '' };
   }
+}
+
+/** Opening + detail stay on adjacent lines (detail reads as a continuation
+ * of "to:"); closing gets a blank line above it as a new sentence. */
+function assembleInstructions(opening: string, detail: string, closing: string): string {
+  const head = detail ? `${opening}\n${detail}` : opening;
+  return [head, closing].filter(Boolean).join('\n\n');
+}
+
+function defaultInstructions(method: PaymentMethod, amountDue: string, orderNumber: string): string {
+  const { opening, detail, closing } = instructionsParts(method, amountDue, orderNumber);
+  return assembleInstructions(opening, detail, closing);
 }
 
 export default function SendPaymentEmailPage() {
@@ -53,9 +92,11 @@ export default function SendPaymentEmailPage() {
   const [instructions, setInstructions] = useState(() => defaultInstructions('Direct Bank EFT', '', ''));
   const [instructionsTouched, setInstructionsTouched] = useState(false);
   // 'template' auto-fills Instructions from the payment method (editable, but
-  // regenerates on method change unless touched); 'paste' is a blank box for
-  // pasting payment details straight from a bank/exchange — never overwritten.
+  // regenerates on method change unless touched); 'paste' lets the admin
+  // paste just the payment detail (a wallet address, an updated BSB/account)
+  // — the usual opening/closing sentences still wrap around it automatically.
   const [instructionsMode, setInstructionsMode] = useState<'template' | 'paste'>('template');
+  const [pastedDetail, setPastedDetail] = useState('');
   const [notes, setNotes] = useState('');
 
   const [loadingOrder, setLoadingOrder] = useState(false);
@@ -102,13 +143,22 @@ export default function SendPaymentEmailPage() {
   }, [unlocked, passcode, lock]);
 
   // Keep the instructions template in sync with the method/amount/order —
-  // unless the user has actually edited it, or switched to the Paste tab, so
-  // we never clobber manual edits or a pasted block of payment details.
+  // unless the user has actually edited it, so we never clobber manual edits.
   useEffect(() => {
     if (instructionsMode === 'template' && !instructionsTouched) {
       setInstructions(defaultInstructions(paymentMethod, amountDue, orderNumber));
     }
   }, [paymentMethod, amountDue, orderNumber, instructionsTouched, instructionsMode]);
+
+  // In Paste mode, re-wrap whatever's pasted with the current opening/closing
+  // sentences whenever the method, amount, order number or the paste itself
+  // changes — so switching payment method mid-paste doesn't leave stale wording.
+  useEffect(() => {
+    if (instructionsMode === 'paste') {
+      const { opening, closing } = instructionsParts(paymentMethod, amountDue, orderNumber);
+      setInstructions(assembleInstructions(opening, pastedDetail, closing));
+    }
+  }, [instructionsMode, paymentMethod, amountDue, orderNumber, pastedDetail]);
 
   const switchToTemplate = () => {
     setInstructionsMode('template');
@@ -117,9 +167,14 @@ export default function SendPaymentEmailPage() {
 
   const switchToPaste = () => {
     setInstructionsMode('paste');
-    setInstructions('');
-    setInstructionsTouched(true);
+    setPastedDetail('');
   };
+
+  const { opening: instructionsOpeningPreview, closing: instructionsClosingPreview } = instructionsParts(
+    paymentMethod,
+    amountDue,
+    orderNumber,
+  );
 
   const showOsko = paymentMethod === 'Direct Bank EFT' || paymentMethod === 'PayID';
   const whatsappLink = useMemo(() => waPaymentConfirmationLink(orderNumber || 'your order'), [orderNumber]);
@@ -193,6 +248,7 @@ export default function SendPaymentEmailPage() {
     setInstructions(defaultInstructions('Direct Bank EFT', '', ''));
     setInstructionsTouched(false);
     setInstructionsMode('template');
+    setPastedDetail('');
     setNotes('');
     setStatus('idle');
     setError('');
@@ -293,20 +349,30 @@ export default function SendPaymentEmailPage() {
               </button>
             </div>
           </div>
+          {instructionsMode === 'paste' && (
+            <p className="text-xs text-stone-500 italic font-mono mb-1.5 leading-relaxed">{instructionsOpeningPreview}</p>
+          )}
           <textarea
-            value={instructions}
+            value={instructionsMode === 'paste' ? pastedDetail : instructions}
             onChange={(e) => {
-              setInstructions(e.target.value);
-              setInstructionsTouched(true);
+              if (instructionsMode === 'paste') {
+                setPastedDetail(e.target.value);
+              } else {
+                setInstructions(e.target.value);
+                setInstructionsTouched(true);
+              }
             }}
-            rows={instructionsMode === 'paste' ? 8 : 5}
-            placeholder={instructionsMode === 'paste' ? 'Paste the wallet address + exact amount, BSB/account, PayID, or any other payment details here — it appears exactly as pasted in the preview below.' : undefined}
+            rows={instructionsMode === 'paste' ? 6 : 5}
+            placeholder={instructionsMode === 'paste' ? 'Paste just the payment detail — wallet address + exact amount, updated BSB/account, PayID handle, etc.' : undefined}
             className={`${inputClass} font-mono text-xs`}
           />
-          <p className="text-[10px] text-stone-500 mt-1">
+          {instructionsMode === 'paste' && (
+            <p className="text-xs text-stone-500 italic font-mono mt-1.5 leading-relaxed">{instructionsClosingPreview}</p>
+          )}
+          <p className="text-[10px] text-stone-500 mt-1.5">
             {instructionsMode === 'template'
               ? "Auto-filled from the payment method — edit freely, it won't reset unless you change the method."
-              : 'Paste mode — nothing here is auto-generated. Switch back to Template to restore the default wording for this payment method.'}
+              : "Paste mode — only the payment detail above is yours to fill in. The opening and closing lines shown in grey wrap around it automatically and stay in sync with the payment method and amount."}
           </p>
         </div>
         <div className="bg-[#1D2024] border border-[#2B2F36] rounded-xl px-4 py-3">
