@@ -1,5 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
+import { CONTACT } from '@/config/site';
+import OrderReferenceCopy from '@/components/OrderReferenceCopy';
 
 export const metadata = {
   title: 'Order Received | Australian Electric Motor Co',
@@ -31,16 +33,37 @@ export default async function ThankYouOrderPage({
       <h1 className="text-3xl sm:text-4xl font-black uppercase text-white tracking-tight">
         Thank You For Your Order
       </h1>
-      {ref && (
-        <div className="inline-block bg-[#17191C] border border-[#2B2F36] rounded-xl px-5 py-3">
-          <div className="text-[11px] font-mono uppercase tracking-wider text-stone-400">Order Reference</div>
-          <div className="text-lg font-mono font-black text-amber-400">{ref}</div>
-        </div>
-      )}
+      {ref && <OrderReferenceCopy orderNumber={ref} />}
       <p className="text-sm text-stone-300 leading-relaxed">
         We have received your order details. In accordance with Australian electric motorbike delivery standards and crate logistics, our sales coordinator will contact you directly to confirm delivery depot details and invoice payment.
         {ref && ' Quote your order reference above in any follow-up.'}
       </p>
+      <div className="bg-[#17191C] border border-[#2B2F36] rounded-xl px-5 py-4 text-left space-y-2">
+        <p className="text-xs font-mono uppercase tracking-wider text-[#C87D55] font-bold">Next steps</p>
+        <ul className="text-sm text-stone-300 leading-relaxed list-disc list-inside space-y-1.5">
+          <li>Complete payment within <strong className="text-white">48 hours</strong> to confirm your order.</li>
+          <li>
+            Use your order number{ref ? <> — <span className="font-mono text-amber-400">{ref}</span> —</> : ''} as the payment
+            reference/description.
+          </li>
+          <li>
+            Once paid, send a screenshot of the completed payment to{' '}
+            <a href={`mailto:${CONTACT.email}`} className="text-amber-400 hover:underline">
+              {CONTACT.email}
+            </a>{' '}
+            or WhatsApp{' '}
+            <a
+              href={`https://wa.me/${CONTACT.whatsapp.replace(/[^0-9]/g, '')}`}
+              className="text-amber-400 hover:underline"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {CONTACT.whatsapp}
+            </a>{' '}
+            for confirmation.
+          </li>
+        </ul>
+      </div>
       <div className="pt-4 flex justify-center gap-4">
         <Link
           href="/shop/"

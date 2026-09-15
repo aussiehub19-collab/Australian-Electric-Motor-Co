@@ -56,3 +56,14 @@ export function formatAddress(c: OrderCustomer): string {
 export function isCustomerComplete(c: Partial<OrderCustomer>): c is OrderCustomer {
   return !!(c.name && c.email && c.phone && c.address && c.suburb && c.state && c.postcode);
 }
+
+/**
+ * Standard payment terms appended to every payment-details email — kept in
+ * one place so the 48-hour deadline, reference convention, and confirmation
+ * step are worded identically whether the admin used the template or pasted
+ * their own instructions (lib/order.ts is imported by both the compose page
+ * and the send API, so preview and outgoing email never drift).
+ */
+export function paymentTermsText(orderNumber: string, contactEmail: string, whatsapp: string): string {
+  return `Please complete payment within 48 hours to confirm this order. Use your order number, ${orderNumber || '[order number]'}, as the payment reference/description. Once paid, send a screenshot of the completed payment to ${contactEmail} or WhatsApp ${whatsapp} so we can confirm and get your order ready for dispatch.`;
+}

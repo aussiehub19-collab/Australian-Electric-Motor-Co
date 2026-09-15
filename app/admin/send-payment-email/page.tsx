@@ -4,6 +4,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { SHOP, CONTACT } from '@/src/config/site';
 import { buildEmailHtml } from '@/lib/emailTemplate';
+import { paymentTermsText } from '@/lib/order';
 import { useAdminPasscode } from '@/lib/useAdminPasscode';
 import { PasscodeGate } from '@/components/admin/PasscodeGate';
 import type { StoredOrder } from '@/lib/orderStore';
@@ -49,6 +50,10 @@ export default function SendPaymentEmailPage() {
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('Direct Bank EFT');
   const [instructions, setInstructions] = useState(() => defaultInstructions('Direct Bank EFT', '', ''));
   const [instructionsTouched, setInstructionsTouched] = useState(false);
+  // 'template' auto-fills Instructions from the payment method (editable, but
+  // regenerates on method change unless touched); 'paste' is a blank box for
+  // pasting payment details straight from a bank/exchange — never overwritten.
+  const [instructionsMode, setInstructionsMode] = useState<'template' | 'paste'>('template');
   const [notes, setNotes] = useState('');
 
   const [loadingOrder, setLoadingOrder] = useState(false);
@@ -95,12 +100,29 @@ export default function SendPaymentEmailPage() {
   }, [unlocked, passcode, lock]);
 
   // Keep the instructions template in sync with the method/amount/order —
-  // unless the user has actually edited it, so we never clobber manual edits.
+  // unless the user has actually edited it, or switched to the Paste tab, so
+  // we never clobber manual edits or a pasted block of payment details.
   useEffect(() => {
-    if (!instructionsTouched) {
+    if (instructionsMode === 'template' && !instructionsTouched) {
       setInstructions(defaultInstructions(paymentMethod, amountDue, orderNumber));
     }
-  }, [paymentMethod, amountDue, orderNumber, instructionsTouched]);
+  }, [paymentMethod, amountDue, orderNumber, instructionsTouched, instructionsMode]);
+
+  const switchToTemplate = () => {
+    setInstructionsMode('template');
+    setInstructionsTouched(false);
+  };
+
+  const switchToPaste = () => {
+    setInstructionsMode('paste');
+    setInstructions('');
+    setInstructionsTouched(true);
+  };
+
+  const paymentTerms = useMemo(
+    () => paymentTermsText(orderNumber, CONTACT.email, CONTACT.whatsapp),
+    [orderNumber],
+  );
 
   const previewHtml = useMemo(
     () =>
@@ -108,17 +130,18 @@ export default function SendPaymentEmailPage() {
         heading: `Payment Details — ${orderNumber || '[order number]'}`,
         intro: `Hi ${customerName || '[customer name]'}, thanks for your patience — here are the payment details to finalise Order ${orderNumber || '[order number]'}. Once payment is received we'll confirm your order and get it ready for dispatch.`,
         rows: [
-          { label: 'Order #', value: orderNumber },
-          { label: 'Amount Due', value: amountDue },
+          { label: 'Order #', value: orderNumber, mono: true },
+          { label: 'Amount Due', value: amountDue, mono: true },
           { label: 'Payment Method', value: paymentMethod },
-          { label: 'Instructions', value: instructions },
+          { label: 'Instructions', value: instructions, mono: true },
+          { label: 'Payment Terms', value: paymentTerms },
           { label: 'Notes', value: notes },
         ],
         replyTo: CONTACT.email,
         ctaLabel: 'Questions? Contact Us →',
         ctaHref: `mailto:${CONTACT.email}`,
       }),
-    [orderNumber, customerName, amountDue, paymentMethod, instructions, notes],
+    [orderNumber, customerName, amountDue, paymentMethod, instructions, paymentTerms, notes],
   );
 
   const formValid = orderNumber && customerName && customerEmail && amountDue && instructions;
@@ -157,6 +180,7 @@ export default function SendPaymentEmailPage() {
     setPaymentMethod('Direct Bank EFT');
     setInstructions(defaultInstructions('Direct Bank EFT', '', ''));
     setInstructionsTouched(false);
+    setInstructionsMode('template');
     setNotes('');
     setStatus('idle');
     setError('');
@@ -234,17 +258,51 @@ export default function SendPaymentEmailPage() {
           </select>
         </div>
         <div>
-          <label className={labelClass}>Instructions *</label>
+          <div className="flex items-center justify-between mb-1.5">
+            <label className={`${labelClass} mb-0`}>Instructions *</label>
+            <div className="flex bg-[#1D2024] border border-[#2B2F36] rounded-lg p-0.5 text-[10px] font-mono font-bold uppercase">
+              <button
+                type="button"
+                onClick={switchToTemplate}
+                className={`px-2.5 py-1 rounded-md transition ${
+                  instructionsMode === 'template' ? 'bg-[#8C4A2F] text-white' : 'text-stone-400 hover:text-stone-200'
+                }`}
+              >
+                Template
+              </button>
+              <button
+                type="button"
+                onClick={switchToPaste}
+                className={`px-2.5 py-1 rounded-md transition ${
+                  instructionsMode === 'paste' ? 'bg-[#8C4A2F] text-white' : 'text-stone-400 hover:text-stone-200'
+                }`}
+              >
+                Paste
+              </button>
+            </div>
+          </div>
           <textarea
             value={instructions}
             onChange={(e) => {
               setInstructions(e.target.value);
               setInstructionsTouched(true);
             }}
-            rows={5}
+            rows={instructionsMode === 'paste' ? 8 : 5}
+            placeholder={instructionsMode === 'paste' ? 'Paste the wallet address + exact amount, BSB/account, PayID, or any other payment details here — it appears exactly as pasted in the preview below.' : undefined}
             className={`${inputClass} font-mono text-xs`}
           />
-          <p className="text-[10px] text-stone-500 mt-1">Auto-filled from the payment method — edit freely, it won't reset unless you change the method.</p>
+          <p className="text-[10px] text-stone-500 mt-1">
+            {instructionsMode === 'template'
+              ? "Auto-filled from the payment method — edit freely, it won't reset unless you change the method."
+              : 'Paste mode — nothing here is auto-generated. Switch back to Template to restore the default wording for this payment method.'}
+          </p>
+        </div>
+        <div className="bg-[#1D2024] border border-[#2B2F36] rounded-xl px-4 py-3">
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-xs font-semibold text-stone-300 uppercase tracking-wider font-mono">Payment Terms</span>
+            <span className="text-[10px] text-stone-500 font-mono">always included</span>
+          </div>
+          <p className="text-xs text-stone-400 leading-relaxed">{paymentTerms}</p>
         </div>
         <div>
           <label className={labelClass}>Notes (optional)</label>

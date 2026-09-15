@@ -3,6 +3,9 @@ import { SITE, CONTACT } from '@/config/site';
 interface EmailRow {
   label: string;
   value: string;
+  /** Monospace value — for order numbers, account numbers, wallet addresses
+   * and anything else a customer needs to select and copy exactly. */
+  mono?: boolean;
 }
 
 function escapeHtml(s: string): string {
@@ -31,7 +34,7 @@ export function buildEmailHtml(opts: {
       (r) => `
       <tr>
         <td style="padding:10px 0;border-bottom:1px solid #E5E1DB;font-family:'Courier New',Courier,monospace;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#8C4A2F;vertical-align:top;width:150px;">${escapeHtml(r.label)}</td>
-        <td style="padding:10px 0 10px 16px;border-bottom:1px solid #E5E1DB;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.55;color:#17191C;">${escapeHtml(r.value).replace(/\n/g, '<br>')}</td>
+        <td style="padding:10px 0 10px 16px;border-bottom:1px solid #E5E1DB;font-family:${r.mono ? "'Courier New',Courier,monospace" : 'Arial,Helvetica,sans-serif'};font-size:14px;line-height:1.55;color:#17191C;">${escapeHtml(r.value).replace(/\n/g, '<br>')}</td>
       </tr>`,
     )
     .join('');

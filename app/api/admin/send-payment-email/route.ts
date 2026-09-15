@@ -4,6 +4,7 @@ import { sendMail } from '@/lib/mailer';
 import { buildEmailHtml } from '@/lib/emailTemplate';
 import { checkAdminPasscode } from '@/lib/adminAuth';
 import { markOrderSent } from '@/lib/orderStore';
+import { paymentTermsText } from '@/lib/order';
 
 /**
  * Sends the "payment details" follow-up email a human picks the moment
@@ -24,11 +25,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, message: 'Missing required fields.' }, { status: 400 });
     }
 
+    const terms = paymentTermsText(orderNumber, CONTACT.email, CONTACT.whatsapp);
+
     const rows = [
-      { label: 'Order #', value: orderNumber },
-      { label: 'Amount Due', value: amountDue },
+      { label: 'Order #', value: orderNumber, mono: true },
+      { label: 'Amount Due', value: amountDue, mono: true },
       { label: 'Payment Method', value: paymentMethod },
-      { label: 'Instructions', value: instructions },
+      { label: 'Instructions', value: instructions, mono: true },
+      { label: 'Payment Terms', value: terms },
       { label: 'Notes', value: notes || '' },
     ];
 
@@ -41,7 +45,7 @@ export async function POST(request: NextRequest) {
       ctaHref: `mailto:${CONTACT.email}`,
     });
 
-    const text = `Payment Details — ${orderNumber}\n\nHi ${customerName}, here are the payment details to finalise your order.\n\nOrder #: ${orderNumber}\nAmount Due: ${amountDue}\nPayment Method: ${paymentMethod}\n\nInstructions:\n${instructions}\n${notes ? `\nNotes: ${notes}\n` : ''}\nOnce payment is received we'll confirm your order and get it ready for dispatch.`;
+    const text = `Payment Details — ${orderNumber}\n\nHi ${customerName}, here are the payment details to finalise your order.\n\nOrder #: ${orderNumber}\nAmount Due: ${amountDue}\nPayment Method: ${paymentMethod}\n\nInstructions:\n${instructions}\n\nPayment Terms:\n${terms}\n${notes ? `\nNotes: ${notes}\n` : ''}\nOnce payment is received we'll confirm your order and get it ready for dispatch.`;
 
     const result = await sendMail({
       to: customerEmail,
