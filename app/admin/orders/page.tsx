@@ -21,6 +21,7 @@ export default function OrdersDashboardPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [deletingId, setDeletingId] = useState('');
+  const [deletingAll, setDeletingAll] = useState(false);
 
   const fetchOrders = useCallback(async () => {
     if (!passcode) return;
@@ -69,6 +70,33 @@ export default function OrdersDashboardPage() {
     }
   };
 
+  const handleDeleteAll = async () => {
+    if (!passcode || !orders || orders.length === 0) return;
+    if (!window.confirm(`Delete all ${orders.length} order${orders.length === 1 ? '' : 's'}? This can't be undone.`)) return;
+    setDeletingAll(true);
+    setError('');
+    try {
+      const results = await Promise.all(
+        orders.map((o) =>
+          fetch(`/api/admin/orders/${encodeURIComponent(o.orderNumber)}/`, {
+            method: 'DELETE',
+            headers: { 'X-Admin-Passcode': passcode },
+          }).then((res) => ({ orderNumber: o.orderNumber, ok: res.ok, status: res.status })),
+        ),
+      );
+      const failed = results.filter((r) => !r.ok);
+      if (failed.some((r) => r.status === 401)) lock();
+      setOrders((prev) => prev?.filter((o) => failed.some((f) => f.orderNumber === o.orderNumber)) ?? prev);
+      if (failed.length > 0) {
+        setError(`${failed.length} order${failed.length === 1 ? '' : 's'} couldn't be deleted — try again.`);
+      }
+    } catch {
+      setError('Could not delete all orders — try again.');
+    } finally {
+      setDeletingAll(false);
+    }
+  };
+
   if (!unlocked) {
     return <PasscodeGate title="Orders" onUnlock={unlock} />;
   }
@@ -98,6 +126,17 @@ export default function OrdersDashboardPage() {
 
       {orders !== null && orders.length === 0 && !error && (
         <p className="text-sm text-stone-400">No orders yet — they'll show up here as customers check out.</p>
+      )}
+
+      {orders !== null && orders.length > 0 && (
+        <button
+          type="button"
+          onClick={handleDeleteAll}
+          disabled={deletingAll}
+          className="text-[11px] font-mono font-bold text-rose-400/80 hover:text-rose-400 disabled:opacity-40 border border-rose-500/30 hover:border-rose-500/50 hover:bg-rose-500/10 rounded-lg px-3 py-2 transition"
+        >
+          {deletingAll ? 'Deleting all…' : `Delete All (${orders.length})`}
+        </button>
       )}
 
       <div className="space-y-2">
