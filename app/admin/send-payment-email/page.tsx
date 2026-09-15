@@ -69,11 +69,11 @@ function instructionsParts(
   }
 }
 
-/** Opening + detail stay on adjacent lines (detail reads as a continuation
- * of "to:"); closing gets a blank line above it as a new sentence. */
+/** Opening, detail and closing each get a blank line between them — reads
+ * as three clean paragraphs rather than the detail block running straight
+ * on from "to:". */
 function assembleInstructions(opening: string, detail: string, closing: string): string {
-  const head = detail ? `${opening}\n${detail}` : opening;
-  return [head, closing].filter(Boolean).join('\n\n');
+  return [opening, detail, closing].filter(Boolean).join('\n\n');
 }
 
 function defaultInstructions(method: PaymentMethod, amountDue: string, orderNumber: string): string {
