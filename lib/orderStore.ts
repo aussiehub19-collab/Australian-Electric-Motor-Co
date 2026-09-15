@@ -1,4 +1,4 @@
-import { Redis } from '@upstash/redis';
+import { getRedis, isRedisConfigured } from '@/lib/redis';
 
 /**
  * Order "database" for the admin dashboard — Upstash Redis (free tier, REST
@@ -10,27 +10,6 @@ import { Redis } from '@upstash/redis';
  * recognised credential pair is set, so the rest of checkout keeps working
  * (email + WhatsApp) even before this is wired up.
  */
-
-// Vercel's "Connect a Project" flow lets you pick any custom prefix for the
-// auto-created env vars (defaults to STORAGE_*, matching its generic KV/Blob
-// naming — not Upstash's own UPSTASH_REDIS_* convention). Rather than making
-// the setup depend on typing the prefix exactly right, check every name
-// Vercel is realistically going to produce.
-const CREDENTIAL_CANDIDATES: [string, string][] = [
-  ['UPSTASH_REDIS_REST_URL', 'UPSTASH_REDIS_REST_TOKEN'],
-  ['KV_REST_API_URL', 'KV_REST_API_TOKEN'],
-  ['STORAGE_REST_API_URL', 'STORAGE_REST_API_TOKEN'],
-  ['STORAGE_KV_REST_API_URL', 'STORAGE_KV_REST_API_TOKEN'],
-];
-
-function resolveCredentials(): { url: string; token: string } | null {
-  for (const [urlKey, tokenKey] of CREDENTIAL_CANDIDATES) {
-    const url = process.env[urlKey];
-    const token = process.env[tokenKey];
-    if (url && token) return { url, token };
-  }
-  return null;
-}
 
 export interface StoredOrder {
   orderNumber: string;
@@ -47,24 +26,11 @@ export interface StoredOrder {
   status: 'pending' | 'payment-sent';
 }
 
-let redis: Redis | null | undefined;
-
-function getRedis(): Redis | null {
-  if (redis !== undefined) return redis;
-  const creds = resolveCredentials();
-  if (!creds) {
-    redis = null;
-    return null;
-  }
-  redis = new Redis({ url: creds.url, token: creds.token });
-  return redis;
-}
-
 const INDEX_KEY = 'aemc:orders:index';
 const orderKey = (orderNumber: string) => `aemc:orders:${orderNumber}`;
 
 export function isOrderStoreConfigured(): boolean {
-  return getRedis() !== null;
+  return isRedisConfigured();
 }
 
 export async function saveOrder(order: StoredOrder): Promise<boolean> {
@@ -95,4 +61,12 @@ export async function markOrderSent(orderNumber: string): Promise<void> {
   if (!r) return;
   const existing = await r.get<StoredOrder>(orderKey(orderNumber));
   if (existing) await r.set(orderKey(orderNumber), { ...existing, status: 'payment-sent' });
+}
+
+/** Removes a test/spam/duplicate order from the dashboard permanently. */
+export async function deleteOrder(orderNumber: string): Promise<void> {
+  const r = getRedis();
+  if (!r) return;
+  await r.del(orderKey(orderNumber));
+  await r.zrem(INDEX_KEY, orderNumber);
 }

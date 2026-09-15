@@ -44,6 +44,13 @@ export async function sendMail(opts: {
     subject: opts.subject,
     html: opts.html,
     text: opts.text,
+    // Nodemailer otherwise builds the Message-ID from the sending machine's
+    // own hostname (a Vercel container ID) — some spam filters treat a
+    // Message-ID domain that doesn't match the From domain as a signal.
+    // Keeping every part of the message aligned to SITE.domain matters more
+    // than any of this once SPF/DKIM/DMARC are published for it in DNS —
+    // see .env.example's Zoho SMTP note for that setup.
+    messageId: `<${Date.now()}.${Math.random().toString(36).slice(2)}@${SITE.domain}>`,
   });
   return { sent: true };
 }

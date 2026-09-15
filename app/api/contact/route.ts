@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { CONTACT } from '@/config/site';
 import { sendMail } from '@/lib/mailer';
 import { buildEmailHtml } from '@/lib/emailTemplate';
+import { saveEnquiry, generateEnquiryId } from '@/lib/enquiryStore';
 
 export async function POST(request: NextRequest) {
   try {
@@ -16,6 +17,24 @@ export async function POST(request: NextRequest) {
         { success: false, message: 'Missing required fields (name, email, message)' },
         { status: 400 },
       );
+    }
+
+    // Best-effort: record the enquiry so /admin/enquiries can list and reply
+    // to it, regardless of whether email delivery succeeds below.
+    try {
+      await saveEnquiry({
+        id: generateEnquiryId(),
+        type: 'contact',
+        name,
+        email,
+        phone: phone || '',
+        message,
+        meta: { Interest: interest || 'General Inquiry' },
+        createdAt: Date.now(),
+        status: 'new',
+      });
+    } catch (err) {
+      console.error('Contact API: saveEnquiry failed (email still sent):', err);
     }
 
     const html = buildEmailHtml({
