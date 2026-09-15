@@ -4,8 +4,8 @@ import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { SHOP, CONTACT } from '@/src/config/site';
 import { buildEmailHtml } from '@/lib/emailTemplate';
-import { paymentTermsHtml } from '@/lib/order';
-import { waPaymentConfirmationLink } from '@/lib/whatsapp';
+import { paymentTermsHtml, paymentTermsLines } from '@/lib/order';
+import { waPaymentConfirmationLink, waPaymentDetailsMessage, waLinkTo, waMessageText } from '@/lib/whatsapp';
 import { useAdminPasscode } from '@/lib/useAdminPasscode';
 import { PasscodeGate } from '@/components/admin/PasscodeGate';
 import { PaymentTermsList } from '@/components/PaymentTermsList';
@@ -87,6 +87,7 @@ export default function SendPaymentEmailPage() {
   const [orderNumber, setOrderNumber] = useState('');
   const [customerName, setCustomerName] = useState('');
   const [customerEmail, setCustomerEmail] = useState('');
+  const [customerPhone, setCustomerPhone] = useState('');
   const [amountDue, setAmountDue] = useState('');
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('Direct Bank EFT');
   const [instructions, setInstructions] = useState(() => defaultInstructions('Direct Bank EFT', '', ''));
@@ -103,6 +104,8 @@ export default function SendPaymentEmailPage() {
   const [loadError, setLoadError] = useState('');
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent'>('idle');
   const [error, setError] = useState('');
+  const [whatsappNotice, setWhatsappNotice] = useState('');
+  const [copiedMessage, setCopiedMessage] = useState(false);
 
   // Pre-fill from an order in the dashboard — the "Send Payment Details" link
   // in the order email, or a click from /admin/orders/, both use ?id=.
@@ -123,6 +126,7 @@ export default function SendPaymentEmailPage() {
           setOrderNumber(order.orderNumber);
           setCustomerName(order.customerName);
           setCustomerEmail(order.customerEmail);
+          setCustomerPhone(order.customerPhone || '');
           setAmountDue(order.amountDue);
           if (METHOD_CODE_MAP[order.paymentMethodCode]) setPaymentMethod(METHOD_CODE_MAP[order.paymentMethodCode]);
         } else {
@@ -191,6 +195,32 @@ export default function SendPaymentEmailPage() {
     [orderNumber, whatsappLink, showOsko],
   );
 
+  // Same terms, as plain lines, for the WhatsApp reply (which can't render
+  // the HTML bullet list) — and the full pre-filled message text, used both
+  // to build the wa.me redirect and as the "copy this" fallback below it.
+  const whatsappTermsLines = useMemo(
+    () =>
+      paymentTermsLines({
+        orderNumber: orderNumber || '[order number]',
+        contactEmail: CONTACT.email,
+        whatsapp: CONTACT.whatsapp,
+        whatsappLink,
+        showOskoNote: showOsko,
+      }),
+    [orderNumber, whatsappLink, showOsko],
+  );
+  const whatsappMessageLines = useMemo(
+    () =>
+      waPaymentDetailsMessage({
+        orderNumber: orderNumber || '[order number]',
+        amountDue: amountDue || '[amount]',
+        instructions,
+        termsLines: whatsappTermsLines,
+      }),
+    [orderNumber, amountDue, instructions, whatsappTermsLines],
+  );
+  const whatsappFullMessage = useMemo(() => waMessageText(whatsappMessageLines), [whatsappMessageLines]);
+
   const previewHtml = useMemo(
     () =>
       buildEmailHtml({
@@ -212,6 +242,7 @@ export default function SendPaymentEmailPage() {
   );
 
   const formValid = orderNumber && customerName && customerEmail && amountDue && instructions;
+  const whatsappValid = orderNumber && customerPhone && amountDue && instructions;
 
   const handleSend = async () => {
     if (!formValid) {
@@ -239,10 +270,42 @@ export default function SendPaymentEmailPage() {
     }
   };
 
+  const handleSendWhatsApp = () => {
+    if (!whatsappValid) {
+      setError('Fill in order #, amount, instructions and customer phone first.');
+      return;
+    }
+    setError('');
+    // Open first, synchronously in the click handler — a redirect fired
+    // after an await here would get blocked as a pop-up by most browsers.
+    window.open(waLinkTo(customerPhone, whatsappMessageLines), '_blank', 'noopener,noreferrer');
+    setWhatsappNotice('WhatsApp opened with the message ready — press send there.');
+    // Best-effort, same as the email path: mark it sent so the dashboard
+    // reflects reality, but don't block the redirect on it.
+    if (orderNumber && passcode) {
+      fetch(`/api/admin/orders/${encodeURIComponent(orderNumber)}/`, {
+        method: 'PATCH',
+        headers: { 'X-Admin-Passcode': passcode },
+      })
+        .then((res) => {
+          if (res.status === 401) lock();
+        })
+        .catch(() => {});
+    }
+    setTimeout(() => setWhatsappNotice(''), 6000);
+  };
+
+  const handleCopyMessage = () => {
+    navigator.clipboard.writeText(whatsappFullMessage);
+    setCopiedMessage(true);
+    setTimeout(() => setCopiedMessage(false), 2000);
+  };
+
   const resetForm = () => {
     setOrderNumber('');
     setCustomerName('');
     setCustomerEmail('');
+    setCustomerPhone('');
     setAmountDue('');
     setPaymentMethod('Direct Bank EFT');
     setInstructions(defaultInstructions('Direct Bank EFT', '', ''));
@@ -252,6 +315,8 @@ export default function SendPaymentEmailPage() {
     setNotes('');
     setStatus('idle');
     setError('');
+    setWhatsappNotice('');
+    setCopiedMessage(false);
   };
 
   const inputClass =
@@ -306,9 +371,15 @@ export default function SendPaymentEmailPage() {
           <label className={labelClass}>Customer Name *</label>
           <input value={customerName} onChange={(e) => setCustomerName(e.target.value)} placeholder="Jack Rider" className={inputClass} />
         </div>
-        <div>
-          <label className={labelClass}>Customer Email *</label>
-          <input type="email" value={customerEmail} onChange={(e) => setCustomerEmail(e.target.value)} placeholder="jack@example.com.au" className={inputClass} />
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className={labelClass}>Customer Email *</label>
+            <input type="email" value={customerEmail} onChange={(e) => setCustomerEmail(e.target.value)} placeholder="jack@example.com.au" className={inputClass} />
+          </div>
+          <div>
+            <label className={labelClass}>Customer Phone</label>
+            <input type="tel" value={customerPhone} onChange={(e) => setCustomerPhone(e.target.value)} placeholder="0412 345 678" className={inputClass} />
+          </div>
         </div>
         <div>
           <label className={labelClass}>Payment Method</label>
@@ -407,6 +478,50 @@ export default function SendPaymentEmailPage() {
       >
         {status === 'sending' ? 'Sending…' : `Send to ${customerEmail || 'customer'}`}
       </button>
+
+      <div className="flex items-center gap-3 text-[10px] font-mono uppercase tracking-wider text-stone-600">
+        <div className="h-px flex-1 bg-[#2B2F36]" />
+        or send via WhatsApp
+        <div className="h-px flex-1 bg-[#2B2F36]" />
+      </div>
+
+      <div className="space-y-3">
+        <div>
+          <h2 className="text-xs font-bold uppercase tracking-wider text-stone-400 font-mono mb-2">WhatsApp Message Preview</h2>
+          <div className="border border-[#2B2F36] rounded-2xl bg-[#0B0C0E] p-4">
+            <p className="text-[13px] text-[#E9EDEF] font-sans whitespace-pre-wrap leading-relaxed">{whatsappFullMessage}</p>
+          </div>
+        </div>
+
+        {whatsappNotice && <p className="text-xs text-emerald-400 font-semibold text-center">{whatsappNotice}</p>}
+
+        <div className="grid grid-cols-2 gap-3">
+          <button
+            type="button"
+            onClick={handleCopyMessage}
+            className="py-3.5 rounded-xl text-sm font-bold transition bg-[#17191C] border border-[#2B2F36] hover:border-stone-600 text-stone-200"
+          >
+            {copiedMessage ? 'Copied!' : 'Copy Message'}
+          </button>
+          <button
+            type="button"
+            onClick={handleSendWhatsApp}
+            disabled={!whatsappValid}
+            className={`flex items-center justify-center gap-2 py-3.5 rounded-xl text-sm font-bold transition ${
+              whatsappValid ? 'bg-[#25D366] hover:bg-[#20bd5a] text-black' : 'bg-[#25D366]/40 text-black/60 cursor-not-allowed'
+            }`}
+          >
+            <svg className="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766 0-3.18-2.586-5.771-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.007c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.303-.058.116-.087.188-.173.289l-.26.303c-.087.087-.179.183-.077.359.101.176.449.741.964 1.201.662.591 1.221.774 1.394.861.173.086.275.072.376-.044.101-.116.433-.506.549-.679.116-.173.231-.145.39-.087s1.011.477 1.184.564c.173.087.289.13.332.202.043.073.043.419-.101.824z" />
+            </svg>
+            Send via WhatsApp
+          </button>
+        </div>
+        <p className="text-[10px] text-stone-500 text-center">
+          Opens the customer's WhatsApp chat with this message ready — press send there. If it doesn't redirect, use
+          Copy Message and paste it in manually.
+        </p>
+      </div>
     </div>
   );
 }

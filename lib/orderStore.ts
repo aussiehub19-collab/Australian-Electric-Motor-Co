@@ -22,6 +22,10 @@ export interface StoredOrder {
   grandTotal: string;
   paymentMethodCode: 'bank' | 'payid' | 'crypto' | 'payin4';
   paymentLabel: string;
+  /** Which checkout button the customer used — lets the admin dashboard
+   * hint which channel to reply on. Optional: orders saved before this
+   * field existed simply don't have it. */
+  channel?: 'whatsapp' | 'email';
   createdAt: number;
   status: 'pending' | 'payment-sent';
 }

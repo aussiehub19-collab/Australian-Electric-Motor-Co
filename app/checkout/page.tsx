@@ -76,9 +76,21 @@ export default function CheckoutPage() {
     if (!customerValid) {
       e.preventDefault();
       setOrderError('Please complete your delivery details first.');
-    } else {
-      setOrderError('');
+      return;
     }
+    setOrderError('');
+    // Fire-and-forget: record the order the same way Email checkout does —
+    // so it shows in /admin/orders/, the business gets the "Send Payment
+    // Details" notification, and the customer still gets the confirmation
+    // email — regardless of which checkout button they used. Doesn't block
+    // or await anything: the anchor's own href/target handle opening
+    // WhatsApp natively, so this just runs alongside it.
+    fetch('/api/order/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ customer, order: buildOrderSummary(), channel: 'whatsapp' }),
+    }).catch((err) => console.error('WhatsApp checkout: order save failed (WhatsApp still opened):', err));
+    saveCart([]);
   };
 
   const handleEmailOrder = async () => {
@@ -92,7 +104,7 @@ export default function CheckoutPage() {
       const res = await fetch('/api/order/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ customer, order: buildOrderSummary() }),
+        body: JSON.stringify({ customer, order: buildOrderSummary(), channel: 'email' }),
       });
       const data = await res.json();
       if (res.ok && data.success) {

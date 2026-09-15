@@ -23,6 +23,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { order, botcheck } = body as { order: OrderSummary; botcheck?: unknown };
     const customer = body.customer || {};
+    const channel: 'whatsapp' | 'email' = body.channel === 'whatsapp' ? 'whatsapp' : 'email';
 
     if (botcheck) return NextResponse.json({ success: true });
 
@@ -70,6 +71,7 @@ export async function POST(request: NextRequest) {
           grandTotal: money(order.grandTotal),
           paymentMethodCode: detectPaymentMethodCode(order),
           paymentLabel: order.paymentLabel,
+          channel,
           createdAt: Date.now(),
           status: 'pending',
         });
@@ -82,8 +84,12 @@ export async function POST(request: NextRequest) {
     const paymentLink = order.orderNumber ? paymentEmailLink(order.orderNumber) : `https://${SITE.domain}/admin/orders/`;
     const businessHtml = buildEmailHtml({
       heading: order.orderNumber ? `New Order — ${order.orderNumber}` : 'New Order',
-      intro: `${customer.name} placed an order through the website checkout.`,
+      intro:
+        channel === 'whatsapp'
+          ? `${customer.name} checked out via WhatsApp — they've also sent (or are about to send) the order details there directly.`
+          : `${customer.name} placed an order through the website checkout.`,
       rows: [
+        { label: 'Checkout Via', value: channel === 'whatsapp' ? 'WhatsApp' : 'Email' },
         ...orderRows,
         { label: 'Customer', value: customer.name },
         { label: 'Phone', value: customer.phone },

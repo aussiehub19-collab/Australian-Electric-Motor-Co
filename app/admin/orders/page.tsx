@@ -148,7 +148,7 @@ export default function OrdersDashboardPage() {
             <Link href={`/admin/send-payment-email/?id=${encodeURIComponent(o.orderNumber)}`} className="min-w-0 flex-1">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <span className="font-mono text-sm font-bold text-amber-400">{o.orderNumber}</span>
                     <span
                       className={`text-[10px] font-mono font-bold uppercase px-1.5 py-0.5 rounded ${
@@ -159,6 +159,11 @@ export default function OrdersDashboardPage() {
                     >
                       {o.status === 'payment-sent' ? 'Sent' : 'Pending'}
                     </span>
+                    {o.channel === 'whatsapp' && (
+                      <span className="text-[10px] font-mono font-bold uppercase px-1.5 py-0.5 rounded bg-[#25D366]/15 text-[#25D366] border border-[#25D366]/30">
+                        WhatsApp
+                      </span>
+                    )}
                   </div>
                   <p className="text-sm text-stone-200 font-semibold truncate mt-1">{o.customerName}</p>
                   <p className="text-xs text-stone-500 truncate">{o.customerEmail}</p>
